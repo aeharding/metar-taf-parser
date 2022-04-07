@@ -1,0 +1,329 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0"
+"Content-Type: text/plain; charset=utf-8"
+"Content-Transfer-Encoding: 8bit"
+"X-Generator: Mivek prop2po"
+"Project-Id-Version: metar-parser"
+"Language: zn-CN"
+
+#:
+msgid "CloudQuantity.BKN"
+msgstr "碎云"
+
+#:
+msgid "CloudQuantity.FEW"
+msgstr "少量"
+
+#:
+msgid "CloudQuantity.NSC"
+msgstr "没有明显的云。"
+
+#:
+msgid "CloudQuantity.OVC"
+msgstr "多云"
+
+#:
+msgid "CloudQuantity.SCT"
+msgstr "散云"
+
+#:
+msgid "CloudQuantity.SKC"
+msgstr "天空晴朗"
+
+#:
+msgid "CloudType.AC"
+msgstr "高积云"
+
+#:
+msgid "CloudType.AS"
+msgstr "高层云"
+
+#:
+msgid "CloudType.CB"
+msgstr "积雨云"
+
+#:
+msgid "CloudType.CC"
+msgstr "卷积云"
+
+#:
+msgid "CloudType.CI"
+msgstr "Cirrus"
+
+#:
+msgid "CloudType.CS"
+msgstr "卷层云"
+
+#:
+msgid "CloudType.CU"
+msgstr "积云"
+
+#:
+msgid "CloudType.NS"
+msgstr "雨层云"
+
+#:
+msgid "CloudType.SC"
+msgstr "层积云"
+
+#:
+msgid "CloudType.ST"
+msgstr "层云"
+
+#:
+msgid "CloudType.TCU"
+msgstr "高耸积云"
+
+#:
+msgid "Descriptive.BC"
+msgstr "补丁"
+
+#:
+msgid "Descriptive.BL"
+msgstr "吹"
+
+#:
+msgid "Descriptive.DR"
+msgstr "低漂"
+
+#:
+msgid "Descriptive.FZ"
+msgstr "冰冻"
+
+#:
+msgid "Descriptive.MI"
+msgstr "浅"
+
+#:
+msgid "Descriptive.PR"
+msgstr "部分的"
+
+#:
+msgid "Descriptive.SH"
+msgstr "阵雨"
+
+#:
+msgid "Descriptive.TS"
+msgstr "雷雨"
+
+#:
+msgid "Error.prefix"
+msgstr "发生错误。 错误代码 n°"
+
+#:
+msgid "ErrorCode.AirportNotFound"
+msgstr "找不到此消息的机场。"
+
+#:
+msgid "ErrorCode.InvalidMessage"
+msgstr "输入的消息无效。"
+
+#:
+msgid "Intensity.-"
+msgstr "光"
+
+#:
+msgid "Intensity.+"
+msgstr "重的"
+
+#:
+msgid "Intensity.VC"
+msgstr "在附近"
+
+#:
+msgid "Phenomenon.BR"
+msgstr "薄雾"
+
+#:
+msgid "Phenomenon.DS"
+msgstr "沙尘暴"
+
+#:
+msgid "Phenomenon.DU"
+msgstr "弥漫的灰尘"
+
+#:
+msgid "Phenomenon.DZ"
+msgstr "细雨"
+
+#:
+msgid "Phenomenon.FC"
+msgstr "漏斗云"
+
+#:
+msgid "Phenomenon.FG"
+msgstr "雾"
+
+#:
+msgid "Phenomenon.FU"
+msgstr "烟"
+
+#:
+msgid "Phenomenon.GR"
+msgstr "冰雹"
+
+#:
+msgid "Phenomenon.GS"
+msgstr "小冰雹和/或雪粒"
+
+#:
+msgid "Phenomenon.HZ"
+msgstr "雾霾"
+
+#:
+msgid "Phenomenon.IC"
+msgstr "冰晶"
+
+#:
+msgid "Phenomenon.PL"
+msgstr "冰粒"
+
+#:
+msgid "Phenomenon.PO"
+msgstr "尘土或沙尘旋风"
+
+#:
+msgid "Phenomenon.PY"
+msgstr "喷"
+
+#:
+msgid "Phenomenon.RA"
+msgstr "雨"
+
+#:
+msgid "Phenomenon.SA"
+msgstr "沙"
+
+#:
+msgid "Phenomenon.SG"
+msgstr "雪粒"
+
+#:
+msgid "Phenomenon.SN"
+msgstr "雪"
+
+#:
+msgid "Phenomenon.SQ"
+msgstr "狂风"
+
+#:
+msgid "Phenomenon.SS"
+msgstr "沙暴"
+
+#:
+msgid "Phenomenon.UP"
+msgstr "未知降水"
+
+#:
+msgid "Phenomenon.VA"
+msgstr "火山灰"
+
+#:
+msgid "Phenomenon.TS"
+msgstr "雷雨"
+
+#:
+msgid "Remark.AO1"
+msgstr "没有降水鉴别器的自动化站"
+
+#:
+msgid "Remark.AO2"
+msgstr "带有降水鉴别器的自动化站"
+
+#:
+msgid "Remark.BASED"
+msgstr "基于"
+
+#:
+msgid "Remark.Ceiling.Height"
+msgstr "上限在 {0} 到 {1} 英尺之间变化"
+
+#:
+msgid "Remark.Ceiling.Second.Location"
+msgstr "由位于 {1} 处的第二个传感器测量的 {0} 英尺的上限"
+
+#:
+msgid "Remark.FCST"
+msgstr "预报"
+
+#:
+msgid "Remark.FUNNELCLOUD"
+msgstr "漏斗云 "
+
+#:
+msgid "MetarFacade.InvalidIcao"
+msgstr "ICAO 代码无效。"
+
+#:
+msgid "Converter.D"
+msgstr "减少"
+
+#:
+msgid "Converter.E"
+msgstr "东"
+
+#:
+msgid "Converter.N"
+msgstr "北"
+
+#:
+msgid "Converter.NE"
+msgstr "东北"
+
+#:
+msgid "Converter.NSC"
+msgstr "无明显变化"
+
+#:
+msgid "Converter.NW"
+msgstr "西北"
+
+#:
+msgid "Converter.S"
+msgstr "南"
+
+#:
+msgid "Converter.SE"
+msgstr "东南"
+
+#:
+msgid "Converter.SW"
+msgstr "西南"
+
+#:
+msgid "Converter.U"
+msgstr "上升"
+
+#:
+msgid "Converter.VRB"
+msgstr "多变的"
+
+#:
+msgid "Converter.W"
+msgstr "西"
+
+#:
+msgid "WeatherChangeType.FM"
+msgstr "从"
+
+#:
+msgid "WeatherChangeType.BECMG"
+msgstr "变得"
+
+#:
+msgid "WeatherChangeType.TEMPO"
+msgstr "暂时的"
+
+#:
+msgid "WeatherChangeType.PROB"
+msgstr "可能性"
+
+#:
+msgid "TimeIndicator.AT"
+msgstr "在"
+
+#:
+msgid "TimeIndicator.TL"
+msgstr "直到"
+
