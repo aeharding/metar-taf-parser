@@ -20,7 +20,7 @@ export class AltimeterCommand implements ICommand {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    metar.altimeter = +matches[1];
+    metar.altimeter = Math.trunc(+matches[1]);
   }
 }
 
@@ -38,7 +38,9 @@ export class AltimeterMercuryCommand implements ICommand {
 
     const mercury = +matches[1] / 100;
 
-    metar.altimeter = converter.convertInchesMercuryToPascal(mercury);
+    metar.altimeter = Math.trunc(
+      converter.convertInchesMercuryToPascal(mercury)
+    );
   }
 }
 

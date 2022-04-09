@@ -51,7 +51,7 @@ function parseRemark(
   line: string[],
   index: number
 ) {
-  const remarks = new RemarkParser().parse(line.slice(1).join(" "));
+  const remarks = new RemarkParser().parse(line.slice(index + 1).join(" "));
 
   container.remarks = remarks;
   container.remark = remarks.join(" ");
@@ -62,7 +62,7 @@ function parseRemark(
  * @param input the string containing the temperature
  * @returns TemperatureDated object
  */
-function parseTemperature(input: string): ITemperatureDated {
+export function parseTemperature(input: string): ITemperatureDated {
   const parts = pySplit(input, "/");
 
   return {
@@ -77,7 +77,7 @@ function parseTemperature(input: string): ITemperatureDated {
  * @param input the string containing the validity
  * @returns Validity object
  */
-function parseValidity(input: string): IValidity {
+export function parseValidity(input: string): IValidity {
   const parts = pySplit(input, "/");
 
   return {
@@ -219,7 +219,8 @@ export class MetarParser extends AbstractParser {
         const trendTime: IMetarTrendTime = {
           type: TimeIndicator[trendParts[i].slice(0, 2) as TimeIndicator],
           // TODO implement time
-          time: "",
+          hour: +trendParts[i].slice(2, 4),
+          minute: +trendParts[i].slice(4, 6),
         };
 
         trend.times.push(trendTime);

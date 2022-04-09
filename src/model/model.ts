@@ -94,11 +94,16 @@ export interface IAbstractValidity {
   startHour: number;
 }
 
-export interface IAbstractWeatherCode extends IAbstractWeatherContainer {
-  day: number;
+/**
+ * Exclusive for the TS port (because python has `time()` and js does not)
+ */
+export interface ITime {
   hour: number;
   minute: number;
-  time: string;
+}
+
+export interface IAbstractWeatherCode extends IAbstractWeatherContainer, ITime {
+  day: number;
   airport: IAirport;
   message: string;
   station: string;
@@ -127,9 +132,8 @@ export interface IAbstractTrend extends IAbstractWeatherContainer {
   type: WeatherChangeType;
 }
 
-export interface IMetarTrendTime {
+export interface IMetarTrendTime extends ITime {
   type: TimeIndicator;
-  time: string;
 }
 
 export interface IMetarTrend extends IAbstractTrend {

@@ -46,3 +46,9 @@ const { metar } = await myService.getAirportData('KMSN')
 
 const metarResult = parseMetar(metar, { locale: de })
 ```
+
+## Development
+
+### Example site
+
+Please see [the example site README.md](example/README.md).

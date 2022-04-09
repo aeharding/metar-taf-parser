@@ -106,7 +106,7 @@ export class WindCommand implements ICommand {
 
     if (!matches) throw new UnexpectedParseError("Wind should be defined");
 
-    return makeWind(matches[1], matches[2], matches[3], matches[5]);
+    return makeWind(matches[1], matches[2], matches[3], matches[4]);
   }
 
   execute(container: IAbstractWeatherContainer, windString: string): boolean {
