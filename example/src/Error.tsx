@@ -1,8 +1,12 @@
 import styled from "@emotion/styled";
 
 const Container = styled.div`
-  background: red;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 0, 0, 0.3);
+  border: 1px solid red;
   color: white;
+  font-family: monospace;
 `;
 
 interface ErrorProps {
@@ -10,5 +14,9 @@ interface ErrorProps {
 }
 
 export default function Error({ error }: ErrorProps) {
-  return <Container>{error.message}</Container>;
+  return (
+    <Container>
+      {error.name}: {error.message}
+    </Container>
+  );
 }

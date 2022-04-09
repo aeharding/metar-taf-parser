@@ -10,21 +10,64 @@ import { createSearchParams, useSearchParams } from "react-router-dom";
 // Types are broke
 const Json = ReactJson as any;
 
-const Button = styled.button``;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  grid-gap: 1rem;
+  margin-top: 1.5rem;
+`;
+
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  grid-gap: 1rem;
+`;
+
+const Button = styled.button`
+  padding: 0.5rem 1rem;
+  font-size: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  background: none;
+  color: inherit;
+  white-space: nowrap;
+  margin-right: 0.5rem;
+  cursor: pointer;
+`;
 
 const Textarea = styled(reactTextareaAutosize)`
   width: 100%;
-  max-width: 400px;
   min-height: 50px;
+
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  resize: none;
+  padding: 1rem;
+  color: inherit;
+  font-family: monospace;
+`;
+
+const JsonContainer = styled.div`
+  display: flex;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+
+  overflow: hidden;
+
+  .react-json-view {
+    padding: 1rem;
+    width: 100%;
+  }
 `;
 
 const EXAMPLE =
-  "METAR KTTN 051853Z 04011KT 1 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017=";
+  "KTTN 051853Z 04011KT 1 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017=";
 
 export default function Parse() {
   const [search] = useSearchParams();
   const navigate = useNavigate();
-  const [input, setInput] = useState(search.get("input") || undefined);
+  const [input, setInput] = useState(search.get("input") || "");
   const [metar, setMetar] = useState<IMetar | undefined>();
   const [error, setError] = useState<Error | undefined>();
 
@@ -47,20 +90,26 @@ export default function Parse() {
   }, [input, navigate]);
 
   return (
-    <>
-      <Button onClick={() => setInput(EXAMPLE)}>Autofill example</Button>
-      <br />
-      <Textarea
-        onChange={(e) => {
-          setInput(e.target.value);
-        }}
-        value={input}
-        placeholder="Enter METAR"
-      />
+    <Container>
+      <InputContainer>
+        <div>
+          <Button onClick={() => setInput(EXAMPLE)}>Autofill example</Button>
+          <Button onClick={() => setInput("")}>Clear</Button>
+        </div>
+        <Textarea
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
+          value={input}
+          placeholder="Enter METAR string"
+        />
+      </InputContainer>
 
       {error && <Error error={error} />}
 
-      <Json src={metar} />
-    </>
+      <JsonContainer>
+        <Json src={metar} theme="harmonic" enableClipboard={false} />
+      </JsonContainer>
+    </Container>
   );
 }
