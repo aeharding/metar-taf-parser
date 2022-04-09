@@ -88,16 +88,16 @@ describe("RemarkParser", () => {
   });
 
   const values: [string, unknown][] = [
-    // ["05009KT", true],
-    // ["030V113", true],
-    // ["9999", true],
-    // ["6 1/2SM", true],
-    // ["1100w", true],
-    // ["VV002", true],
-    // ["CAVOK", true],
-    // ["SCT026CB", true],
-    // ["ZZZ026CV", false],
-    // ["+SHGSRA", true],
+    ["05009KT", true],
+    ["030V113", true],
+    ["9999", true],
+    ["6 1/2SM", true],
+    ["1100w", true],
+    ["VV002", true],
+    ["CAVOK", true],
+    ["SCT026CB", true],
+    ["ZZZ026CV", false],
+    ["+SHGSRA", true],
     ["+VFDR", false],
   ];
 
@@ -119,7 +119,7 @@ describe("RemarkParser", () => {
 });
 
 describe("MetarParser", () => {
-  (() => {
+  test("parses", () => {
     const input =
       "LFPG 170830Z 00000KT 0350 R27L/0375N R09R/0175N R26R/0500D R08L/0400N R26L/0275D R08R/0250N R27R/0300N R09L/0200N FG SCT000 M01/M01 Q1026 NOSIG";
 
@@ -139,11 +139,10 @@ describe("MetarParser", () => {
     expect(metar.runwaysInfo[0].name).toBe("27L");
     expect(metar.runwaysInfo[0].minRange).toBe(375);
     expect(metar.runwaysInfo[0].trend).toBe("N");
-  })();
+  });
 
   describe("MetarParser", () => {
-    (() => {
-      // With tempo
+    test("with tempo", () => {
       const input =
         "LFBG 081130Z AUTO 23012KT 9999 SCT022 BKN072 BKN090 22/16 Q1011 TEMPO 26015G25KT 3000 TSRA SCT025CB BKN050";
 
@@ -174,6 +173,24 @@ describe("MetarParser", () => {
       expect(trend.clouds[1].quantity).toBe(CloudQuantity.BKN);
       expect(trend.clouds[1].height).toBe(5000);
       expect(trend.clouds[1].type).toBeUndefined();
-    })();
+    });
+
+    test("with tempo becmg", () => {
+      const metar = new MetarParser().parse(
+        "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO SHRA BECMG SKC"
+      );
+
+      expect(metar.trends).toHaveLength(2);
+      expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
+      expect(metar.trends[0].weatherConditions).toHaveLength(1);
+      expect(metar.trends[0].weatherConditions[0].descriptive).toBe(
+        Descriptive.SHOWERS
+      );
+      expect(metar.trends[0].weatherConditions[0].phenomenons[0]).toBe(
+        Phenomenon.RAIN
+      );
+      expect(metar.trends[1].type).toBe(WeatherChangeType.BECMG);
+      expect(metar.trends[1].clouds).toHaveLength(1);
+    });
   });
 });

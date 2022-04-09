@@ -161,7 +161,7 @@ export abstract class AbstractParser {
     abstractWeatherContainer: IAbstractWeatherContainer,
     input: string
   ): boolean {
-    if (this.#CAVOK === input) {
+    if (input === this.#CAVOK) {
       abstractWeatherContainer.cavok = true;
       const distance = "> 10km";
 
@@ -209,7 +209,7 @@ export class MetarParser extends AbstractParser {
     while (
       i < trendParts.length &&
       trendParts[i] !== this.TEMPO &&
-      trendParts[0] !== this.BECMG
+      trendParts[i] !== this.BECMG
     ) {
       if (
         trendParts[i].startsWith(this.FM) ||
@@ -284,9 +284,10 @@ export class MetarParser extends AbstractParser {
           } as unknown as IMetarTrend;
           // TODO - remove casting
 
-          this.parseTrend(index, trend, metarTab);
+          index = this.parseTrend(index, trend, metarTab);
           metar.trends.push(trend);
-
+        } else if (metarTab[index] === this.RMK) {
+          parseRemark(metar, metarTab, index);
           break;
         } else {
           const command = this.#commandSupplier.get(metarTab[index]);
