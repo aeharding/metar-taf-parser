@@ -2,7 +2,15 @@
  * Split behaving similar to Python's implementation
  */
 export function pySplit(string: string, separator: string, n?: number) {
-  const split = string.split(separator);
+  let split = string.split(separator);
+
+  // Note: Python implementation will automatically trim empty values if
+  // separator is undefined. Since this function is kinda meh, we'll just do it
+  // for any spaces (pretty close to their implementation, since a space is the
+  // default character to split on)
+  //
+  // https://docs.python.org/3/library/stdtypes.html?highlight=split#str.split
+  if (separator === " ") split = split.filter((n) => n);
 
   if (n == null || split.length <= n) return split;
 
@@ -10,18 +18,4 @@ export function pySplit(string: string, separator: string, n?: number) {
   out.push(split.slice(n).join(separator));
 
   return out;
-}
-
-export function findAll(regex: RegExp, str: string): string[] {
-  const hits: string[] = [];
-  // Iterate hits
-  let match = null;
-  do {
-    match = regex.exec(str);
-    if (match) {
-      hits.push(match[0]);
-    }
-  } while (match);
-
-  return hits;
 }

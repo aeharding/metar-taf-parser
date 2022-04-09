@@ -29,7 +29,7 @@ export class CeilingHeightCommand extends Command {
 
     remark.push(format(i18n.Remark.Ceiling.Height, minCeiling, maxCeiling));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -51,7 +51,7 @@ export class CeilingSecondLocationCommand extends Command {
       format(i18n.Remark.Ceiling.Second.Location, height, matches[2])
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -69,7 +69,7 @@ export class HailSizeCommand extends Command {
 
     remark.push(format(i18n.Remark.Hail[0], matches[1]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -93,7 +93,7 @@ export class HourlyMaximumMinimumTemperatureCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -116,7 +116,7 @@ export class HourlyMaximumTemperatureCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -139,7 +139,7 @@ export class HourlyMinimumTemperatureCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -157,7 +157,7 @@ export class HourlyPrecipitationAmountCommand extends Command {
 
     remark.push(format(i18n.Remark.Precipitation.Amount.Hourly, +matches[1]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -180,7 +180,7 @@ export class HourlyPressureCommand extends Command {
       )}`
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -213,7 +213,7 @@ export class HourlyTemperatureDewPointCommand extends Command {
       );
     }
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -233,7 +233,7 @@ export class IceAccretionCommand extends Command {
       format(i18n.Remark.Ice.Accretion.Amount, +matches[2], +matches[1])
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -258,7 +258,7 @@ export class ObscurationCommand extends Command {
 
     remark.push(format(i18n.Remark.Obscuration, layer, height, detail));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -281,7 +281,7 @@ export class PrecipitationAmount24HourCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -305,7 +305,7 @@ export class PrecipitationAmount36HourCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -335,7 +335,7 @@ export class PrecipitationBegEndCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -355,7 +355,7 @@ export class PrevailingVisibilityCommand extends Command {
       format(i18n.Remark.Variable.Prevailing.Visibility, matches[1], matches[5])
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -376,7 +376,7 @@ export class SeaLevelPressureCommand extends Command {
 
     remark.push(format(i18n.Remark.Sea.Level.Pressure, pressure));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -396,7 +396,7 @@ export class SecondLocationVisibilityCommand extends Command {
       format(i18n.Remark.Second.Location.Visibility, matches[1], matches[5])
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -420,7 +420,7 @@ export class SectorVisibilityCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -438,7 +438,7 @@ export class SmallHailSizeCommand extends Command {
 
     remark.push(format(i18n.Remark.Hail.LesserThan, matches[1]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -456,7 +456,7 @@ export class SnowDepthCommand extends Command {
 
     remark.push(format(i18n.Remark.Snow.Depth, +matches[1]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -476,7 +476,7 @@ export class SnowIncreaseCommand extends Command {
       format(i18n.Remark.Snow.Increasing.Rapidly, matches[1], matches[2])
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -499,7 +499,7 @@ export class SnowPelletsCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -517,7 +517,7 @@ export class SunshineDurationCommand extends Command {
 
     remark.push(format(i18n.Remark.Sunshine.Duration, +matches[1]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -535,7 +535,7 @@ export class SurfaceVisibilityCommand extends Command {
 
     remark.push(format(i18n.Remark.Surface.Visibility, matches[1]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -558,7 +558,7 @@ export class ThunderStormLocationCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -582,7 +582,7 @@ export class ThunderStormLocationMovingCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -610,7 +610,7 @@ export class TornadicActivityBegCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -640,7 +640,7 @@ export class TornadicActivityBegEndCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -668,7 +668,7 @@ export class TornadicActivityEndCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -686,7 +686,7 @@ export class TowerVisibilityCommand extends Command {
 
     remark.push(format(i18n.Remark.Tower.Visibility, matches[1]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -710,7 +710,7 @@ export class VariableSkyCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -735,7 +735,7 @@ export class VariableSkyHeightCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -758,7 +758,7 @@ export class VirgaDirectionCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -778,7 +778,7 @@ export class WaterEquivalentSnowCommand extends Command {
       format(i18n.Remark.Water.Equivalent.Snow.Ground, +matches[1] / 10)
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -804,7 +804,7 @@ export class WindPeakCommand extends Command {
       )
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -822,7 +822,7 @@ export class WindShiftCommand extends Command {
 
     remark.push(format(i18n.Remark.WindShift[0], matches[1] || "", matches[2]));
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 
@@ -842,7 +842,7 @@ export class WindShiftFropaCommand extends Command {
       format(i18n.Remark.WindShift.FROPA, matches[1] || "", matches[2])
     );
 
-    return [code.replace(this.#regex, ""), remark];
+    return [code.replace(this.#regex, "").trim(), remark];
   }
 }
 

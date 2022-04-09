@@ -1,6 +1,5 @@
 import * as converter from "commons/converter";
 import { UnexpectedParseError } from "commons/errors";
-import { findAll } from "helpers/helpers";
 import { IMetar } from "model/model";
 
 interface ICommand {
