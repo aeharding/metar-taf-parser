@@ -32,7 +32,7 @@ export function degreesToCardinal(input: number | string) {
 export function convertVisibility(input: string): string {
   if (input === "9999") return "> 10km";
 
-  return `${input}m`;
+  return `${+input}m`;
 }
 
 export function convertTemperature(input: string): number {

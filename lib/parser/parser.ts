@@ -3,6 +3,9 @@ import {
   IAbstractWeatherCode,
   IAbstractWeatherContainer,
   IFMValidity,
+  IMetar,
+  IMetarTrend,
+  IMetarTrendTime,
   isWeatherConditionValid,
   ITemperatureDated,
   IValidity,
@@ -11,7 +14,14 @@ import {
 import * as converter from "commons/converter";
 import { pySplit } from "helpers/helpers";
 import { CommandSupplier } from "command/common";
-import { Intensity, Phenomenon, Descriptive } from "model/enum";
+import {
+  Intensity,
+  Phenomenon,
+  Descriptive,
+  TimeIndicator,
+  WeatherChangeType,
+} from "model/enum";
+import { CommandSupplier as MetarCommandSupplier } from "command/metar";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -19,10 +29,13 @@ import { Intensity, Phenomenon, Descriptive } from "model/enum";
  * @param timeString The string representing the delivery time
  */
 function parseDeliveryTime(
-  abstractWeatherCode: IAbstractWeatherCode,
   timeString: string
-) {
-  abstractWeatherCode.day = +timeString.slice(2);
+): Pick<IAbstractWeatherCode, "day" | "hour" | "minute"> {
+  return {
+    day: +timeString.slice(0, 2),
+    hour: +timeString.slice(2, 4),
+    minute: +timeString.slice(4, 6),
+  };
   // TODO
   // abstractWeatherCode.time = new Date()
 }
@@ -93,10 +106,11 @@ function parseFromValidity(input: string): IFMValidity {
  * Base parser.
  */
 export abstract class AbstractParser {
-  #FM = "FM";
-  #TEMPO = "TEMPO";
-  #BECMG = "BECMG";
-  #RMK = "RMK";
+  FM = "FM";
+  TEMPO = "TEMPO";
+  BECMG = "BECMG";
+  RMK = "RMK";
+
   #TOKENIZE_REGEX = /\s((?=\d\/\dSM)(?<!\s\d\s)|(?!\d\/\dSM))|=/;
   #INTENSITY_REGEX = /^(-|\+|VC)/;
   #CAVOK = "CAVOK";
@@ -174,6 +188,116 @@ export abstract class AbstractParser {
     }
 
     return false;
+  }
+}
+
+export class MetarParser extends AbstractParser {
+  AT = "AT";
+  TL = "TL";
+  #commandSupplier = new MetarCommandSupplier();
+
+  /**
+   * Parses a trend of a metar
+   * @param index the index starting the trend in the list
+   * @param trend The trend to update
+   * @param trendParts array of tokens
+   * @returns the last index of the token that was last parsed
+   */
+  parseTrend(index: number, trend: IMetarTrend, trendParts: string[]): number {
+    let i = index + 1;
+
+    while (
+      i < trendParts.length &&
+      trendParts[i] !== this.TEMPO &&
+      trendParts[0] !== this.BECMG
+    ) {
+      if (
+        trendParts[i].startsWith(this.FM) ||
+        trendParts[i].startsWith(this.TL) ||
+        trendParts[i].startsWith(this.AT)
+      ) {
+        const trendTime: IMetarTrendTime = {
+          type: TimeIndicator[trendParts[i].slice(0, 2) as TimeIndicator],
+          // TODO implement time
+          time: "",
+        };
+
+        trend.times.push(trendTime);
+      } else {
+        this.generalParse(trend, trendParts[i]);
+      }
+
+      i = i + 1;
+    }
+
+    return i - 1;
+  }
+
+  /**
+   * Parses an message and returns a METAR
+   * @param input The message to parse
+   * @returns METAR
+   */
+  parse(input: string): IMetar {
+    const metarTab = this.tokenize(input);
+
+    const metar: IMetar = {
+      ...parseDeliveryTime(metarTab[1]),
+      station: metarTab[0],
+      message: input,
+      // wind: IWind,
+      // visibility?: Visibility,
+      // verticalVisibility: number,
+      // windShear: IWindShear,
+      cavok: false,
+      remark: "",
+      remarks: [],
+      clouds: [],
+      weatherConditions: [],
+      // airport: IAirport,
+      trends: [],
+      // temperature: number,
+      // dewPoint: number,
+      // altimeter: number,
+      nosig: false,
+      auto: false,
+      runwaysInfo: [],
+    } as unknown as IMetar; // TODO remove cast
+
+    let index = 2;
+
+    while (index < metarTab.length) {
+      if (!super.generalParse(metar, metarTab[index])) {
+        if (metarTab[index] === "NOSIG") {
+          metar.nosig = true;
+        } else if (metarTab[index] === "AUTO") {
+          metar.auto = true;
+        } else if (
+          metarTab[index] === this.TEMPO ||
+          metarTab[index] === this.BECMG
+        ) {
+          const trend: IMetarTrend = {
+            type: WeatherChangeType[metarTab[index] as WeatherChangeType],
+            weatherConditions: [],
+            clouds: [],
+            times: [],
+          } as unknown as IMetarTrend;
+          // TODO - remove casting
+
+          this.parseTrend(index, trend, metarTab);
+          metar.trends.push(trend);
+
+          break;
+        } else {
+          const command = this.#commandSupplier.get(metarTab[index]);
+          if (command) command.execute(metar, metarTab[index]);
+        }
+      }
+
+      index = index + 1;
+    }
+
+    return metar;
   }
 }
 

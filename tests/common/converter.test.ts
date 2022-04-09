@@ -31,7 +31,7 @@ describe("convertVisibility", () => {
   });
 
   test("specific", () => {
-    expect(converter.convertVisibility("4512")).toBe("4512m");
+    expect(converter.convertVisibility("04512")).toBe("4512m");
   });
 });
 

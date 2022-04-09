@@ -93,7 +93,7 @@ export class TemperatureCommand implements ICommand {
   }
 }
 
-class CommandSupplier {
+export class CommandSupplier {
   #commands = [
     new RunwayCommand(),
     new TemperatureCommand(),

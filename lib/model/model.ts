@@ -96,11 +96,13 @@ export interface IAbstractValidity {
 
 export interface IAbstractWeatherCode extends IAbstractWeatherContainer {
   day: number;
+  hour: number;
+  minute: number;
   time: string;
   airport: IAirport;
   message: string;
   station: string;
-  trends: unknown[];
+  trends: IAbstractTrend[];
 }
 
 export interface IMetar extends IAbstractWeatherCode {
@@ -110,6 +112,7 @@ export interface IMetar extends IAbstractWeatherCode {
   nosig: boolean;
   auto: boolean;
   runwaysInfo: IRunwayInfo[];
+  trends: IMetarTrend[];
 }
 
 export interface ITAF extends IAbstractWeatherCode {
@@ -117,6 +120,7 @@ export interface ITAF extends IAbstractWeatherCode {
   maxTemperature: number;
   minTemperature: number;
   amendment: boolean;
+  trends: ITAFTrend[];
 }
 
 export interface IAbstractTrend extends IAbstractWeatherContainer {
@@ -128,7 +132,7 @@ export interface IMetarTrendTime {
   time: string;
 }
 
-export interface MetarTrend extends IAbstractTrend {
+export interface IMetarTrend extends IAbstractTrend {
   times: IMetarTrendTime[];
 }
 
