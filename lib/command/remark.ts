@@ -1,10 +1,12 @@
+import { pySplit } from "helpers/helpers";
 import {
   convertPrecipitationAmount,
   convertTemperatureRemarks,
-} from "../commons/converter";
-import i18n, { format } from "../commons/i18n";
+} from "commons/converter";
+import i18n, { format } from "commons/i18n";
+import { UnexpectedParseError } from "commons/errors";
 
-abstract class Command {
+export abstract class Command {
   abstract canParse(code: string): boolean;
 
   abstract execute(code: string, remark: string[]): [string, string[]];
@@ -20,7 +22,7 @@ export class CeilingHeightCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     const minCeiling = +matches[1] * 100;
     const maxCeiling = +matches[2] * 100;
@@ -41,7 +43,7 @@ export class CeilingSecondLocationCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     const height = +matches[1] * 100;
 
@@ -63,7 +65,7 @@ export class HailSizeCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.Hail[0], matches[1]));
 
@@ -81,7 +83,7 @@ export class HourlyMaximumMinimumTemperatureCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -105,7 +107,7 @@ export class HourlyMaximumTemperatureCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -128,7 +130,7 @@ export class HourlyMinimumTemperatureCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -151,7 +153,7 @@ export class HourlyPrecipitationAmountCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.Precipitation.Amount.Hourly, +matches[1]));
 
@@ -169,7 +171,7 @@ export class HourlyPressureCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       `${i18n.Remark.Barometer[+matches[1]]} ${format(
@@ -192,7 +194,7 @@ export class HourlyTemperatureDewPointCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     if (!matches[3]) {
       remark.push(
@@ -225,7 +227,7 @@ export class IceAccretionCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(i18n.Remark.Ice.Accretion.Amount, +matches[2], +matches[1])
@@ -245,7 +247,7 @@ export class ObscurationCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     const layer =
       i18n.CloudQuantity[matches[2] as keyof typeof i18n.CloudQuantity];
@@ -270,7 +272,7 @@ export class PrecipitationAmount24HourCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -293,7 +295,7 @@ export class PrecipitationAmount36HourCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -317,7 +319,7 @@ export class PrecipitationBegEndCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -347,7 +349,7 @@ export class PrevailingVisibilityCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(i18n.Remark.Variable.Prevailing.Visibility, matches[1], matches[5])
@@ -367,7 +369,7 @@ export class SeaLevelPressureCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     let pressure = matches[1].startsWith("9") ? "9" : "10";
     pressure += matches[1] + "." + matches[2];
@@ -388,7 +390,7 @@ export class SecondLocationVisibilityCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(i18n.Remark.Second.Location.Visibility, matches[1], matches[5])
@@ -408,7 +410,7 @@ export class SectorVisibilityCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -432,7 +434,7 @@ export class SmallHailSizeCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.Hail.LesserThan, matches[1]));
 
@@ -450,7 +452,7 @@ export class SnowDepthCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.Snow.Depth, +matches[1]));
 
@@ -468,7 +470,7 @@ export class SnowIncreaseCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(i18n.Remark.Snow.Increasing.Rapidly, matches[1], matches[2])
@@ -488,7 +490,7 @@ export class SnowPelletsCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -511,7 +513,7 @@ export class SunshineDurationCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.Sunshine.Duration, +matches[1]));
 
@@ -529,7 +531,7 @@ export class SurfaceVisibilityCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.Surface.Visibility, matches[1]));
 
@@ -547,7 +549,7 @@ export class ThunderStormLocationCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -570,7 +572,7 @@ export class ThunderStormLocationMovingCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -595,7 +597,7 @@ export class TornadicActivityBegCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -623,7 +625,7 @@ export class TornadicActivityBegEndCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -653,7 +655,7 @@ export class TornadicActivityEndCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -680,7 +682,7 @@ export class TowerVisibilityCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.Tower.Visibility, matches[1]));
 
@@ -698,7 +700,7 @@ export class VariableSkyCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -722,7 +724,7 @@ export class VariableSkyHeightCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -747,7 +749,7 @@ export class VirgaDirectionCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -770,7 +772,7 @@ export class WaterEquivalentSnowCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(i18n.Remark.Water.Equivalent.Snow.Ground, +matches[1] / 10)
@@ -790,7 +792,7 @@ export class WindPeakCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(
@@ -816,7 +818,7 @@ export class WindShiftCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(format(i18n.Remark.WindShift[0], matches[1] || "", matches[2]));
 
@@ -834,7 +836,7 @@ export class WindShiftFropaCommand extends Command {
   execute(code: string, remark: string[]): [string, string[]] {
     const matches = code.match(this.#regex);
 
-    if (!matches) throw new Error("Match not found");
+    if (!matches) throw new UnexpectedParseError("Match not found");
 
     remark.push(
       format(i18n.Remark.WindShift.FROPA, matches[1] || "", matches[2])
@@ -850,7 +852,7 @@ export class DefaultCommand extends Command {
   }
 
   execute(code: string, remark: string[]): [string, string[]] {
-    const rmkSplit = code.split(" ", 1);
+    const rmkSplit = pySplit(code, " ", 1);
 
     if (i18n.Remark[rmkSplit[0] as keyof typeof i18n.Remark]) {
       remark.push(

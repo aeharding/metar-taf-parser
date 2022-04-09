@@ -5,10 +5,14 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": "lib",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*", "dist/*", "lib/*"]
+    },
+    "rootDirs": ["src", "tests"],
     "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "declaration": true,
     "outDir": "./dist",

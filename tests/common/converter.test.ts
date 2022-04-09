@@ -1,4 +1,4 @@
-import * as converter from "../../lib/commons/converter";
+import * as converter from "commons/converter";
 
 describe("degreesToCardinal", () => {
   test("VRB", () => {

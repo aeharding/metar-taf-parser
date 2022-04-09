@@ -1,4 +1,4 @@
-import messages from "../locale/en.json";
+import messages from "locale/en.json";
 
 // TODO - add other language support. EN hardcoded for now.
 

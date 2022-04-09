@@ -3,10 +3,15 @@ import {
   IAbstractWeatherCode,
   IAbstractWeatherContainer,
   IFMValidity,
+  isWeatherConditionValid,
   ITemperatureDated,
   IValidity,
+  IWeatherCondition,
 } from "model/model";
-import * as converter from "../commons/converter";
+import * as converter from "commons/converter";
+import { pySplit } from "helpers/helpers";
+import { CommandSupplier } from "command/common";
+import { Intensity, Phenomenon, Descriptive } from "model/enum";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -45,7 +50,7 @@ function parseRemark(
  * @returns TemperatureDated object
  */
 function parseTemperature(input: string): ITemperatureDated {
-  const parts = input.split("/");
+  const parts = pySplit(input, "/");
 
   return {
     temperature: converter.convertTemperature(parts[0].slice(2)),
@@ -60,7 +65,7 @@ function parseTemperature(input: string): ITemperatureDated {
  * @returns Validity object
  */
 function parseValidity(input: string): IValidity {
-  const parts = input.split("/");
+  const parts = pySplit(input, "/");
 
   return {
     startDay: +parts[0].slice(0, 2),
@@ -87,18 +92,100 @@ function parseFromValidity(input: string): IFMValidity {
  * Abstract class.
  * Base parser.
  */
-abstract class AbstractParser {}
+export abstract class AbstractParser {
+  #FM = "FM";
+  #TEMPO = "TEMPO";
+  #BECMG = "BECMG";
+  #RMK = "RMK";
+  #TOKENIZE_REGEX = /\s((?=\d\/\dSM)(?<!\s\d\s)|(?!\d\/\dSM))|=/;
+  #INTENSITY_REGEX = /^(-|\+|VC)/;
+  #CAVOK = "CAVOK";
+  #commonSupplier = new CommandSupplier();
 
-class RemarkParser {
+  parseWeatherCondition(input: string): IWeatherCondition {
+    let intensity: Intensity | undefined;
+    if (input.match(this.#INTENSITY_REGEX)) {
+      const match = input.match(this.#INTENSITY_REGEX)?.[0];
+      if (match) intensity = match as Intensity;
+    }
+
+    let descriptive: Descriptive | undefined;
+    for (const key of Object.values(Descriptive)) {
+      if (input.includes(key)) descriptive = key as Descriptive;
+    }
+
+    const weatherCondition: IWeatherCondition = {
+      intensity,
+      descriptive,
+      phenomenons: [],
+    };
+
+    for (const key of Object.values(Phenomenon)) {
+      if (input.includes(key))
+        weatherCondition.phenomenons.push(key as Phenomenon);
+    }
+
+    return weatherCondition;
+  }
+
+  /**
+   * Parses the message into different tokens
+   * @param input The metar or TAF as string
+   * @returns List of tokens
+   */
+  tokenize(input: string) {
+    return input.split(this.#TOKENIZE_REGEX).filter((v) => v);
+  }
+
+  /**
+   * Common parse method for METAR, TAF and trends object
+   * @param abstractWeatherCode the object to update
+   * @param input The token to parse
+   * @returns True if the token was parsed false otherwise
+   */
+  generalParse(
+    abstractWeatherContainer: IAbstractWeatherContainer,
+    input: string
+  ): boolean {
+    if (this.#CAVOK === input) {
+      abstractWeatherContainer.cavok = true;
+      const distance = "> 10km";
+
+      if (!abstractWeatherContainer.visibility)
+        abstractWeatherContainer.visibility = {
+          distance,
+        };
+
+      abstractWeatherContainer.visibility.distance = distance;
+
+      return true;
+    }
+
+    const command = this.#commonSupplier.get(input);
+    if (command) {
+      return command.execute(abstractWeatherContainer, input);
+    }
+
+    const weatherCondition = this.parseWeatherCondition(input);
+
+    if (isWeatherConditionValid(weatherCondition)) {
+      abstractWeatherContainer.weatherConditions.push(weatherCondition);
+      return true;
+    }
+
+    return false;
+  }
+}
+
+export class RemarkParser {
   #supplier = new RemarkCommandSupplier();
 
   parse(code: string): string[] {
-    const rmkStr = code;
-    const rmkList: string[] = [];
-
+    let rmkStr = code;
+    let rmkList: string[] = [];
     while (rmkStr) {
       try {
-        this.#supplier.get(rmkStr).execute(rmkStr, rmkList);
+        [rmkStr, rmkList] = this.#supplier.get(rmkStr).execute(rmkStr, rmkList);
       } catch (e) {
         // TODO
         // if (e instanceof TranslationError) this.#supplier.defaultCommand.execute(rmkStr, rmkList)

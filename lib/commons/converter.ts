@@ -1,3 +1,5 @@
+import { pySplit } from "helpers/helpers";
+
 export function degreesToCardinal(input: number | string) {
   const degrees = +input;
 
@@ -34,7 +36,7 @@ export function convertVisibility(input: string): string {
 }
 
 export function convertTemperature(input: string): number {
-  if (input.startsWith("M")) return -input.split("M")[1];
+  if (input.startsWith("M")) return -pySplit(input, "M")[1];
 
   return +input;
 }

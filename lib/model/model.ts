@@ -5,7 +5,7 @@ import {
   Phenomenon,
   TimeIndicator,
   WeatherChangeType,
-} from "./enum";
+} from "model/enum";
 
 export interface ICountry {
   name: string;
@@ -26,12 +26,12 @@ export interface IAirport {
 }
 
 export interface IWind {
-  speed: string;
+  speed: number;
   direction: string;
-  degrees: number;
-  gust: number;
-  minVariation: number;
-  maxVariation: number;
+  degrees?: number;
+  gust?: number;
+  minVariation?: number;
+  maxVariation?: number;
   unit: string;
 }
 
@@ -40,14 +40,14 @@ export interface IWindShear extends IWind {
 }
 
 export interface Visibility {
-  distance: number;
-  minDistance: number;
-  minDirection: string;
+  distance: string;
+  minDistance?: number;
+  minDirection?: string;
 }
 
 export interface IWeatherCondition {
-  intensity: string;
-  descriptive: Descriptive;
+  intensity?: string;
+  descriptive?: Descriptive;
   phenomenons: Phenomenon[];
 }
 
@@ -67,19 +67,19 @@ export interface ITemperatureDated {
 export interface IRunwayInfo {
   name: string;
   minRange: number;
-  maxRange: number;
+  maxRange?: number;
   trend: unknown;
 }
 
 export interface ICloud {
-  height: number;
+  height?: number;
   quantity: CloudQuantity;
-  type: CloudType;
+  type?: CloudType;
 }
 
 export interface IAbstractWeatherContainer {
   wind: IWind;
-  visibility: Visibility;
+  visibility?: Visibility;
   verticalVisibility: number;
   windShear: IWindShear;
   cavok: boolean;

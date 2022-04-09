@@ -1,3 +1,3 @@
-import i18n from "./commons/i18n";
+import i18n from "commons/i18n";
 
-i18n();
+// i18n();

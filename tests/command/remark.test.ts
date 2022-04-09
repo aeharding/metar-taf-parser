@@ -38,7 +38,7 @@ import {
   WindPeakCommand,
   WindShiftCommand,
   WindShiftFropaCommand,
-} from "../../lib/command/remark";
+} from "command/remark";
 
 describe("CeilingHeightCommand", () => {
   const command = new CeilingHeightCommand();
