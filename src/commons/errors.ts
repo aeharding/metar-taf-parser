@@ -1,4 +1,6 @@
-export class ParseError extends Error {
+export abstract class ParseError extends Error {
+  name = "ParseError";
+
   constructor(message?: string) {
     super(message);
     Object.setPrototypeOf(this, new.target.prototype);
@@ -6,13 +8,20 @@ export class ParseError extends Error {
 }
 
 export class InvalidWeatherStatementError extends ParseError {
-  constructor(missing: string) {
-    super(`Invalid weather string. Missing: ${missing}`);
+  name = "InvalidWeatherStatementError";
+  cause?: unknown;
+
+  constructor(cause?: unknown) {
+    super(`Invalid weather string.`);
     Object.setPrototypeOf(this, new.target.prototype);
+
+    this.cause = cause;
   }
 }
 
 export class TranslationError extends ParseError {
+  name = "TranslationError";
+
   constructor(missingLocale: string) {
     super(`Missing locale "${missingLocale}"`);
     Object.setPrototypeOf(this, new.target.prototype);
@@ -23,6 +32,8 @@ export class TranslationError extends ParseError {
  * Should never occur
  */
 export class UnexpectedParseError extends ParseError {
+  name = "UnexpectedParseError";
+
   constructor(message?: string) {
     super(message);
     Object.setPrototypeOf(this, new.target.prototype);
