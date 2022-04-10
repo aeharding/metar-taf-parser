@@ -111,7 +111,8 @@ export abstract class AbstractParser {
   BECMG = "BECMG";
   RMK = "RMK";
 
-  #TOKENIZE_REGEX = /\s((?=\d\/\dSM)(?<!\s\d\s)|(?!\d\/\dSM))|=/;
+  // Safari does not currently support negative lookbehind
+  // #TOKENIZE_REGEX = /\s((?=\d\/\dSM)(?<!\s\d\s)|(?!\d\/\dSM))|=/;
   #INTENSITY_REGEX = /^(-|\+|VC)/;
   #CAVOK = "CAVOK";
   #commonSupplier = new CommandSupplier();
@@ -148,7 +149,27 @@ export abstract class AbstractParser {
    * @returns List of tokens
    */
   tokenize(input: string) {
-    return input.split(this.#TOKENIZE_REGEX).filter((v) => v);
+    // Missing safari support. If added in the future, put this back
+    // return input.split(this.#TOKENIZE_REGEX).filter((v) => v);
+
+    // Hack for safari below...
+    const splitRegex = /\s|=/;
+    const smRegex = /^\d\/\dSM$/;
+    const digitRegex = /^\d$/;
+
+    // return input.split(this.#TOKENIZE_REGEX).filter((v) => v);
+    const splitted = input.split(splitRegex);
+
+    for (let i = 0; i < splitted.length; i++) {
+      if (digitRegex.test(splitted[i])) {
+        if (splitted[i + 1] && smRegex.test(splitted[i + 1])) {
+          splitted.splice(i, 2, `${splitted[i]} ${splitted[i + 1]}`);
+          i--;
+        }
+      }
+    }
+
+    return splitted.filter((t) => t);
   }
 
   /**

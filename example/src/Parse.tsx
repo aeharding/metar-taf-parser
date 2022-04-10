@@ -46,6 +46,7 @@ const Textarea = styled(reactTextareaAutosize)`
   padding: 1rem;
   color: inherit;
   font-family: monospace;
+  font-size: inherit;
 `;
 
 const JsonContainer = styled.div`
