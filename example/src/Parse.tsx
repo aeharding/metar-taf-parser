@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import reactTextareaAutosize from "react-textarea-autosize";
-import { parseMetar, IMetar, Locale } from "metar-taf-parser";
+import { parseMetar, IMetar, Locale, parseTAF, ITAF } from "metar-taf-parser";
 import ReactJson from "react-json-view";
 import Error from "./Error";
 import { useNavigate } from "react-router";
@@ -13,6 +13,7 @@ import it from "metar-taf-parser/dist/locale/it";
 import pl from "metar-taf-parser/dist/locale/pl";
 import zh from "metar-taf-parser/dist/locale/zh-CN";
 import { css } from "@emotion/react";
+import Tabs from "./Tabs";
 
 // Types are broke
 const Json = ReactJson as any;
@@ -95,8 +96,16 @@ const JsonContainer = styled.div`
   }
 `;
 
-const EXAMPLE =
+const METAR_EXAMPLE =
   "KTTN 051853Z 04011KT 1 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017=";
+
+const TAF_EXAMPLE = `
+TAF KSEA 101723Z 1018/1124 27006KT P6SM VCSH BKN013 OVC080
+  FM102200 23007KT P6SM VCSH OVC040
+  FM110400 04005KT P6SM -SHRA OVC030
+  FM111200 02010KT P6SM -SHRA OVC025
+  FM112000 01007KT P6SM BKN035
+`.trim();
 
 const langs = [
   { name: "en", locale: en, label: "🇬🇧 English" },
@@ -111,66 +120,94 @@ function findLocale(selectedName: string): Locale | undefined {
   return langs.find(({ name }) => name === selectedName)?.locale;
 }
 
-export default function Parse() {
+export function ParseMetar() {
+  return (
+    <Parse entityName="METAR" parse={parseMetar} example={METAR_EXAMPLE} />
+  );
+}
+
+export function ParseTAF() {
+  return <Parse entityName="TAF" parse={parseTAF} example={TAF_EXAMPLE} />;
+}
+
+interface ParseProps {
+  entityName: string;
+  parse: typeof parseMetar | typeof parseTAF;
+  example: string;
+}
+
+function Parse({ entityName, parse, example: EXAMPLE }: ParseProps) {
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const [input, setInput] = useState(search.get("input") || "");
-  const [metar, setMetar] = useState<IMetar | undefined>();
+  const [result, setResult] = useState<IMetar | ITAF | undefined>();
   const [error, setError] = useState<Error | undefined>();
   const [lang, setLang] = useState("en");
 
   useEffect(() => {
     try {
-      if (input) setMetar(parseMetar(input, { locale: findLocale(lang) }));
-      else setMetar(undefined);
+      if (input) setResult(parse?.(input, { locale: findLocale(lang) }));
+      else setResult(undefined);
 
       setError(undefined);
     } catch (e) {
       setError(e as Error);
-      setMetar(undefined);
+      setResult(undefined);
       console.error(e);
     }
+  }, [input, navigate, lang, parse]);
 
+  useEffect(() => {
+    setInput(search.get("input") || "");
+  }, [search]);
+
+  function inputChange(input: string) {
+    setInput(input);
     navigate(
       { search: input ? createSearchParams({ input }).toString() : undefined },
       { replace: true }
     );
-  }, [input, navigate, lang]);
+  }
 
   return (
-    <Container>
-      <InputContainer>
-        <div>
-          <Button onClick={() => setInput(EXAMPLE)}>Autofill example</Button>
-          <Button onClick={() => setInput("")}>Clear</Button>
-          <Select value={lang} onChange={(e) => setLang(e.target.value)}>
-            {langs.map((lang) => (
-              <option key={lang.name} value={lang.name}>
-                {lang.label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <Textarea
-          onChange={(e) => {
-            setInput(e.target.value);
-          }}
-          value={input}
-          placeholder="Enter METAR string"
-          autoFocus
-        />
-      </InputContainer>
+    <>
+      <Tabs />
+      <Container>
+        <InputContainer>
+          <div>
+            <Button onClick={() => inputChange(EXAMPLE)}>
+              Autofill example
+            </Button>
+            <Button onClick={() => inputChange("")}>Clear</Button>
+            <Select value={lang} onChange={(e) => setLang(e.target.value)}>
+              {langs.map((lang) => (
+                <option key={lang.name} value={lang.name}>
+                  {lang.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <Textarea
+            onChange={(e) => {
+              inputChange(e.target.value);
+            }}
+            value={input}
+            placeholder={`Enter ${entityName} string`}
+            autoFocus
+          />
+        </InputContainer>
 
-      {error && <Error error={error} />}
+        {error && <Error error={error} />}
 
-      <JsonContainer>
-        <Json
-          // Hide undefined values from displaying
-          src={metar ? JSON.parse(JSON.stringify(metar)) : metar}
-          theme="harmonic"
-          enableClipboard={false}
-        />
-      </JsonContainer>
-    </Container>
+        <JsonContainer>
+          <Json
+            // Hide undefined values from displaying
+            src={result ? JSON.parse(JSON.stringify(result)) : result}
+            theme="harmonic"
+            enableClipboard={false}
+          />
+        </JsonContainer>
+      </Container>
+    </>
   );
 }

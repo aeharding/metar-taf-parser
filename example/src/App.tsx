@@ -2,7 +2,8 @@ import { css, Global } from "@emotion/react";
 import styled from "@emotion/styled";
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import Parse from "./Parse";
+import { Routes, Route, Navigate } from "react-router";
+import { ParseMetar, ParseTAF } from "./Parse";
 
 const globalStyles = css`
   html {
@@ -65,7 +66,11 @@ function App() {
             .
           </p>
 
-          <Parse />
+          <Routes>
+            <Route path="/" element={<Navigate to="/metar" replace />} />
+            <Route path="/metar" element={<ParseMetar />} />
+            <Route path="/taf" element={<ParseTAF />} />
+          </Routes>
         </header>
       </div>
     </BrowserRouter>
