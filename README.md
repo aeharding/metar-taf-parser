@@ -1,6 +1,6 @@
 # metar-taf-parser
 
-This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to typescript. It's fully typed and tested with i18n support, and can run on Node or the browser.
+This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to Typescript. It's fully typed and tested with i18n support, and can run on Node or the browser.
 
 ## Example
 
@@ -11,7 +11,7 @@ import { parseMetar } from 'metar-taf-parser'
 
 // Get the raw METAR/TAF strings in your preferred way
 // For example: https://www.aviationweather.gov/dataserver
-const { metar } = await myService.getAirportData('KMSN')
+// const { metar } = await myService.getAirportData('KMSN')
 
 // Readily serializable
 const metarResult = parseMetar(metar)
@@ -26,7 +26,7 @@ import { parseTAF } from 'metar-taf-parser'
 
 // Get the raw METAR/TAF strings in your preferred way
 // For example: https://www.aviationweather.gov/dataserver
-const { taf } = await myService.getAirportData('KMSN')
+// const { taf } = await myService.getAirportData('KMSN')
 
 // Readily serializable
 const tafResult = parseTAF(taf)
@@ -50,3 +50,7 @@ const metarResult = parseMetar(metar, { locale: de })
 ### Example site
 
 Please see [the example site README.md](example/README.md).
+
+## Acknowledgment
+
+This software port was made possible due to the fantastic work of [@mivek](https://github.com/mivek) in [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser). If you like this project, please [consider buying @mivek a coffee](https://ko-fi.com/mivek).
