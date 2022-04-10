@@ -75,6 +75,11 @@ const Textarea = styled(reactTextareaAutosize)`
   color: inherit;
   font-family: monospace;
   font-size: inherit;
+  outline: 0;
+
+  &:focus {
+    border-color: #056fc6;
+  }
 `;
 
 const JsonContainer = styled.div`
@@ -152,6 +157,7 @@ export default function Parse() {
           }}
           value={input}
           placeholder="Enter METAR string"
+          autoFocus
         />
       </InputContainer>
 
