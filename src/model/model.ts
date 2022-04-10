@@ -111,9 +111,9 @@ export interface IAbstractWeatherCode extends IAbstractWeatherContainer, ITime {
 }
 
 export interface IMetar extends IAbstractWeatherCode {
-  temperature: number;
-  dewPoint: number;
-  altimeter: number;
+  temperature?: number;
+  dewPoint?: number;
+  altimeter?: number;
   nosig: boolean;
   auto: boolean;
   runwaysInfo: IRunwayInfo[];

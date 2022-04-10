@@ -40,8 +40,6 @@ function parseDeliveryTime(
     hour: +timeString.slice(2, 4),
     minute: +timeString.slice(4, 6),
   };
-  // TODO
-  // abstractWeatherCode.time = new Date()
 }
 
 /**
@@ -248,7 +246,6 @@ export class MetarParser extends AbstractParser {
       ) {
         const trendTime: IMetarTrendTime = {
           type: TimeIndicator[trendParts[i].slice(0, 2) as TimeIndicator],
-          // TODO implement time
           hour: +trendParts[i].slice(2, 4),
           minute: +trendParts[i].slice(4, 6),
         };
@@ -276,24 +273,16 @@ export class MetarParser extends AbstractParser {
       ...parseDeliveryTime(metarTab[1]),
       station: metarTab[0],
       message: input,
-      // wind: IWind,
-      // visibility?: Visibility,
-      // verticalVisibility: number,
-      // windShear: IWindShear,
       cavok: false,
       remark: "",
       remarks: [],
       clouds: [],
       weatherConditions: [],
-      // airport: IAirport,
       trends: [],
-      // temperature: number,
-      // dewPoint: number,
-      // altimeter: number,
       nosig: false,
       auto: false,
       runwaysInfo: [],
-    } as unknown as IMetar; // TODO remove cast
+    };
 
     let index = 2;
 
@@ -312,8 +301,8 @@ export class MetarParser extends AbstractParser {
             weatherConditions: [],
             clouds: [],
             times: [],
-          } as unknown as IMetarTrend;
-          // TODO - remove casting
+            remarks: [],
+          };
 
           index = this.parseTrend(index, trend, metarTab);
           metar.trends.push(trend);
