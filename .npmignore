@@ -1,0 +1,9 @@
+.github
+example
+src
+tests
+.prettierrc
+.npmrc
+.gitignore
+README.md
+tsconfig.json
