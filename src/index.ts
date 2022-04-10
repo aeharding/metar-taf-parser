@@ -10,7 +10,7 @@ export interface IMetarTAFParserOptions {
 
 export function parseMetar(
   metar: string,
-  options: IMetarTAFParserOptions
+  options?: IMetarTAFParserOptions
 ): IMetar {
   const lang = options?.locale || en;
 
