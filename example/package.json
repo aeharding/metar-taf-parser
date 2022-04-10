@@ -13,7 +13,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
-    "metar-taf-parser": "^0.0.1",
+    "metar-taf-parser": "^1.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-json-view": "^1.21.3",
