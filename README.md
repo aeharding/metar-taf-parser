@@ -1,40 +1,36 @@
-# metar-taf-parser
+# ✈️ [metar-taf-parser](https://aeharding.github.io/metar-taf-parser)
 
 This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to Typescript. It's fully typed and tested with i18n support, and can run on Node or the browser.
 
-## Example
+[Check out the demo here](https://aeharding.github.io/metar-taf-parser)
 
-### Parse METAR
+## Installation
+
+```sh
+yarn add metar-taf-parser
+# or
+npm i --save metar-taf-parser
+```
+
+## Usage
+
+### Parse a METAR
 
 ```ts
 import { parseMetar } from 'metar-taf-parser'
 
-// Get the raw METAR/TAF strings in your preferred way
-// For example: https://www.aviationweather.gov/dataserver
-// const { metar } = await myService.getAirportData('KMSN')
-
-// Readily serializable
-const metarResult = parseMetar(metar)
-
-// Your code here 🚀
+const metar = parseMetar(rawMetarString)
 ```
 
-### Parse TAF
+### Parse a TAF
 
 ```ts
 import { parseTAF } from 'metar-taf-parser'
 
-// Get the raw METAR/TAF strings in your preferred way
-// For example: https://www.aviationweather.gov/dataserver
-// const { taf } = await myService.getAirportData('KMSN')
-
-// Readily serializable
-const tafResult = parseTAF(taf)
-
-// Your code here 🚀
+const taf = parseTAF(rawTAFString)
 ```
 
-### i18n
+## i18n
 
 ```ts
 import { parseMetar } from 'metar-taf-parser'
@@ -45,15 +41,15 @@ const { metar } = await myService.getAirportData('KMSN')
 const metarResult = parseMetar(metar, { locale: de })
 ```
 
-## Contributing
-
-This project is intended to provide feature parity with [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) and will only accept PRs to maintain feature parity or to fix inconsistencies with that project.
-
 ## Development
 
 ### Example site
 
 Please see [the example site README.md](example/README.md).
+
+## Contributing
+
+This project is intended to provide feature parity with [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) and will only accept PRs to maintain feature parity or to fix inconsistencies with that project.
 
 ## Acknowledgment
 

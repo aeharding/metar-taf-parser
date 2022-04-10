@@ -1,7 +1,16 @@
 {
   "name": "metar-taf-parser",
   "version": "1.0.1",
-  "description": "Parse METAR and TAF files",
+  "description": "Parse METAR and TAF reports",
+  "homepage": "https://aeharding.github.io/metar-taf-parser",
+  "keywords": [
+    "aviation",
+    "weather",
+    "metar",
+    "taf",
+    "report",
+    "deserialize"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "author": "Alexander Harding <2166114+aeharding@users.noreply.github.com>",
@@ -16,7 +25,7 @@
     "start": "node --experimental-specifier-resolution=node --loader ts-node/esm lib",
     "check-types": "tsc --noEmit",
     "check-formatting": "prettier --check '**/*.{js,json,css,md,scss,tsx,ts}'",
-    "watch": "watch 'yarn build' lib",
+    "watch": "watch 'yarn build' src",
     "test": "jest --coverage",
     "test-watch": "jest --watch --coverage",
     "prepublishOnly": "yarn build"
