@@ -186,7 +186,7 @@ export class HourlyPressureCommand extends Command {
     remark.push(
       `${_(`Remark.Barometer.${+matches[1]}` as any, this.locale)} ${format(
         _("Remark.Pressure.Tendency", this.locale),
-        +matches[1]
+        +matches[2] / 10
       )}`
     );
 

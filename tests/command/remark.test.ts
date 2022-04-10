@@ -217,7 +217,7 @@ describe("HourlyPressureCommand", () => {
 
       expect(res).toBe("");
       expect(remarks).toEqual([
-        "steady or unsteady increase of 2 hectopascals in the past 3 hours",
+        "steady or unsteady increase of 3.2 hectopascals in the past 3 hours",
       ]);
     });
   });

@@ -78,12 +78,12 @@ export interface ICloud {
 }
 
 export interface IAbstractWeatherContainer {
-  wind: IWind;
+  wind?: IWind;
   visibility?: Visibility;
-  verticalVisibility: number;
-  windShear: IWindShear;
-  cavok: boolean;
-  remark: string;
+  verticalVisibility?: number;
+  windShear?: IWindShear;
+  cavok?: boolean;
+  remark?: string;
   remarks: string[];
   clouds: ICloud[];
   weatherConditions: IWeatherCondition[];
@@ -104,7 +104,7 @@ export interface ITime {
 
 export interface IAbstractWeatherCode extends IAbstractWeatherContainer, ITime {
   day: number;
-  airport: IAirport;
+  airport?: IAirport;
   message: string;
   station: string;
   trends: IAbstractTrend[];
@@ -121,10 +121,10 @@ export interface IMetar extends IAbstractWeatherCode {
 }
 
 export interface ITAF extends IAbstractWeatherCode {
-  validity: IAbstractValidity;
-  maxTemperature: number;
-  minTemperature: number;
-  amendment: boolean;
+  validity: IValidity;
+  maxTemperature?: ITemperatureDated;
+  minTemperature?: ITemperatureDated;
+  amendment?: boolean;
   trends: ITAFTrend[];
 }
 
@@ -141,15 +141,17 @@ export interface IMetarTrend extends IAbstractTrend {
 }
 
 export interface ITAFTrend extends IAbstractTrend {
-  probability: number;
-  validity: IAbstractValidity;
+  probability?: number;
+  validity?: IFMValidity;
 }
 
-export interface IValidity extends IAbstractValidity {
+export interface IEndValidity {
   endHour: number;
   endDay: number;
 }
 
-export interface IFMValidity extends IAbstractValidity {
-  startMinutes: number;
+export interface IValidity extends IAbstractValidity, IEndValidity {}
+
+export interface IFMValidity extends IAbstractValidity, Partial<IEndValidity> {
+  startMinutes?: number;
 }

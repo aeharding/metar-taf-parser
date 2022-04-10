@@ -7,6 +7,8 @@ import {
   IMetarTrend,
   IMetarTrendTime,
   isWeatherConditionValid,
+  ITAF,
+  ITAFTrend,
   ITemperatureDated,
   IValidity,
   IWeatherCondition,
@@ -23,7 +25,7 @@ import {
 } from "model/enum";
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
 import { Locale } from "commons/i18n";
-import { TranslationError } from "commons/errors";
+import { InvalidWeatherStatementError, TranslationError } from "commons/errors";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -121,6 +123,8 @@ export abstract class AbstractParser {
   #INTENSITY_REGEX = /^(-|\+|VC)/;
   #CAVOK = "CAVOK";
   #commonSupplier = new CommandSupplier();
+
+  constructor(protected locale: Locale) {}
 
   parseWeatherCondition(input: string): IWeatherCondition {
     let intensity: Intensity | undefined;
@@ -221,10 +225,6 @@ export class MetarParser extends AbstractParser {
   AT = "AT";
   TL = "TL";
   #commandSupplier = new MetarCommandSupplier();
-
-  constructor(private locale: Locale) {
-    super();
-  }
 
   /**
    * Parses a trend of a metar
@@ -330,6 +330,179 @@ export class MetarParser extends AbstractParser {
     }
 
     return metar;
+  }
+}
+
+/**
+ * Parser for TAF messages
+ */
+export class TAFParser extends AbstractParser {
+  TAF = "TAF";
+  PROB = "PROB";
+  TX = "TX";
+  TN = "TN";
+
+  #validityPattern = /^\d{4}\/\d{4}$/;
+
+  /**
+   * the message to parse
+   * @param input
+   * @returns a TAF object
+   * @throws ParseError if the message is invalid
+   */
+  parse(input: string): ITAF {
+    let amendment: boolean | undefined;
+    const lines = this.extractLinesTokens(input);
+
+    if (lines[0][0] !== this.TAF)
+      throw new InvalidWeatherStatementError(
+        'TAF report must begin with string "TAF"'
+      );
+
+    let index = 1;
+
+    if (lines[0][1] === this.TAF) index = 2;
+
+    if (lines[0][index] === "AMD") {
+      amendment = true;
+      index += 1;
+    }
+
+    const station = lines[0][index];
+    index += 1;
+    const time = parseDeliveryTime(lines[0][index]);
+    index += 1;
+    const validity = parseValidity(lines[0][index]);
+
+    const taf: ITAF = {
+      station,
+      amendment,
+      ...time,
+      validity,
+      message: input,
+      trends: [],
+      remarks: [],
+      clouds: [],
+      weatherConditions: [],
+    };
+
+    for (let i = index + 1; i < lines[0].length; i++) {
+      const token = lines[0][i];
+
+      if (token == this.RMK) parseRemark(taf, lines[0], i, this.locale);
+      else if (token.startsWith(this.TX))
+        taf.maxTemperature = parseTemperature(token);
+      else if (token.startsWith(this.TN))
+        taf.minTemperature = parseTemperature(token);
+      else this.generalParse(taf, token);
+    }
+
+    // Handle the other lines
+    for (let i = 1; i < lines.length; i++) {
+      this.parseLine(taf, lines[i]);
+    }
+
+    return taf;
+  }
+
+  /**
+   * Format the message as a multiple line code so each line can be parsed
+   * @param tafCode The base message
+   * @returns a list of string representing the lines of the message
+   */
+  extractLinesTokens(tafCode: string): string[][] {
+    const singleLine = tafCode.replace(/\n/g, " ");
+    const cleanLine = singleLine.replace(/\s{2,}/g, " ");
+    const lines = joinProbIfNeeded(
+      cleanLine
+        .replace(/\s(?=PROB\d{2}\sTEMPO|TEMPO|BECMG|FM|PROB)/g, "\n")
+        .split(/\n/)
+    );
+
+    // TODO cleanup
+    function joinProbIfNeeded(ls: string[]): string[] {
+      for (let i = 0; i < ls.length; i++) {
+        if (/PROB\d{2}/.test(ls[i]) && /TEMPO/.test(ls[i + 1])) {
+          ls.splice(i, 2, `${ls[i]} ${ls[i + 1]}`);
+          i--;
+        }
+      }
+      return ls;
+    }
+    const linesToken = lines.map(this.tokenize);
+
+    if (linesToken.length > 1) {
+      const lastLine = linesToken[lines.length - 1];
+      const temperatures = lastLine.filter(
+        (l) => l.startsWith(this.TX) || l.startsWith(this.TN)
+      );
+
+      if (temperatures.length) {
+        linesToken[0] = linesToken[0].concat(temperatures);
+        linesToken[lines.length - 1] = lastLine.filter(
+          (l) => !l.startsWith(this.TX) && !l.startsWith(this.TN)
+        );
+      }
+    }
+
+    return linesToken;
+  }
+
+  /**
+   * Parses the tokens of the line and updates the TAF object
+   * @param taf TAF object to update
+   * @param lineTokens the array of tokens representing a line
+   */
+  parseLine(taf: ITAF, lineTokens: string[]) {
+    let index = 1;
+    let trend: ITAFTrend;
+
+    if (lineTokens[0].startsWith(this.FM)) {
+      trend = {
+        ...this.makeEmptyTAFTrend(WeatherChangeType.FM),
+        validity: parseFromValidity(lineTokens[0]),
+      };
+    } else if (lineTokens[0].startsWith(this.PROB)) {
+      trend = this.makeEmptyTAFTrend(WeatherChangeType.PROB);
+      if (lineTokens.length > 1 && lineTokens[1] === this.TEMPO) {
+        trend = this.makeEmptyTAFTrend(
+          WeatherChangeType[lineTokens[1] as WeatherChangeType]
+        );
+        index = 2;
+      }
+      trend.probability = +lineTokens[0].slice(4);
+    } else {
+      trend = this.makeEmptyTAFTrend(
+        WeatherChangeType[lineTokens[0] as WeatherChangeType]
+      );
+    }
+
+    this.parseTrend(index, lineTokens, trend);
+    taf.trends.push(trend);
+  }
+
+  /**
+   * Parses a trend of the TAF
+   * @param index the index at which the array should be parsed
+   * @param line The array of string containing the line
+   * @param trend The trend object to update
+   */
+  parseTrend(index: number, line: string[], trend: ITAFTrend) {
+    for (let i = index; i < line.length; i++) {
+      if (line[i] === this.RMK) parseRemark(trend, line, i, this.locale);
+      else if (this.#validityPattern.test(line[i]))
+        trend.validity = parseValidity(line[i]);
+      else super.generalParse(trend, line[i]);
+    }
+  }
+
+  makeEmptyTAFTrend(type: WeatherChangeType): ITAFTrend {
+    return {
+      type,
+      remarks: [],
+      clouds: [],
+      weatherConditions: [],
+    };
   }
 }
 

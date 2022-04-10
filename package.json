@@ -11,14 +11,14 @@
     "url": "https://github.com/aeharding/metar-taf-parser.git"
   },
   "scripts": {
-    "build": "yarn clean; tsc && tsc-alias",
+    "build": "yarn clean; tsc --project tsconfig.build.json && tsc-alias",
     "clean": "rm -rf ./dist",
     "start": "node --experimental-specifier-resolution=node --loader ts-node/esm lib",
     "check-types": "tsc --noEmit",
     "check-formatting": "prettier --check '**/*.{js,json,css,md,scss,tsx,ts}'",
     "watch": "watch 'yarn build' lib",
-    "test": "jest",
-    "test-watch": "jest --watch",
+    "test": "jest --coverage",
+    "test-watch": "jest --watch --coverage",
     "prepublishOnly": "yarn build"
   },
   "files": [

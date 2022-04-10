@@ -45,15 +45,18 @@ export function convertInchesMercuryToPascal(input: number): number {
   return 33.8639 * input;
 }
 
+/**
+ * Converts number `.toFixed(1)` before outputting to match python implementation
+ */
 export function convertTemperatureRemarks(
   sign: string,
   temperature: string
-): number {
+): string {
   const temp = +temperature / 10;
 
-  if (sign === "0") return temp;
+  if (sign === "0") return temp.toFixed(1);
 
-  return -temp;
+  return (-temp).toFixed(1);
 }
 
 export function convertPrecipitationAmount(amount: string): number {
