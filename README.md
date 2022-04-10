@@ -4,8 +4,6 @@ This is a port of [python-metar-taf-parser](https://github.com/mivek/python-meta
 
 ## Example
 
-⚠️ This project is an active work in progress. These examples do not currently work.
-
 ### Parse METAR
 
 ```ts
