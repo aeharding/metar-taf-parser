@@ -40,7 +40,7 @@ const tafResult = parseTAF(taf)
 
 ```ts
 import { parseMetar } from 'metar-taf-parser'
-import de from 'metar-taf-parser/locale/de'
+import de from 'metar-taf-parser/dist/locale/de'
 
 const { metar } = await myService.getAirportData('KMSN')
 

@@ -22,6 +22,8 @@ import {
   WeatherChangeType,
 } from "model/enum";
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
+import { Locale } from "commons/i18n";
+import { TranslationError } from "commons/errors";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -49,9 +51,12 @@ function parseDeliveryTime(
 function parseRemark(
   container: IAbstractWeatherContainer,
   line: string[],
-  index: number
+  index: number,
+  locale: Locale
 ) {
-  const remarks = new RemarkParser().parse(line.slice(index + 1).join(" "));
+  const remarks = new RemarkParser(locale).parse(
+    line.slice(index + 1).join(" ")
+  );
 
   container.remarks = remarks;
   container.remark = remarks.join(" ");
@@ -217,6 +222,10 @@ export class MetarParser extends AbstractParser {
   TL = "TL";
   #commandSupplier = new MetarCommandSupplier();
 
+  constructor(private locale: Locale) {
+    super();
+  }
+
   /**
    * Parses a trend of a metar
    * @param index the index starting the trend in the list
@@ -309,7 +318,7 @@ export class MetarParser extends AbstractParser {
           index = this.parseTrend(index, trend, metarTab);
           metar.trends.push(trend);
         } else if (metarTab[index] === this.RMK) {
-          parseRemark(metar, metarTab, index);
+          parseRemark(metar, metarTab, index, this.locale);
           break;
         } else {
           const command = this.#commandSupplier.get(metarTab[index]);
@@ -325,7 +334,9 @@ export class MetarParser extends AbstractParser {
 }
 
 export class RemarkParser {
-  #supplier = new RemarkCommandSupplier();
+  constructor(private locale: Locale) {}
+
+  #supplier = new RemarkCommandSupplier(this.locale);
 
   parse(code: string): string[] {
     let rmkStr = code;
@@ -334,10 +345,14 @@ export class RemarkParser {
       try {
         [rmkStr, rmkList] = this.#supplier.get(rmkStr).execute(rmkStr, rmkList);
       } catch (e) {
-        // TODO
-        // if (e instanceof TranslationError) this.#supplier.defaultCommand.execute(rmkStr, rmkList)
-
-        throw e;
+        if (e instanceof TranslationError) {
+          [rmkStr, rmkList] = this.#supplier.defaultCommand.execute(
+            rmkStr,
+            rmkList
+          );
+        } else {
+          throw e;
+        }
       }
     }
 

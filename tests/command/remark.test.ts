@@ -39,9 +39,10 @@ import {
   WindShiftCommand,
   WindShiftFropaCommand,
 } from "command/remark";
+import en from "locale/en";
 
 describe("CeilingHeightCommand", () => {
-  const command = new CeilingHeightCommand();
+  const command = new CeilingHeightCommand(en);
 
   (() => {
     const code = "CIG 005V010";
@@ -62,7 +63,7 @@ describe("CeilingHeightCommand", () => {
 });
 
 describe("CeilingSecondLocationCommand", () => {
-  const command = new CeilingSecondLocationCommand();
+  const command = new CeilingSecondLocationCommand(en);
 
   (() => {
     const code = "CIG 002 RY11";
@@ -85,7 +86,7 @@ describe("CeilingSecondLocationCommand", () => {
 });
 
 describe("HailSizeCommand", () => {
-  const command = new HailSizeCommand();
+  const command = new HailSizeCommand(en);
 
   (() => {
     const code = "GR 4";
@@ -127,7 +128,7 @@ describe("HailSizeCommand", () => {
 });
 
 describe("HourlyMaximumMinimumTemperatureCommand", () => {
-  const command = new HourlyMaximumMinimumTemperatureCommand();
+  const command = new HourlyMaximumMinimumTemperatureCommand(en);
   const code = "400121023";
 
   describe(code, () => {
@@ -147,7 +148,7 @@ describe("HourlyMaximumMinimumTemperatureCommand", () => {
 });
 
 describe("HourlyMaximumTemperatureCommand", () => {
-  const command = new HourlyMaximumTemperatureCommand();
+  const command = new HourlyMaximumTemperatureCommand(en);
   const code = "10272";
 
   describe(code, () => {
@@ -165,7 +166,7 @@ describe("HourlyMaximumTemperatureCommand", () => {
 });
 
 describe("HourlyMinimumTemperatureCommand", () => {
-  const command = new HourlyMinimumTemperatureCommand();
+  const command = new HourlyMinimumTemperatureCommand(en);
   const code = "20283";
 
   describe(code, () => {
@@ -183,7 +184,7 @@ describe("HourlyMinimumTemperatureCommand", () => {
 });
 
 describe("HourlyPrecipitationAmountCommand", () => {
-  const command = new HourlyPrecipitationAmountCommand();
+  const command = new HourlyPrecipitationAmountCommand(en);
   const code = "P0008";
 
   describe(code, () => {
@@ -203,7 +204,7 @@ describe("HourlyPrecipitationAmountCommand", () => {
 });
 
 describe("HourlyPressureCommand", () => {
-  const command = new HourlyPressureCommand();
+  const command = new HourlyPressureCommand(en);
   const code = "52032";
 
   describe(code, () => {
@@ -223,7 +224,7 @@ describe("HourlyPressureCommand", () => {
 });
 
 describe("HourlyTemperatureDewPointCommand", () => {
-  const command = new HourlyTemperatureDewPointCommand();
+  const command = new HourlyTemperatureDewPointCommand(en);
 
   (() => {
     const code = "T0217";
@@ -263,7 +264,7 @@ describe("HourlyTemperatureDewPointCommand", () => {
 });
 
 describe("IceAccretionCommand", () => {
-  const command = new IceAccretionCommand();
+  const command = new IceAccretionCommand(en);
   const code = "l1001";
 
   describe(code, () => {
@@ -283,7 +284,7 @@ describe("IceAccretionCommand", () => {
 });
 
 describe("ObscurationCommand", () => {
-  const command = new ObscurationCommand();
+  const command = new ObscurationCommand(en);
   const code = "FU BKN020";
 
   describe(code, () => {
@@ -301,7 +302,7 @@ describe("ObscurationCommand", () => {
 });
 
 describe("PrecipitationAmount24HourCommand", () => {
-  const command = new PrecipitationAmount24HourCommand();
+  const command = new PrecipitationAmount24HourCommand(en);
   const code = "70125";
 
   describe(code, () => {
@@ -321,7 +322,7 @@ describe("PrecipitationAmount24HourCommand", () => {
 });
 
 describe("PrecipitationAmount36HourCommand", () => {
-  const command = new PrecipitationAmount36HourCommand();
+  const command = new PrecipitationAmount36HourCommand(en);
   const code = "60225";
 
   describe(code, () => {
@@ -341,7 +342,7 @@ describe("PrecipitationAmount36HourCommand", () => {
 });
 
 describe("PrecipitationBegEndCommand", () => {
-  const command = new PrecipitationBegEndCommand();
+  const command = new PrecipitationBegEndCommand(en);
 
   (() => {
     const code = "RAB20E51";
@@ -398,7 +399,7 @@ describe("PrecipitationBegEndCommand", () => {
 });
 
 describe("PrevailingVisibilityCommand", () => {
-  const command = new PrevailingVisibilityCommand();
+  const command = new PrevailingVisibilityCommand(en);
   const code = "VIS 1/2V2";
 
   describe(code, () => {
@@ -418,7 +419,7 @@ describe("PrevailingVisibilityCommand", () => {
 });
 
 describe("SeaLevelPressureCommand", () => {
-  const command = new SeaLevelPressureCommand();
+  const command = new SeaLevelPressureCommand(en);
   const code = "SLP117";
 
   describe(code, () => {
@@ -436,7 +437,7 @@ describe("SeaLevelPressureCommand", () => {
 });
 
 describe("SecondLocationVisibilityCommand", () => {
-  const command = new SecondLocationVisibilityCommand();
+  const command = new SecondLocationVisibilityCommand(en);
   const code = "VIS 1/2 RWY12";
 
   describe(code, () => {
@@ -456,7 +457,7 @@ describe("SecondLocationVisibilityCommand", () => {
 });
 
 describe("SectorVisibilityCommand", () => {
-  const command = new SectorVisibilityCommand();
+  const command = new SectorVisibilityCommand(en);
   const code = "VIS SW 1 1/2";
 
   describe(code, () => {
@@ -476,7 +477,7 @@ describe("SectorVisibilityCommand", () => {
 });
 
 describe("SmallHailSizeCommand", () => {
-  const command = new SmallHailSizeCommand();
+  const command = new SmallHailSizeCommand(en);
   const code = "GR LESS THAN 1/4";
 
   describe(code, () => {
@@ -496,7 +497,7 @@ describe("SmallHailSizeCommand", () => {
 });
 
 describe("SnowDepthCommand", () => {
-  const command = new SnowDepthCommand();
+  const command = new SnowDepthCommand(en);
   const code = "4/011";
 
   describe(code, () => {
@@ -514,7 +515,7 @@ describe("SnowDepthCommand", () => {
 });
 
 describe("SnowIncreaseCommand", () => {
-  const command = new SnowIncreaseCommand();
+  const command = new SnowIncreaseCommand(en);
   const code = "SNINCR 2/10";
 
   describe(code, () => {
@@ -534,7 +535,7 @@ describe("SnowIncreaseCommand", () => {
 });
 
 describe("SnowPelletsCommand", () => {
-  const command = new SnowPelletsCommand();
+  const command = new SnowPelletsCommand(en);
   const code = "GS HVY";
 
   describe(code, () => {
@@ -552,7 +553,7 @@ describe("SnowPelletsCommand", () => {
 });
 
 describe("SunshineDurationCommand", () => {
-  const command = new SunshineDurationCommand();
+  const command = new SunshineDurationCommand(en);
   const code = "98460";
 
   describe(code, () => {
@@ -570,7 +571,7 @@ describe("SunshineDurationCommand", () => {
 });
 
 describe("SurfaceVisibilityCommand", () => {
-  const command = new SurfaceVisibilityCommand();
+  const command = new SurfaceVisibilityCommand(en);
   const code = "SFC VIS 8";
 
   describe(code, () => {
@@ -588,7 +589,7 @@ describe("SurfaceVisibilityCommand", () => {
 });
 
 describe("ThunderStormLocationCommand", () => {
-  const command = new ThunderStormLocationCommand();
+  const command = new ThunderStormLocationCommand(en);
   const code = "TS NE";
 
   describe(code, () => {
@@ -606,7 +607,7 @@ describe("ThunderStormLocationCommand", () => {
 });
 
 describe("ThunderStormLocationMovingCommand", () => {
-  const command = new ThunderStormLocationMovingCommand();
+  const command = new ThunderStormLocationMovingCommand(en);
   const code = "TS SE MOV NE";
 
   describe(code, () => {
@@ -626,7 +627,7 @@ describe("ThunderStormLocationMovingCommand", () => {
 });
 
 describe("TornadicActivityBegCommand", () => {
-  const command = new TornadicActivityBegCommand();
+  const command = new TornadicActivityBegCommand(en);
   const code = "TORNADO B1112 4 SW";
 
   describe(code, () => {
@@ -646,7 +647,7 @@ describe("TornadicActivityBegCommand", () => {
 });
 
 describe("TornadicActivityBegEndCommand", () => {
-  const command = new TornadicActivityBegEndCommand();
+  const command = new TornadicActivityBegEndCommand(en);
   const code = "TORNADO B1112E1234 4 SW";
 
   describe(code, () => {
@@ -666,7 +667,7 @@ describe("TornadicActivityBegEndCommand", () => {
 });
 
 describe("TornadicActivityEndCommand", () => {
-  const command = new TornadicActivityEndCommand();
+  const command = new TornadicActivityEndCommand(en);
   const code = "TORNADO E1234 4 SW";
 
   describe(code, () => {
@@ -686,7 +687,7 @@ describe("TornadicActivityEndCommand", () => {
 });
 
 describe("TowerVisibilityCommand", () => {
-  const command = new TowerVisibilityCommand();
+  const command = new TowerVisibilityCommand(en);
   const code = "TWR VIS 3";
 
   describe(code, () => {
@@ -704,7 +705,7 @@ describe("TowerVisibilityCommand", () => {
 });
 
 describe("VariableSkyCommand", () => {
-  const command = new VariableSkyCommand();
+  const command = new VariableSkyCommand(en);
   const code = "SCT V BKN";
 
   describe(code, () => {
@@ -724,7 +725,7 @@ describe("VariableSkyCommand", () => {
 });
 
 describe("VariableSkyHeightCommand", () => {
-  const command = new VariableSkyHeightCommand();
+  const command = new VariableSkyHeightCommand(en);
   const code = "SCT008 V BKN";
 
   describe(code, () => {
@@ -744,7 +745,7 @@ describe("VariableSkyHeightCommand", () => {
 });
 
 describe("VirgaDirectionCommand", () => {
-  const command = new VirgaDirectionCommand();
+  const command = new VirgaDirectionCommand(en);
   const code = "VIRGA SW";
 
   describe(code, () => {
@@ -762,7 +763,7 @@ describe("VirgaDirectionCommand", () => {
 });
 
 describe("WaterEquivalentSnowCommand", () => {
-  const command = new WaterEquivalentSnowCommand();
+  const command = new WaterEquivalentSnowCommand(en);
   const code = "933125";
 
   describe(code, () => {
@@ -780,7 +781,7 @@ describe("WaterEquivalentSnowCommand", () => {
 });
 
 describe("WindPeakCommand", () => {
-  const command = new WindPeakCommand();
+  const command = new WindPeakCommand(en);
   const code = "PK WND 29027/2250";
 
   describe(code, () => {
@@ -800,7 +801,7 @@ describe("WindPeakCommand", () => {
 });
 
 describe("WindShiftCommand", () => {
-  const command = new WindShiftCommand();
+  const command = new WindShiftCommand(en);
   const code = "WSHFT 2241";
 
   describe(code, () => {
@@ -818,7 +819,7 @@ describe("WindShiftCommand", () => {
 });
 
 describe("WindShiftFropaCommand", () => {
-  const command = new WindShiftFropaCommand();
+  const command = new WindShiftFropaCommand(en);
   const code = "WSHFT 2241 FROPA";
 
   describe(code, () => {
@@ -838,7 +839,7 @@ describe("WindShiftFropaCommand", () => {
 });
 
 describe("WindShiftFropaCommand", () => {
-  const command = new WindShiftFropaCommand();
+  const command = new WindShiftFropaCommand(en);
   const code = "WSHFT 2241 FROPA";
 
   describe(code, () => {
@@ -858,7 +859,7 @@ describe("WindShiftFropaCommand", () => {
 });
 
 describe("DefaultCommand", () => {
-  const command = new DefaultCommand();
+  const command = new DefaultCommand(en);
 
   (() => {
     const code = "AO1";
@@ -898,7 +899,7 @@ describe("DefaultCommand", () => {
 });
 
 describe("RemarkCommandSupplier", () => {
-  const supplier = new RemarkCommandSupplier();
+  const supplier = new RemarkCommandSupplier(en);
 
   test("gets WindShiftFropaCommand command", () => {
     const code = "WSHFT 2241 FROPA";

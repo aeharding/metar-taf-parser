@@ -5,7 +5,6 @@ import {
   parseValidity,
   RemarkParser,
 } from "parser/parser";
-import i18n from "commons/i18n";
 import {
   CloudQuantity,
   CloudType,
@@ -16,17 +15,18 @@ import {
   WeatherChangeType,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
+import en from "locale/en";
 
 describe("RemarkParser", () => {
   (() => {
     const code = "Token AO1 End of remark";
 
     test(`parses "${code}"`, () => {
-      const remarks = new RemarkParser().parse(code);
+      const remarks = new RemarkParser(en).parse(code);
 
       expect(remarks).toStrictEqual([
         "Token",
-        i18n.Remark.AO1,
+        en.Remark.AO1,
         "End",
         "of",
         "remark",
@@ -130,7 +130,7 @@ describe("MetarParser", () => {
     const input =
       "LFPG 170830Z 00000KT 0350 R27L/0375N R09R/0175N R26R/0500D R08L/0400N R26L/0275D R08R/0250N R27R/0300N R09L/0200N FG SCT000 M01/M01 Q1026 NOSIG";
 
-    const metar = new MetarParser().parse(input);
+    const metar = new MetarParser(en).parse(input);
 
     expect(metar.station).toBe("LFPG");
     expect(metar.day).toBe(17);
@@ -153,7 +153,7 @@ describe("MetarParser", () => {
       const input =
         "LFBG 081130Z AUTO 23012KT 9999 SCT022 BKN072 BKN090 22/16 Q1011 TEMPO 26015G25KT 3000 TSRA SCT025CB BKN050";
 
-      const metar = new MetarParser().parse(input);
+      const metar = new MetarParser(en).parse(input);
 
       expect(metar.auto).toBe(true);
       expect(metar.clouds).toHaveLength(3);
@@ -183,7 +183,7 @@ describe("MetarParser", () => {
     });
 
     test("tempo becmg", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO SHRA BECMG SKC"
       );
 
@@ -201,7 +201,7 @@ describe("MetarParser", () => {
     });
 
     test("tempo fm", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1830 SHRA"
       );
 
@@ -219,7 +219,7 @@ describe("MetarParser", () => {
     });
 
     test("tempo tl", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1700 TL1830 SHRA"
       );
 
@@ -242,7 +242,7 @@ describe("MetarParser", () => {
     });
 
     test("minVisibility", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "LFPG 161430Z 24015G25KT 5000 1100w"
       );
 
@@ -258,7 +258,9 @@ describe("MetarParser", () => {
     });
 
     test("wind variation", () => {
-      const metar = new MetarParser().parse("LFPG 161430Z 24015G25KT 180V300");
+      const metar = new MetarParser(en).parse(
+        "LFPG 161430Z 24015G25KT 180V300"
+      );
 
       expect(metar.wind.degrees).toBe(240);
       expect(metar.wind.speed).toBe(15);
@@ -269,7 +271,7 @@ describe("MetarParser", () => {
     });
 
     test("vertical visibility", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "LFLL 160730Z 28002KT 0350 FG VV002"
       );
 
@@ -283,7 +285,7 @@ describe("MetarParser", () => {
     });
 
     test("Ndv", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "LSZL 300320Z AUTO 00000KT 9999NDV BKN060 OVC074 00/M04 Q1001\n RMK="
       );
 
@@ -291,7 +293,7 @@ describe("MetarParser", () => {
     });
 
     test("cavok", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "LFPG 212030Z 03003KT CAVOK 09/06 Q1031 NOSIG"
       );
 
@@ -304,7 +306,7 @@ describe("MetarParser", () => {
     });
 
     test("altimeter mercury", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "KTTN 051853Z 04011KT 9999 VCTS SN FZFG BKN003 OVC010 M02/M02 A3006"
       );
 
@@ -313,7 +315,7 @@ describe("MetarParser", () => {
     });
 
     test("wind alternative form", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "ENLK 081350Z 26026G40 240V300 9999 VCSH FEW025 BKN030 02/M01 Q0996"
       );
 
@@ -326,7 +328,7 @@ describe("MetarParser", () => {
     });
 
     test("descriptive only", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "AGGH 140340Z 05010KT 9999 TS FEW020 SCT021CB BKN300 32/26 Q1010"
       );
 
@@ -337,7 +339,7 @@ describe("MetarParser", () => {
     });
 
     test("with runway deposit", () => {
-      const metar = new MetarParser().parse(
+      const metar = new MetarParser(en).parse(
         "UNAA 240830Z 34002MPS CAVOK M14/M18 Q1019 R02/190054 NOSIG RMK QFE741"
       );
 

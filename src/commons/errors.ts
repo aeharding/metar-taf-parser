@@ -23,7 +23,7 @@ export class TranslationError extends ParseError {
   name = "TranslationError";
 
   constructor(missingLocale: string) {
-    super(`Missing locale "${missingLocale}"`);
+    super(`Missing translation "${missingLocale}"`);
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
