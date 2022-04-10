@@ -47,7 +47,7 @@ const H1 = styled.h1`
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/metar-taf-parser">
       <Global styles={globalStyles} />
 
       <div className="App">
@@ -67,9 +67,9 @@ function App() {
           </p>
 
           <Routes>
-            <Route path="/" element={<Navigate to="/metar" replace />} />
             <Route path="/metar" element={<ParseMetar />} />
             <Route path="/taf" element={<ParseTAF />} />
+            <Route path="*" element={<Navigate to="/metar" replace />} />
           </Routes>
         </header>
       </div>
