@@ -45,6 +45,10 @@ const { metar } = await myService.getAirportData('KMSN')
 const metarResult = parseMetar(metar, { locale: de })
 ```
 
+## Contributing
+
+This project is intended to provide feature parity with [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) and will only accept PRs to maintain feature parity or to fix inconsistencies with that project.
+
 ## Development
 
 ### Example site
