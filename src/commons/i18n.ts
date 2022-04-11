@@ -1,5 +1,5 @@
 import en from "locale/en";
-import get from "lodash/get";
+import { resolve } from "helpers/helpers";
 import { TranslationError } from "./errors";
 
 export default en;
@@ -32,7 +32,7 @@ export function _(
   path: Join<PathsToStringProps<typeof en>, ".">,
   lang: Locale
 ): string {
-  const translation = get(lang, path);
+  const translation = resolve(lang, path);
 
   if (!translation || typeof translation !== "string")
     throw new TranslationError(path);

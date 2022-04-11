@@ -19,3 +19,18 @@ export function pySplit(string: string, separator: string, n?: number) {
 
   return out;
 }
+
+/**
+ * Access nested object properties by string path
+ *
+ * https://stackoverflow.com/a/22129960
+ */
+export function resolve(
+  obj: any,
+  path: string | string[],
+  separator = "."
+): unknown {
+  const properties = Array.isArray(path) ? path : path.split(separator);
+
+  return properties.reduce((prev, curr) => prev?.[curr], obj);
+}
