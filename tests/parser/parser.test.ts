@@ -1317,6 +1317,78 @@ describe("RemarkParser", () => {
     });
   });
 
+  test("parse precipitation start descriptive", () => {
+    const remarks = new RemarkParser(en).parse("AO1 SHRAB05SHSNB0220");
+
+    expect(remarks).toHaveLength(3);
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.PrecipitationBeg,
+      description: format(
+        _("Remark.Precipitation.Beg.0", en),
+        _("Descriptive.SH", en),
+        _("Phenomenon.RA", en),
+        "",
+        "05"
+      )?.trim(),
+      raw: "SHRAB05",
+      descriptive: Descriptive.SHOWERS,
+      phenomenon: Phenomenon.RAIN,
+      startMin: 5,
+    });
+    expect(remarks[2]).toEqual<Remark>({
+      type: RemarkType.PrecipitationBeg,
+      description: format(
+        _("Remark.Precipitation.Beg.0", en),
+        _("Descriptive.SH", en),
+        _("Phenomenon.SN", en),
+        "02",
+        20
+      )?.trim(),
+      raw: "SHSNB0220",
+      descriptive: Descriptive.SHOWERS,
+      phenomenon: Phenomenon.SNOW,
+      startHour: 2,
+      startMin: 20,
+    });
+  });
+
+  test("parse precipitation end descriptive", () => {
+    const remarks = new RemarkParser(en).parse("AO1 SHRAE05SHSNE0120");
+
+    expect(remarks).toHaveLength(3);
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.PrecipitationEnd,
+      description: format(
+        _("Remark.Precipitation.End", en),
+        _("Descriptive.SH", en),
+        _("Phenomenon.RA", en),
+        "",
+        "05",
+        "",
+        30
+      )?.trim(),
+      raw: "SHRAE05",
+      descriptive: Descriptive.SHOWERS,
+      phenomenon: Phenomenon.RAIN,
+      endMin: 5,
+    });
+    expect(remarks[2]).toEqual<Remark>({
+      type: RemarkType.PrecipitationEnd,
+      description: format(
+        _("Remark.Precipitation.End", en),
+        _("Descriptive.SH", en),
+        _("Phenomenon.SN", en),
+        "01",
+        20
+      )?.trim(),
+      raw: "SHSNE0120",
+      descriptive: Descriptive.SHOWERS,
+      phenomenon: Phenomenon.SNOW,
+      endHour: 1,
+      endMin: 20,
+    });
+  });
+
   test("parse thunderstorm start", () => {
     const remarks = new RemarkParser(en).parse("AO1 TSB0159E30");
 
