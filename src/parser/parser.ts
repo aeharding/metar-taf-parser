@@ -273,14 +273,11 @@ export class MetarParser extends AbstractParser {
       ...parseDeliveryTime(metarTab[1]),
       station: metarTab[0],
       message: input,
-      cavok: false,
       remark: "",
       remarks: [],
       clouds: [],
       weatherConditions: [],
       trends: [],
-      nosig: false,
-      auto: false,
       runwaysInfo: [],
     };
 

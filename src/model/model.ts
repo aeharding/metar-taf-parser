@@ -114,8 +114,8 @@ export interface IMetar extends IAbstractWeatherCode {
   temperature?: number;
   dewPoint?: number;
   altimeter?: number;
-  nosig: boolean;
-  auto: boolean;
+  nosig?: boolean;
+  auto?: boolean;
   runwaysInfo: IRunwayInfo[];
   trends: IMetarTrend[];
 }
