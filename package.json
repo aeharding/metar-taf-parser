@@ -9,7 +9,8 @@
     "metar",
     "taf",
     "report",
-    "deserialize"
+    "deserialize",
+    "decoder"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
