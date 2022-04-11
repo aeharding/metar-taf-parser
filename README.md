@@ -1,6 +1,6 @@
 # ✈️ [metar-taf-parser](https://aeharding.github.io/metar-taf-parser)
 
-This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to Typescript. It's dependency-free, fully typed, tested, has i18n support, and can run on Node or the browser.
+Parser for METeorological Aerodrome Reports (METARs) and Terminal Aerodrome Forecasts (TAFs). This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to Typescript. It's dependency-free, fully typed, tested, has i18n support, and can run on Node or in the browser.
 
 [Check out the demo here](https://aeharding.github.io/metar-taf-parser)
 
