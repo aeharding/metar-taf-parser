@@ -273,7 +273,6 @@ export class MetarParser extends AbstractParser {
       ...parseDeliveryTime(metarTab[1]),
       station: metarTab[0],
       message: input,
-      remark: "",
       remarks: [],
       clouds: [],
       weatherConditions: [],
