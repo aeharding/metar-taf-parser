@@ -62,3 +62,17 @@ describe("convertTemperatureRemarks", () => {
 test("convertPrecipitationAmount", () => {
   expect(converter.convertPrecipitationAmount("0217")).toBe(2.17);
 });
+
+describe("convertFractionalAmount", () => {
+  test("whole", () => {
+    expect(converter.convertFractionalAmount("12")).toBe(12);
+  });
+
+  test("whole + fraction", () => {
+    expect(converter.convertFractionalAmount("3 1/4")).toBe(3.25);
+  });
+
+  test("fraction", () => {
+    expect(converter.convertFractionalAmount("1/4")).toBe(0.25);
+  });
+});

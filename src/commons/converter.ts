@@ -62,3 +62,24 @@ export function convertTemperatureRemarks(
 export function convertPrecipitationAmount(amount: string): number {
   return +amount / 100;
 }
+
+/**
+ * Converts fractional and/or whole amounts
+ *
+ * Example "1/3", "1 1/3" and "1"
+ */
+export function convertFractionalAmount(input: string): number {
+  const [whole, fraction] = input.split(" ");
+
+  if (!fraction) return parseFraction(whole);
+
+  return +whole + parseFraction(fraction);
+}
+
+function parseFraction(input: string): number {
+  const [top, bottom] = input.split("/");
+
+  if (!bottom) return +top;
+
+  return +top / +bottom;
+}
