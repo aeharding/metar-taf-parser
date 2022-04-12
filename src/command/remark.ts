@@ -273,8 +273,11 @@ export class HourlyPrecipitationAmountCommand extends Command {
   }
 }
 
+enum Tendency {}
+
 interface IHourlyPressureRemark extends IBaseRemark {
   type: RemarkType.HourlyPressure;
+  tendency: Tendency;
 }
 
 export class HourlyPressureCommand extends Command {
@@ -638,7 +641,7 @@ export class SeaLevelPressureCommand extends Command {
 
 interface ISecondLocationVisibilityRemark extends IBaseRemark {
   type: RemarkType.SecondLocationVisibility;
-  pressure: string;
+  distance: string;
   location: string;
 }
 
@@ -654,18 +657,18 @@ export class SecondLocationVisibilityCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const pressure = matches[1];
+    const distance = matches[1];
     const location = matches[5];
     const humanReadable = format(
       _("Remark.Second.Location.Visibility", this.locale),
-      pressure,
+      distance,
       location
     );
 
     remark.push({
       type: RemarkType.SecondLocationVisibility,
       description: humanReadable,
-      pressure,
+      distance,
       location,
     });
 
@@ -710,7 +713,7 @@ export class SectorVisibilityCommand extends Command {
 
 interface ISmallHailSizeRemark extends IBaseRemark {
   type: RemarkType.SmallHailSize;
-  size: number;
+  size: string;
 }
 
 export class SmallHailSizeCommand extends Command {
@@ -733,7 +736,7 @@ export class SmallHailSizeCommand extends Command {
     remark.push({
       type: RemarkType.SmallHailSize,
       description: humanReadable,
-      size: +matches[1],
+      size: matches[1],
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -875,7 +878,7 @@ export class SunshineDurationCommand extends Command {
 
 interface ISurfaceVisibilityRemark extends IBaseRemark {
   type: RemarkType.SurfaceVisibility;
-  visibility: string;
+  distance: string;
 }
 
 export class SurfaceVisibilityCommand extends Command {
@@ -890,16 +893,16 @@ export class SurfaceVisibilityCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const visibility = matches[1];
+    const distance = matches[1];
     const humanReadable = format(
       _("Remark.Surface.Visibility", this.locale),
-      visibility
+      distance
     );
 
     remark.push({
       type: RemarkType.SurfaceVisibility,
       description: humanReadable,
-      visibility,
+      distance,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1126,7 +1129,7 @@ export class TornadicActivityEndCommand extends Command {
 
 interface ITowerVisibilityRemark extends IBaseRemark {
   type: RemarkType.TowerVisibility;
-  visibility: string;
+  distance: string;
 }
 
 export class TowerVisibilityCommand extends Command {
@@ -1141,16 +1144,16 @@ export class TowerVisibilityCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const visibility = matches[1];
+    const distance = matches[1];
     const humanReadable = format(
       _("Remark.Tower.Visibility", this.locale),
-      visibility
+      distance
     );
 
     remark.push({
       type: RemarkType.TowerVisibility,
       description: humanReadable,
-      visibility,
+      distance,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1159,7 +1162,7 @@ export class TowerVisibilityCommand extends Command {
 
 interface IVariableSkyRemark extends IBaseRemark {
   type: RemarkType.VariableSky;
-  cloudQuantity: [CloudQuantity, CloudQuantity];
+  cloudQuantityRange: [CloudQuantity, CloudQuantity];
 }
 
 export class VariableSkyCommand extends Command {
@@ -1183,10 +1186,10 @@ export class VariableSkyCommand extends Command {
     remark.push({
       type: RemarkType.VariableSky,
       description: humanReadable,
-      cloudQuantity: [
+      cloudQuantityRange: [
         matches[1],
         matches[2],
-      ] as IVariableSkyRemark["cloudQuantity"],
+      ] as IVariableSkyRemark["cloudQuantityRange"],
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1196,7 +1199,7 @@ export class VariableSkyCommand extends Command {
 interface IVariableSkyHeightRemark extends IBaseRemark {
   type: RemarkType.VariableSkyHeight;
   height: number;
-  cloudQuantity: [CloudQuantity, CloudQuantity];
+  cloudQuantityRange: [CloudQuantity, CloudQuantity];
 }
 
 export class VariableSkyHeightCommand extends Command {
@@ -1223,10 +1226,10 @@ export class VariableSkyHeightCommand extends Command {
       type: RemarkType.VariableSkyHeight,
       description: humanReadable,
       height,
-      cloudQuantity: [
+      cloudQuantityRange: [
         matches[1],
         matches[3],
-      ] as IVariableSkyHeightRemark["cloudQuantity"],
+      ] as IVariableSkyHeightRemark["cloudQuantityRange"],
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
