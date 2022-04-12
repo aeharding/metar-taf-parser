@@ -1,4 +1,4 @@
-import { RemarkCommandSupplier } from "command/remark";
+import { Remark, RemarkCommandSupplier } from "command/remark";
 import {
   IAbstractWeatherCode,
   IAbstractWeatherContainer,
@@ -59,7 +59,7 @@ function parseRemark(
   );
 
   container.remarks = remarks;
-  container.remark = remarks.join(" ");
+  container.remark = remarks.map(({ description }) => description).join(" ");
 }
 
 /**
@@ -496,9 +496,9 @@ export class RemarkParser {
 
   #supplier = new RemarkCommandSupplier(this.locale);
 
-  parse(code: string): string[] {
+  parse(code: string): Remark[] {
     let rmkStr = code;
-    let rmkList: string[] = [];
+    let rmkList: Remark[] = [];
     while (rmkStr) {
       try {
         [rmkStr, rmkList] = this.#supplier.get(rmkStr).execute(rmkStr, rmkList);

@@ -6,6 +6,7 @@ import {
   TimeIndicator,
   WeatherChangeType,
 } from "model/enum";
+import { Remark } from "src/command/remark";
 
 export interface ICountry {
   name: string;
@@ -84,7 +85,7 @@ export interface IAbstractWeatherContainer {
   windShear?: IWindShear;
   cavok?: boolean;
   remark?: string;
-  remarks: string[];
+  remarks: Remark[];
   clouds: ICloud[];
   weatherConditions: IWeatherCondition[];
 }
