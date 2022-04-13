@@ -1,6 +1,5 @@
 import en from "locale/en";
 import { resolve } from "helpers/helpers";
-import { TranslationError } from "./errors";
 
 export default en;
 
@@ -31,18 +30,27 @@ type Join<T extends string[], D extends string> = T extends []
 export function _(
   path: Join<PathsToStringProps<typeof en>, ".">,
   lang: Locale
-): string {
+): string | undefined {
   const translation = resolve(lang, path);
 
-  if (!translation || typeof translation !== "string")
-    throw new TranslationError(path);
+  if (!translation || typeof translation !== "string") return undefined;
 
   return translation;
 }
 
-export function format(message: string, ...args: unknown[]): string {
+export function format(
+  message: string | undefined,
+  ...args: unknown[]
+): string | undefined {
+  if (!message) return;
+
+  // All arguments must be defined, otherwise nothing is returned
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === undefined) return;
+  }
+
   return message.replace(/{\d+}/g, (match) => {
     const index = +match.slice(1, -1);
-    return args[index] !== undefined ? `${args[index]}` : "";
+    return `${args[index]}`;
   });
 }

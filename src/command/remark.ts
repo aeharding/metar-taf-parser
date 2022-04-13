@@ -4,12 +4,31 @@ import {
   convertTemperatureRemarks,
 } from "commons/converter";
 import { format, _, Locale } from "commons/i18n";
-import { TranslationError, UnexpectedParseError } from "commons/errors";
-import { CloudQuantity, Descriptive, Phenomenon } from "src/model/enum";
+import { RemarkExecutionError, UnexpectedParseError } from "commons/errors";
+import { CloudQuantity, Descriptive, Direction, Phenomenon } from "model/enum";
+
+/**
+ * For safely casting input values
+ * @param input String that is expected to be in the snum
+ * @param enumExpected The enum to cast the input value to
+ * @throws RemarkExecutionError when input is not a key of enum
+ */
+function as<T extends Record<string, unknown>>(
+  input: string,
+  enumExpected: T
+): T[keyof T] {
+  if (!Object.values(enumExpected).includes(input))
+    throw new RemarkExecutionError(
+      `${input} not found in ${Object.values(enumExpected)}`
+    );
+
+  return input as T[keyof T];
+}
 
 export interface IBaseRemark {
   type: RemarkType;
-  description: string;
+  description?: string;
+  raw: string;
 }
 
 export abstract class Command {
@@ -23,8 +42,15 @@ export abstract class Command {
 interface ICeilingHeightRemark extends IBaseRemark {
   type: RemarkType.CeilingHeight;
 
-  minCeiling: number;
-  maxCeiling: number;
+  /**
+   * Ceiling min height (varying between min and max) above ground level
+   */
+  min: number;
+
+  /**
+   * Ceiling max height (varying between min and max) above ground level
+   */
+  max: number;
 }
 
 export class CeilingHeightCommand extends Command {
@@ -39,19 +65,21 @@ export class CeilingHeightCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const minCeiling = +matches[1] * 100;
-    const maxCeiling = +matches[2] * 100;
+    const min = +matches[1] * 100;
+    const max = +matches[2] * 100;
+    const description = format(
+      _("Remark.Ceiling.Height", this.locale),
+      min,
+      max
+    );
 
     remark.push({
       type: RemarkType.CeilingHeight,
-      description: format(
-        _("Remark.Ceiling.Height", this.locale),
-        minCeiling,
-        maxCeiling
-      ),
+      description,
+      raw: matches[0],
 
-      minCeiling,
-      maxCeiling,
+      min,
+      max,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -79,14 +107,16 @@ export class CeilingSecondLocationCommand extends Command {
 
     const height = +matches[1] * 100;
     const location = matches[2];
+    const description = format(
+      _("Remark.Ceiling.Second.Location", this.locale),
+      height,
+      location
+    );
 
     remark.push({
       type: RemarkType.CeilingSecondLocation,
-      description: format(
-        _("Remark.Ceiling.Second.Location", this.locale),
-        height,
-        location
-      ),
+      description,
+      raw: matches[0],
 
       height,
       location,
@@ -114,9 +144,12 @@ export class HailSizeCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
+    const description = format(_("Remark.Hail.0", this.locale), matches[1]);
+
     remark.push({
       type: RemarkType.HailSize,
-      description: format(_("Remark.Hail.0", this.locale), matches[1]),
+      description,
+      raw: matches[0],
 
       size: matches[1],
     });
@@ -151,7 +184,7 @@ export class HourlyMaximumMinimumTemperatureCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Hourly.Maximum.Minimum.Temperature", this.locale),
       convertTemperatureRemarks(matches[1], matches[2]).toFixed(1),
       convertTemperatureRemarks(matches[3], matches[4]).toFixed(1)
@@ -159,7 +192,9 @@ export class HourlyMaximumMinimumTemperatureCommand extends Command {
 
     remark.push({
       type: RemarkType.HourlyMaximumMinimumTemperature,
-      description: humanReadable,
+      description: description,
+      raw: matches[0],
+
       max: convertTemperatureRemarks(matches[1], matches[2]),
       min: convertTemperatureRemarks(matches[3], matches[4]),
     });
@@ -189,14 +224,16 @@ export class HourlyMaximumTemperatureCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Hourly.Maximum.Temperature", this.locale),
       convertTemperatureRemarks(matches[1], matches[2]).toFixed(1)
     );
 
     remark.push({
       type: RemarkType.HourlyMaximumTemperature,
-      description: humanReadable,
+      description: description,
+      raw: matches[0],
+
       max: convertTemperatureRemarks(matches[1], matches[2]),
     });
 
@@ -225,14 +262,16 @@ export class HourlyMinimumTemperatureCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Hourly.Minimum.Temperature", this.locale),
       convertTemperatureRemarks(matches[1], matches[2]).toFixed(1)
     );
 
     remark.push({
       type: RemarkType.HourlyMinimumTemperature,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       min: convertTemperatureRemarks(matches[1], matches[2]),
     });
 
@@ -242,6 +281,10 @@ export class HourlyMinimumTemperatureCommand extends Command {
 
 interface IHourlyPrecipitationAmountRemark extends IBaseRemark {
   type: RemarkType.HourlyPrecipitationAmount;
+
+  /**
+   * In inches
+   */
   amount: number;
 }
 
@@ -258,14 +301,16 @@ export class HourlyPrecipitationAmountCommand extends Command {
     if (!matches) throw new UnexpectedParseError("Match not found");
 
     const amount = +matches[1];
-    const humanReadable = format(
+    const description = format(
       _("Remark.Precipitation.Amount.Hourly", this.locale),
       amount
     );
 
     remark.push({
       type: RemarkType.HourlyPrecipitationAmount,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       amount: amount / 100,
     });
 
@@ -273,11 +318,32 @@ export class HourlyPrecipitationAmountCommand extends Command {
   }
 }
 
-enum Tendency {}
-
 interface IHourlyPressureRemark extends IBaseRemark {
   type: RemarkType.HourlyPressure;
-  tendency: Tendency;
+
+  /**
+   * https://www.e-education.psu.edu/files/meteo101/image/Section13/metar_decoding1203.html
+   *
+   * | Code Figure |                                     Description                                    |                        Primary Requirement                        |
+   * |:-----------:|:----------------------------------------------------------------------------------:|:-----------------------------------------------------------------:|
+   * |      0      | Increasing, then decreasing.                                                       | Atmospheric pressure now higher than 3 hours ago. (x3 rows below) |
+   * |      1      | Increasing, then steady, or increasing then increasing more slowly.                |                                                                   |
+   * |      2      | Increasing steadily or unsteadily.                                                 |                                                                   |
+   * |      3      | Decreasing or steady, then increasing; or increasing then increasing more rapidly. |                                                                   |
+   * |      0      | Increasing, then decreasing.                                                       | Atmospheric pressure now same as 3 hours ago. (x3 rows below)     |
+   * |      4      | Steady                                                                             |                                                                   |
+   * |      5      | Decreasing then increasing.                                                        |                                                                   |
+   * |      5      | Decreasing, then increasing.                                                       | Atmospheric pressure now lower than 3 hours ago. (x3 rows below)  |
+   * |      6      | Decreasing, then steady, or decreasing then decreasing more slowly.                |                                                                   |
+   * |      7      | Decreasing steadily or unsteadily.                                                 |                                                                   |
+   * |      8      | Steady or increasing, then decreasing; or decreasing then decreasing more rapidly. |                                                                   |
+   */
+  code: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+  /**
+   * In hectopascals
+   */
+  pressureChange: number;
 }
 
 export class HourlyPressureCommand extends Command {
@@ -292,14 +358,21 @@ export class HourlyPressureCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = `${_(
-      `Remark.Barometer.${+matches[1]}` as any,
-      this.locale
-    )} ${format(_("Remark.Pressure.Tendency", this.locale), +matches[2] / 10)}`;
+    const part1 = _(`Remark.Barometer.${+matches[1]}` as any, this.locale);
+    const part2 = format(
+      _("Remark.Pressure.Tendency", this.locale),
+      +matches[2] / 10
+    );
+    const description =
+      part1 != null && part2 != null ? `${part1} ${part2}` : undefined;
 
     remark.push({
       type: RemarkType.HourlyPressure,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
+      code: +matches[1] as IHourlyPressureRemark["code"],
+      pressureChange: +matches[2] / 10,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -335,27 +408,31 @@ export class HourlyTemperatureDewPointCommand extends Command {
     const temperature = convertTemperatureRemarks(matches[1], matches[2]);
 
     if (!matches[3]) {
-      const humanReadable = format(
+      const description = format(
         _("Remark.Hourly.Temperature.0", this.locale),
         temperature.toFixed(1)
       );
 
       remark.push({
         type: RemarkType.HourlyTemperatureDewPoint,
-        description: humanReadable,
+        description,
+        raw: matches[0],
+
         temperature,
       });
     } else {
       const dewPoint = convertTemperatureRemarks(matches[4], matches[5]);
-      const humanReadable = format(
+      const description = format(
         _("Remark.Hourly.Temperature.Dew.Point", this.locale),
-        convertTemperatureRemarks(matches[1], matches[2]),
+        temperature.toFixed(1),
         dewPoint.toFixed(1)
       );
 
       remark.push({
         type: RemarkType.HourlyTemperatureDewPoint,
-        description: humanReadable,
+        description,
+        raw: matches[0],
+
         temperature,
         dewPoint,
       });
@@ -368,7 +445,11 @@ export class HourlyTemperatureDewPointCommand extends Command {
 interface IIceAccretionRemark extends IBaseRemark {
   type: RemarkType.IceAccretion;
 
-  inches: number;
+  /**
+   * In inches
+   */
+  amount: number;
+
   periodInHours: number;
 }
 
@@ -384,7 +465,7 @@ export class IceAccretionCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Ice.Accretion.Amount", this.locale),
       +matches[2],
       +matches[1]
@@ -392,9 +473,11 @@ export class IceAccretionCommand extends Command {
 
     remark.push({
       type: RemarkType.IceAccretion,
-      description: humanReadable,
-      inches: +matches[2] * 100,
-      periodInHours: +matches[3],
+      description,
+      raw: matches[0],
+
+      amount: +matches[2] / 100,
+      periodInHours: +matches[1],
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -421,25 +504,27 @@ export class ObscurationCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const layer = _(`CloudQuantity.${matches[2]}` as any, this.locale);
+    const quantity = as(matches[2], CloudQuantity);
 
     const height = 100 * +matches[3];
 
-    const phenomenon = _(`Phenomenon.${matches[1]}` as any, this.locale);
+    const phenomenon = as(matches[1], Phenomenon);
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Obscuration", this.locale),
-      layer,
+      _(`CloudQuantity.${quantity}`, this.locale),
       height,
-      phenomenon
+      _(`Phenomenon.${phenomenon}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.Obscuration,
-      description: humanReadable,
-      quantity: matches[2] as CloudQuantity,
+      description,
+      raw: matches[0],
+
+      quantity,
       height,
-      phenomenon: matches[1] as Phenomenon,
+      phenomenon,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -449,7 +534,10 @@ export class ObscurationCommand extends Command {
 interface IPrecipitationAmount24HourRemark extends IBaseRemark {
   type: RemarkType.PrecipitationAmount24Hour;
 
-  inches: number;
+  /**
+   * In inches
+   */
+  amount: number;
 }
 
 export class PrecipitationAmount24HourCommand extends Command {
@@ -464,16 +552,18 @@ export class PrecipitationAmount24HourCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const inches = convertPrecipitationAmount(matches[1]);
-    const humanReadable = format(
+    const amount = convertPrecipitationAmount(matches[1]);
+    const description = format(
       _("Remark.Precipitation.Amount.24", this.locale),
-      inches
+      amount
     );
 
     remark.push({
       type: RemarkType.PrecipitationAmount24Hour,
-      description: humanReadable,
-      inches,
+      description,
+      raw: matches[0],
+
+      amount,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -483,8 +573,12 @@ export class PrecipitationAmount24HourCommand extends Command {
 interface IPrecipitationAmount36HourRemark extends IBaseRemark {
   type: RemarkType.PrecipitationAmount36Hour;
 
-  periodInHours: number;
-  inches: number;
+  periodInHours: 3 | 6;
+
+  /**
+   * In inches
+   */
+  amount: number;
 }
 
 export class PrecipitationAmount36HourCommand extends Command {
@@ -499,20 +593,23 @@ export class PrecipitationAmount36HourCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const periodInHours = +matches[1];
-    const inches = convertPrecipitationAmount(matches[2]);
+    const periodInHours =
+      +matches[1] as IPrecipitationAmount36HourRemark["periodInHours"];
+    const amount = convertPrecipitationAmount(matches[2]);
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Precipitation.Amount.3.6", this.locale),
       periodInHours,
-      inches
+      amount
     );
 
     remark.push({
       type: RemarkType.PrecipitationAmount36Hour,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       periodInHours,
-      inches,
+      amount,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -541,10 +638,13 @@ export class PrecipitationBegEndCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const descriptive = matches[2] ? as(matches[2], Descriptive) : undefined;
+    const phenomenon = as(matches[3], Phenomenon);
+
+    const description = format(
       _("Remark.Precipitation.Beg.End", this.locale),
-      matches[2] ? _(`Descriptive.${matches[2]}` as any, this.locale) : "",
-      _(`Phenomenon.${matches[3]}` as any, this.locale),
+      descriptive ? _(`Descriptive.${descriptive}`, this.locale) : "",
+      _(`Phenomenon.${phenomenon}`, this.locale),
       matches[4] || "",
       matches[5],
       matches[6] || "",
@@ -553,9 +653,11 @@ export class PrecipitationBegEndCommand extends Command {
 
     remark.push({
       type: RemarkType.PrecipitationBegEnd,
-      description: humanReadable,
-      descriptive: (matches[2] as Descriptive) || undefined,
-      phenomenon: matches[3] as Phenomenon,
+      description,
+      raw: matches[0],
+
+      descriptive,
+      phenomenon,
       startHour: matches[4] ? +matches[4] : undefined,
       startMin: +matches[5],
       endHour: matches[6] ? +matches[6] : undefined,
@@ -568,8 +670,8 @@ export class PrecipitationBegEndCommand extends Command {
 
 interface IPrevailingVisibilityRemark extends IBaseRemark {
   type: RemarkType.PrevailingVisibility;
-  minVisibility: number;
-  maxVisibility: number;
+  minVisibility: string;
+  maxVisibility: string;
 }
 
 export class PrevailingVisibilityCommand extends Command {
@@ -584,10 +686,10 @@ export class PrevailingVisibilityCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const minVisibility = +matches[1];
-    const maxVisibility = +matches[5];
+    const minVisibility = matches[1];
+    const maxVisibility = matches[5];
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Variable.Prevailing.Visibility", this.locale),
       minVisibility,
       maxVisibility
@@ -595,7 +697,9 @@ export class PrevailingVisibilityCommand extends Command {
 
     remark.push({
       type: RemarkType.PrevailingVisibility,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       minVisibility,
       maxVisibility,
     });
@@ -624,14 +728,16 @@ export class SeaLevelPressureCommand extends Command {
     let pressure = matches[1].startsWith("9") ? "9" : "10";
     pressure += matches[1] + "." + matches[2];
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Sea.Level.Pressure", this.locale),
       pressure
     );
 
     remark.push({
       type: RemarkType.SeaLevelPressure,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       pressure: +pressure,
     });
 
@@ -659,7 +765,7 @@ export class SecondLocationVisibilityCommand extends Command {
 
     const distance = matches[1];
     const location = matches[5];
-    const humanReadable = format(
+    const description = format(
       _("Remark.Second.Location.Visibility", this.locale),
       distance,
       location
@@ -667,7 +773,9 @@ export class SecondLocationVisibilityCommand extends Command {
 
     remark.push({
       type: RemarkType.SecondLocationVisibility,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       distance,
       location,
     });
@@ -678,8 +786,8 @@ export class SecondLocationVisibilityCommand extends Command {
 
 interface ISectorVisibilityRemark extends IBaseRemark {
   type: RemarkType.SectorVisibility;
-  direction: string;
-  miles: string;
+  direction: Direction;
+  distance: string;
 }
 
 export class SectorVisibilityCommand extends Command {
@@ -694,17 +802,21 @@ export class SectorVisibilityCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const direction = as(matches[1], Direction);
+
+    const description = format(
       _("Remark.Sector.Visibility", this.locale),
-      _(`Converter.${matches[1]}` as any, this.locale),
+      _(`Converter.${direction}`, this.locale),
       matches[2]
     );
 
     remark.push({
       type: RemarkType.SectorVisibility,
-      description: humanReadable,
-      direction: matches[1],
-      miles: matches[2],
+      description,
+      raw: matches[0],
+
+      direction,
+      distance: matches[2],
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -728,14 +840,16 @@ export class SmallHailSizeCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Hail.LesserThan", this.locale),
       matches[1]
     );
 
     remark.push({
       type: RemarkType.SmallHailSize,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       size: matches[1],
     });
 
@@ -761,11 +875,13 @@ export class SnowDepthCommand extends Command {
     if (!matches) throw new UnexpectedParseError("Match not found");
 
     const depth = +matches[1];
-    const humanReadable = format(_("Remark.Snow.Depth", this.locale), depth);
+    const description = format(_("Remark.Snow.Depth", this.locale), depth);
 
     remark.push({
       type: RemarkType.SnowDepth,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       depth,
     });
 
@@ -794,7 +910,7 @@ export class SnowIncreaseCommand extends Command {
     const inchesLastHour = +matches[1];
     const totalDepth = +matches[2];
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Snow.Increasing.Rapidly", this.locale),
       inchesLastHour,
       totalDepth
@@ -802,7 +918,9 @@ export class SnowIncreaseCommand extends Command {
 
     remark.push({
       type: RemarkType.SnowIncrease,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       inchesLastHour,
       totalDepth,
     });
@@ -828,14 +946,16 @@ export class SnowPelletsCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.Snow.Pellets", this.locale),
       _(`Remark.${matches[1]}` as any, this.locale)
     );
 
     remark.push({
       type: RemarkType.SnowPellets,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       amount: matches[1] as ISnowPelletsRemark["amount"],
     });
 
@@ -861,14 +981,16 @@ export class SunshineDurationCommand extends Command {
     if (!matches) throw new UnexpectedParseError("Match not found");
 
     const duration = +matches[1];
-    const humanReadable = format(
+    const description = format(
       _("Remark.Sunshine.Duration", this.locale),
       duration
     );
 
     remark.push({
       type: RemarkType.SunshineDuration,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       duration,
     });
 
@@ -894,14 +1016,16 @@ export class SurfaceVisibilityCommand extends Command {
     if (!matches) throw new UnexpectedParseError("Match not found");
 
     const distance = matches[1];
-    const humanReadable = format(
+    const description = format(
       _("Remark.Surface.Visibility", this.locale),
       distance
     );
 
     remark.push({
       type: RemarkType.SurfaceVisibility,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       distance,
     });
 
@@ -911,7 +1035,7 @@ export class SurfaceVisibilityCommand extends Command {
 
 interface IThunderStormLocationRemark extends IBaseRemark {
   type: RemarkType.ThunderStormLocation;
-  direction: string;
+  location: Direction;
 }
 
 export class ThunderStormLocationCommand extends Command {
@@ -926,16 +1050,19 @@ export class ThunderStormLocationCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const direction = matches[1];
-    const humanReadable = format(
+    const location = as(matches[1], Direction);
+
+    const description = format(
       _("Remark.Thunderstorm.Location.0", this.locale),
-      _(`Converter.${direction}` as any, this.locale)
+      _(`Converter.${location}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.ThunderStormLocation,
-      description: humanReadable,
-      direction,
+      description,
+      raw: matches[0],
+
+      location,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -948,8 +1075,12 @@ interface IThunderStormLocationMovingRemark extends IBaseRemark {
   /**
    * Current location is relative of the station
    */
-  currentLocation: string;
-  movingInDirection: string;
+  location: Direction;
+
+  /**
+   * Direction moving (eg. "SW")
+   */
+  moving: Direction;
 }
 
 export class ThunderStormLocationMovingCommand extends Command {
@@ -964,19 +1095,22 @@ export class ThunderStormLocationMovingCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const currentLocation = matches[1];
-    const movingInDirection = matches[2];
-    const humanReadable = format(
+    const location = as(matches[1], Direction);
+    const moving = as(matches[2], Direction);
+
+    const description = format(
       _("Remark.Thunderstorm.Location.Moving", this.locale),
-      _(`Converter.${currentLocation}` as any, this.locale),
-      _(`Converter.${movingInDirection}` as any, this.locale)
+      _(`Converter.${location}`, this.locale),
+      _(`Converter.${moving}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.ThunderStormLocationMoving,
-      description: humanReadable,
-      currentLocation,
-      movingInDirection,
+      description,
+      raw: matches[0],
+
+      location,
+      moving,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -990,7 +1124,7 @@ interface ITornadicActivityBegRemark extends IBaseRemark {
   startHour?: number;
   startMinute: number;
   distance: number;
-  direction: string;
+  direction: Direction;
 }
 
 export class TornadicActivityBegCommand extends Command {
@@ -1006,23 +1140,27 @@ export class TornadicActivityBegCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const direction = as(matches[7], Direction);
+
+    const description = format(
       _("Remark.Tornadic.Activity.Beginning", this.locale),
       _(`Remark.${matches[1].replace(" ", "")}` as any, this.locale),
       matches[3] || "",
       matches[4],
       matches[6],
-      _(`Converter.${matches[7]}` as any, this.locale)
+      _(`Converter.${direction}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.TornadicActivityBeg,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       tornadicType: matches[1] as ITornadicActivityBegRemark["tornadicType"],
       startHour: matches[3] ? +matches[3] : undefined,
       startMinute: +matches[4],
       distance: +matches[6],
-      direction: matches[7],
+      direction,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1038,7 +1176,7 @@ interface ITornadicActivityBegEndRemark extends IBaseRemark {
   endHour?: number;
   endMinute: number;
   distance: number;
-  direction: string;
+  direction: Direction;
 }
 
 export class TornadicActivityBegEndCommand extends Command {
@@ -1054,7 +1192,9 @@ export class TornadicActivityBegEndCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const direction = as(matches[10], Direction);
+
+    const description = format(
       _("Remark.Tornadic.Activity.BegEnd", this.locale),
       _(`Remark.${matches[1].replace(" ", "")}` as any, this.locale),
       matches[3] || "",
@@ -1062,19 +1202,21 @@ export class TornadicActivityBegEndCommand extends Command {
       matches[6] || "",
       matches[7],
       matches[9],
-      _(`Converter.${matches[10]}` as any, this.locale)
+      _(`Converter.${direction}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.TornadicActivityBegEnd,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       tornadicType: matches[1] as ITornadicActivityBegRemark["tornadicType"],
       startHour: matches[3] ? +matches[3] : undefined,
       startMinute: +matches[4],
       endHour: matches[6] ? +matches[6] : undefined,
       endMinute: +matches[7],
       distance: +matches[9],
-      direction: matches[10],
+      direction,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1085,10 +1227,10 @@ interface ITornadicActivityEndRemark extends IBaseRemark {
   type: RemarkType.TornadicActivityEnd;
 
   tornadicType: "TORNADO" | "FUNNEL CLOUD" | "WATERSPOUT";
-  startHour?: number;
-  startMinute: number;
+  endHour?: number;
+  endMinute: number;
   distance: number;
-  direction: string;
+  direction: Direction;
 }
 
 export class TornadicActivityEndCommand extends Command {
@@ -1104,23 +1246,27 @@ export class TornadicActivityEndCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const direction = as(matches[7], Direction);
+
+    const description = format(
       _("Remark.Tornadic.Activity.Ending", this.locale),
       _(`Remark.${matches[1].replace(" ", "")}` as any, this.locale),
       matches[3] || "",
       matches[4],
       matches[6],
-      _(`Converter.${matches[7]}` as any, this.locale)
+      _(`Converter.${direction}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.TornadicActivityEnd,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       tornadicType: matches[1] as ITornadicActivityEndRemark["tornadicType"],
-      startHour: matches[3] ? +matches[3] : undefined,
-      startMinute: +matches[4],
+      endHour: matches[3] ? +matches[3] : undefined,
+      endMinute: +matches[4],
       distance: +matches[6],
-      direction: matches[7],
+      direction,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1145,14 +1291,16 @@ export class TowerVisibilityCommand extends Command {
     if (!matches) throw new UnexpectedParseError("Match not found");
 
     const distance = matches[1];
-    const humanReadable = format(
+    const description = format(
       _("Remark.Tower.Visibility", this.locale),
       distance
     );
 
     remark.push({
       type: RemarkType.TowerVisibility,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       distance,
     });
 
@@ -1177,19 +1325,21 @@ export class VariableSkyCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const firstQuantity = as(matches[1], CloudQuantity);
+    const secondQuantity = as(matches[2], CloudQuantity);
+
+    const description = format(
       _("Remark.Variable.Sky.Condition.0", this.locale),
-      _(`CloudQuantity.${matches[1]}` as any, this.locale),
-      _(`CloudQuantity.${matches[2]}` as any, this.locale)
+      _(`CloudQuantity.${firstQuantity}`, this.locale),
+      _(`CloudQuantity.${secondQuantity}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.VariableSky,
-      description: humanReadable,
-      cloudQuantityRange: [
-        matches[1],
-        matches[2],
-      ] as IVariableSkyRemark["cloudQuantityRange"],
+      description,
+      raw: matches[0],
+
+      cloudQuantityRange: [firstQuantity, secondQuantity],
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1214,22 +1364,24 @@ export class VariableSkyHeightCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
+    const firstQuantity = as(matches[1], CloudQuantity);
+    const secondQuantity = as(matches[3], CloudQuantity);
+
     const height = 100 * +matches[2];
-    const humanReadable = format(
+    const description = format(
       _("Remark.Variable.Sky.Condition.Height", this.locale),
       height,
-      _(`CloudQuantity.${matches[1]}` as any, this.locale),
-      _(`CloudQuantity.${matches[3]}` as any, this.locale)
+      _(`CloudQuantity.${firstQuantity}`, this.locale),
+      _(`CloudQuantity.${secondQuantity}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.VariableSkyHeight,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       height,
-      cloudQuantityRange: [
-        matches[1],
-        matches[3],
-      ] as IVariableSkyHeightRemark["cloudQuantityRange"],
+      cloudQuantityRange: [firstQuantity, secondQuantity],
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1238,7 +1390,7 @@ export class VariableSkyHeightCommand extends Command {
 
 interface IVirgaDirectionRemark extends IBaseRemark {
   type: RemarkType.VirgaDirection;
-  direction: string;
+  direction: Direction;
 }
 
 export class VirgaDirectionCommand extends Command {
@@ -1253,15 +1405,19 @@ export class VirgaDirectionCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const direction = as(matches[1], Direction);
+
+    const description = format(
       _("Remark.Virga.Direction", this.locale),
-      _(`Converter.${matches[1]}` as any, this.locale)
+      _(`Converter.${direction}`, this.locale)
     );
 
     remark.push({
       type: RemarkType.VirgaDirection,
-      description: humanReadable,
-      direction: matches[1],
+      description,
+      raw: matches[0],
+
+      direction,
     });
 
     return [code.replace(this.#regex, "").trim(), remark];
@@ -1286,14 +1442,16 @@ export class WaterEquivalentSnowCommand extends Command {
     if (!matches) throw new UnexpectedParseError("Match not found");
 
     const amount = +matches[1] / 10;
-    const humanReadable = format(
+    const description = format(
       _("Remark.Water.Equivalent.Snow.Ground", this.locale),
       amount
     );
 
     remark.push({
       type: RemarkType.WaterEquivalentSnow,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       amount,
     });
 
@@ -1306,7 +1464,7 @@ interface IWindPeakCommandRemark extends IBaseRemark {
   /**
    * In knots
    */
-  windSpeed: number;
+  speed: number;
   degrees: number;
   startHour?: number;
   startMinute: number;
@@ -1325,20 +1483,22 @@ export class WindPeakCommand extends Command {
     if (!matches) throw new UnexpectedParseError("Match not found");
 
     const degrees = +matches[1];
-    const windSpeed = +matches[2];
+    const speed = +matches[2];
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.PeakWind", this.locale),
       degrees,
-      windSpeed,
+      speed,
       matches[3] || "",
       matches[4]
     );
 
     remark.push({
       type: RemarkType.WindPeak,
-      description: humanReadable,
-      windSpeed,
+      description,
+      raw: matches[0],
+
+      speed,
       degrees,
       startHour: matches[3] ? +matches[3] : undefined,
       startMinute: +matches[4],
@@ -1366,7 +1526,7 @@ export class WindShiftCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.WindShift.0", this.locale),
       matches[1] || "",
       matches[2]
@@ -1374,7 +1534,9 @@ export class WindShiftCommand extends Command {
 
     remark.push({
       type: RemarkType.WindShift,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       startHour: matches[1] ? +matches[1] : undefined,
       startMinute: +matches[2],
     });
@@ -1401,7 +1563,7 @@ export class WindShiftFropaCommand extends Command {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    const humanReadable = format(
+    const description = format(
       _("Remark.WindShift.FROPA", this.locale),
       matches[1] || "",
       matches[2]
@@ -1409,7 +1571,9 @@ export class WindShiftFropaCommand extends Command {
 
     remark.push({
       type: RemarkType.WindShiftFropa,
-      description: humanReadable,
+      description,
+      raw: matches[0],
+
       startHour: matches[1] ? +matches[1] : undefined,
       startMinute: +matches[2],
     });
@@ -1447,26 +1611,18 @@ export class DefaultCommand extends Command {
 
   execute(code: string, remark: Remark[]): [string, Remark[]] {
     const rmkSplit = pySplit(code, " ", 1);
+    const rem = _(`Remark.${rmkSplit[0]}` as any, this.locale);
 
     if (RemarkType[rmkSplit[0] as RemarkType]) {
-      try {
-        const rem = _(`Remark.${rmkSplit[0]}` as any, this.locale);
-        remark.push({
-          type: rmkSplit[0] as RemarkType,
-          description: rem,
-        } as IDefaultCommandRemark);
-      } catch (error) {
-        if (!(error instanceof TranslationError)) throw error;
-
-        remark.push({
-          type: RemarkType.Unknown,
-          description: rmkSplit[0],
-        });
-      }
+      remark.push({
+        type: rmkSplit[0] as RemarkType,
+        description: rem,
+        raw: rmkSplit[0],
+      } as IDefaultCommandRemark);
     } else {
       remark.push({
         type: RemarkType.Unknown,
-        description: rmkSplit[0],
+        raw: rmkSplit[0],
       });
     }
 

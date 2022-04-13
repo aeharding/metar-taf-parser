@@ -132,6 +132,7 @@ export enum Phenomenon {
   SPRAY = "PY",
   SQUALL = "SQ",
   SAND_WHIRLS = "PO",
+  THUNDERSTORM = "TS",
   DUSTSTORM = "DS",
   SANDSTORM = "SS",
   FUNNEL_CLOUD = "FC",
@@ -244,4 +245,23 @@ export enum WeatherChangeType {
 
    */
   PROB = "PROB",
+}
+
+export enum Direction {
+  E = "E",
+  ENE = "ENE",
+  ESE = "ESE",
+  N = "N",
+  NE = "NE",
+  NNE = "NNE",
+  NNW = "NNW",
+  NW = "NW",
+  S = "S",
+  SE = "SE",
+  SSE = "SSE",
+  SSW = "SSW",
+  SW = "SW",
+  W = "W",
+  WNW = "WNW",
+  WSW = "WSW",
 }

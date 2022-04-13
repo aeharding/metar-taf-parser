@@ -12,18 +12,26 @@ export class InvalidWeatherStatementError extends ParseError {
   cause?: unknown;
 
   constructor(cause?: unknown) {
-    super(`Invalid weather string.`);
+    super(
+      typeof cause === "string"
+        ? `Invalid weather string: ${cause}`
+        : "Invalid weather string"
+    );
     Object.setPrototypeOf(this, new.target.prototype);
 
-    this.cause = cause;
+    if (typeof cause !== "string") this.cause = cause;
   }
 }
 
-export class TranslationError extends ParseError {
-  name = "TranslationError";
+/**
+ * Thrown when remark command marked as canParse, but couldn't parse when
+ * executing (for example, an invalid CloudQuantity)
+ */
+export class RemarkExecutionError extends ParseError {
+  name = "RemarkExecutionError";
 
-  constructor(missingLocale: string) {
-    super(`Missing translation "${missingLocale}"`);
+  constructor(message: string) {
+    super(message);
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }

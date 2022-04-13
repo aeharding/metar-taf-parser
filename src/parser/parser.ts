@@ -25,7 +25,10 @@ import {
 } from "model/enum";
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
 import { Locale } from "commons/i18n";
-import { InvalidWeatherStatementError, TranslationError } from "commons/errors";
+import {
+  InvalidWeatherStatementError,
+  RemarkExecutionError,
+} from "commons/errors";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -35,10 +38,17 @@ import { InvalidWeatherStatementError, TranslationError } from "commons/errors";
 function parseDeliveryTime(
   timeString: string
 ): Pick<IAbstractWeatherCode, "day" | "hour" | "minute"> {
+  const day = +timeString.slice(0, 2);
+  const hour = +timeString.slice(2, 4);
+  const minute = +timeString.slice(4, 6);
+
+  if (isNaN(day) || isNaN(hour) || isNaN(minute))
+    throw new InvalidWeatherStatementError("Report time is invalid");
+
   return {
-    day: +timeString.slice(0, 2),
-    hour: +timeString.slice(2, 4),
-    minute: +timeString.slice(4, 6),
+    day,
+    hour,
+    minute,
   };
 }
 
@@ -59,7 +69,9 @@ function parseRemark(
   );
 
   container.remarks = remarks;
-  container.remark = remarks.map(({ description }) => description).join(" ");
+  container.remark = remarks
+    .map(({ description, raw }) => description || raw)
+    .join(" ");
 }
 
 /**
@@ -336,12 +348,12 @@ export class TAFParser extends AbstractParser {
    * @throws ParseError if the message is invalid
    */
   parse(input: string): ITAF {
-    let amendment: boolean | undefined;
+    let amendment: true | undefined;
     const lines = this.extractLinesTokens(input);
 
     if (lines[0][0] !== this.TAF)
       throw new InvalidWeatherStatementError(
-        'TAF report must begin with string "TAF"'
+        'TAF report must begin with "TAF"'
       );
 
     let index = 1;
@@ -503,7 +515,7 @@ export class RemarkParser {
       try {
         [rmkStr, rmkList] = this.#supplier.get(rmkStr).execute(rmkStr, rmkList);
       } catch (e) {
-        if (e instanceof TranslationError) {
+        if (e instanceof RemarkExecutionError) {
           [rmkStr, rmkList] = this.#supplier.defaultCommand.execute(
             rmkStr,
             rmkList

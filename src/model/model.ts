@@ -83,7 +83,7 @@ export interface IAbstractWeatherContainer {
   visibility?: Visibility;
   verticalVisibility?: number;
   windShear?: IWindShear;
-  cavok?: boolean;
+  cavok?: true;
   remark?: string;
   remarks: Remark[];
   clouds: ICloud[];
@@ -115,8 +115,8 @@ export interface IMetar extends IAbstractWeatherCode {
   temperature?: number;
   dewPoint?: number;
   altimeter?: number;
-  nosig?: boolean;
-  auto?: boolean;
+  nosig?: true;
+  auto?: true;
   runwaysInfo: IRunwayInfo[];
   trends: IMetarTrend[];
 }
@@ -125,7 +125,7 @@ export interface ITAF extends IAbstractWeatherCode {
   validity: IValidity;
   maxTemperature?: ITemperatureDated;
   minTemperature?: ITemperatureDated;
-  amendment?: boolean;
+  amendment?: true;
   trends: ITAFTrend[];
 }
 
