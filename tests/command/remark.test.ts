@@ -43,6 +43,7 @@ import {
 } from "command/remark";
 import en from "locale/en";
 import { CloudQuantity, Phenomenon, Descriptive, Direction } from "model/enum";
+import { RemarkExecutionError } from "commons/errors";
 
 describe("CeilingHeightCommand", () => {
   const command = new CeilingHeightCommand(en);
@@ -367,28 +368,43 @@ describe("IceAccretionCommand", () => {
 
 describe("ObscurationCommand", () => {
   const command = new ObscurationCommand(en);
-  const code = "FU BKN020";
 
-  describe(code, () => {
-    test("canParse", () => {
-      expect(command.canParse(code)).toBe(true);
+  (() => {
+    const code = "FU BKN020";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("execute", () => {
+        const [res, remarks] = command.execute(code, []);
+
+        expect(res).toBe("");
+        expect(remarks).toEqual<Remark[]>([
+          {
+            type: RemarkType.Obscuration,
+            description: "broken layer at 2000 feet composed of smoke",
+            raw: code,
+            quantity: CloudQuantity.BKN,
+            height: 2000,
+            phenomenon: Phenomenon.SMOKE,
+          },
+        ]);
+      });
     });
+  })();
 
-    test("execute", () => {
-      const [res, remarks] = command.execute(code, []);
+  test("invalid CloudQuantity should throw on execute", () => {
+    expect(() => command.execute("FU BKG020", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
 
-      expect(res).toBe("");
-      expect(remarks).toEqual<Remark[]>([
-        {
-          type: RemarkType.Obscuration,
-          description: "broken layer at 2000 feet composed of smoke",
-          raw: code,
-          quantity: CloudQuantity.BKN,
-          height: 2000,
-          phenomenon: Phenomenon.SMOKE,
-        },
-      ]);
-    });
+  test("invalid Phenomenon should throw on execute", () => {
+    expect(() => command.execute("FB BKN020", [])).toThrowError(
+      RemarkExecutionError
+    );
   });
 });
 
@@ -528,6 +544,18 @@ describe("PrecipitationBegEndCommand", () => {
       });
     });
   })();
+
+  test("invalid descriptive should throw on execute", () => {
+    expect(() => command.execute("BBRAB0120E0151", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
+
+  test("invalid phenomenon should throw on execute", () => {
+    expect(() => command.execute("BLRRB0120E0151", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
 });
 
 describe("PrevailingVisibilityCommand", () => {
@@ -631,6 +659,12 @@ describe("SectorVisibilityCommand", () => {
         },
       ]);
     });
+  });
+
+  test("invalid direction should throw on execute", () => {
+    expect(() => command.execute("VIS SS 1 1/2", [])).toThrowError(
+      RemarkExecutionError
+    );
   });
 });
 
@@ -810,6 +844,12 @@ describe("ThunderStormLocationCommand", () => {
       ]);
     });
   });
+
+  test("invalid direction should throw on execute", () => {
+    expect(() => command.execute("TS NN", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
 });
 
 describe("ThunderStormLocationMovingCommand", () => {
@@ -836,6 +876,18 @@ describe("ThunderStormLocationMovingCommand", () => {
         },
       ]);
     });
+  });
+
+  test("invalid location should throw on execute", () => {
+    expect(() => command.execute("TS SS MOV NE", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
+
+  test("invalid moving direction should throw on execute", () => {
+    expect(() => command.execute("TS SE MOV NN", [])).toThrowError(
+      RemarkExecutionError
+    );
   });
 });
 
@@ -866,6 +918,12 @@ describe("TornadicActivityBegCommand", () => {
         },
       ]);
     });
+  });
+
+  test("invalid direction should throw on execute", () => {
+    expect(() => command.execute("TORNADO B1112 4 EE", [])).toThrowError(
+      RemarkExecutionError
+    );
   });
 });
 
@@ -899,6 +957,12 @@ describe("TornadicActivityBegEndCommand", () => {
       ]);
     });
   });
+
+  test("invalid direction should throw on execute", () => {
+    expect(() => command.execute("TORNADO B1112E1234 4 WW", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
 });
 
 describe("TornadicActivityEndCommand", () => {
@@ -927,6 +991,12 @@ describe("TornadicActivityEndCommand", () => {
         },
       ]);
     });
+  });
+
+  test("invalid direction should throw on execute", () => {
+    expect(() => command.execute("TORNADO E1234 4 NS", [])).toThrowError(
+      RemarkExecutionError
+    );
   });
 });
 
@@ -978,6 +1048,18 @@ describe("VariableSkyCommand", () => {
       ]);
     });
   });
+
+  test("invalid 1st CloudQuantity should throw on execute", () => {
+    expect(() => command.execute("RRR V BKN", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
+
+  test("invalid 2nd CloudQuantity should throw on execute", () => {
+    expect(() => command.execute("BKN V GGG", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
 });
 
 describe("VariableSkyHeightCommand", () => {
@@ -1005,6 +1087,18 @@ describe("VariableSkyHeightCommand", () => {
       ]);
     });
   });
+
+  test("invalid 1st CloudQuantity should throw on execute", () => {
+    expect(() => command.execute("RRR008 V BKN", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
+
+  test("invalid 2nd CloudQuantity should throw on execute", () => {
+    expect(() => command.execute("BKN008 V GGG", [])).toThrowError(
+      RemarkExecutionError
+    );
+  });
 });
 
 describe("VirgaDirectionCommand", () => {
@@ -1029,6 +1123,12 @@ describe("VirgaDirectionCommand", () => {
         },
       ]);
     });
+  });
+
+  test("invalid direction should throw on execute", () => {
+    expect(() => command.execute("VIRGA WE", [])).toThrowError(
+      RemarkExecutionError
+    );
   });
 });
 

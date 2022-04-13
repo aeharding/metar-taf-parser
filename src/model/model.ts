@@ -69,7 +69,7 @@ export interface IRunwayInfo {
   name: string;
   minRange: number;
   maxRange?: number;
-  trend: unknown;
+  trend: string;
 }
 
 export interface ICloud {
