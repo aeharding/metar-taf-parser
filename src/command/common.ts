@@ -190,7 +190,7 @@ export class VerticalVisibilityCommand implements ICommand {
 }
 
 export class MinimalVisibilityCommand implements ICommand {
-  #regex = /^(\d{4}[a-z])$/;
+  #regex = /^(\d{4}[a-zA-Z]{1,2})$/;
 
   execute(
     container: IAbstractWeatherContainer,
@@ -204,7 +204,7 @@ export class MinimalVisibilityCommand implements ICommand {
       throw new UnexpectedParseError("container.visibility not instantiated");
 
     container.visibility.minDistance = +matches[1].slice(0, 4);
-    container.visibility.minDirection = matches[1][4];
+    container.visibility.minDirection = matches[1].slice(4);
 
     return true;
   }
