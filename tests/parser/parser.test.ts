@@ -354,6 +354,17 @@ describe("MetarParser", () => {
       expect(metar.remark).toBe("QFE741");
       expect(metar.remarks).toHaveLength(1);
     });
+
+    test("with minimum visibility", () => {
+      const metar = new MetarParser(en).parse(
+        "SUMU 070520Z 34025KT 8000 2000SW VCSH SCT013CB BKN026 00/M05 Q1012 TEMPO 2000 SHSN="
+      );
+
+      expect(metar.station).toBe("SUMU");
+      expect(metar.visibility).toBeDefined();
+      expect(metar.visibility?.minDistance).toBe(2000);
+      expect(metar.visibility?.minDirection).toBe("SW");
+    });
   });
 });
 
