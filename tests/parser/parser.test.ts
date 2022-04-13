@@ -40,15 +40,7 @@ describe("RemarkParser", () => {
         },
         {
           type: RemarkType.Unknown,
-          raw: "End",
-        },
-        {
-          type: RemarkType.Unknown,
-          raw: "of",
-        },
-        {
-          type: RemarkType.Unknown,
-          raw: "remark",
+          raw: "End of remark",
         },
       ]);
     });
@@ -794,7 +786,7 @@ describe("TAFParser", () => {
 
     expect(taf).toBeDefined();
     expect(taf.remark).toBeDefined();
-    expect(taf.remarks).toHaveLength(9);
+    expect(taf.remarks).toHaveLength(1);
   });
 
   test("parse with trend remark", () => {
@@ -804,7 +796,7 @@ describe("TAFParser", () => {
 
     expect(taf.trends).toHaveLength(3);
     expect(taf.trends[2].remark).toBeDefined();
-    expect(taf.trends[2].remarks).toHaveLength(9);
+    expect(taf.trends[2].remarks).toHaveLength(1);
   });
 });
 
@@ -812,7 +804,7 @@ describe("RemarkParser", () => {
   test("parse A01", () => {
     const remarks = new RemarkParser(en).parse("Token AO1 End of remark");
 
-    expect(remarks).toHaveLength(5);
+    expect(remarks).toHaveLength(3);
     expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.AO1,
       description: _("Remark.AO1", en),
@@ -823,7 +815,7 @@ describe("RemarkParser", () => {
   test("parse A02", () => {
     const remarks = new RemarkParser(en).parse("Token AO2 End of remark");
 
-    expect(remarks).toHaveLength(5);
+    expect(remarks).toHaveLength(3);
     expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.AO2,
       description: _("Remark.AO2", en),
@@ -1430,7 +1422,7 @@ describe("RemarkParser", () => {
       "CF1AC8 CF TR SLP091 DENSITY ALT 200FT"
     );
 
-    expect(remarks[3]).toEqual<Remark>({
+    expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.SeaLevelPressure,
       description: format(_("Remark.Sea.Level.Pressure", en), "1009.1"),
       raw: "SLP091",

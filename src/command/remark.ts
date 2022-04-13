@@ -1587,18 +1587,14 @@ interface IUnknownRemark extends IBaseRemark {
 }
 
 type DefaultRemarkTypes =
-  | RemarkType.ALQDS
   | RemarkType.AO1
   | RemarkType.AO2
-  | RemarkType.BASED
-  | RemarkType.DSNT
-  | RemarkType.FCST
-  | RemarkType.FUNNELCLOUD
   | RemarkType.PRESFR
   | RemarkType.PRESRR
   | RemarkType.TORNADO
-  | RemarkType.VIRGA
-  | RemarkType.WATERSPOUT;
+  | RemarkType.FUNNELCLOUD
+  | RemarkType.WATERSPOUT
+  | RemarkType.VIRGA;
 
 interface IDefaultCommandRemark extends IBaseRemark {
   type: DefaultRemarkTypes;
@@ -1620,10 +1616,16 @@ export class DefaultCommand extends Command {
         raw: rmkSplit[0],
       } as IDefaultCommandRemark);
     } else {
-      remark.push({
-        type: RemarkType.Unknown,
-        raw: rmkSplit[0],
-      });
+      const lastRemark = remark[remark.length - 1];
+      if (lastRemark?.type === RemarkType.Unknown) {
+        // Merge with last unknown value
+        lastRemark.raw = `${lastRemark.raw} ${rmkSplit[0]}`;
+      } else {
+        remark.push({
+          type: RemarkType.Unknown,
+          raw: rmkSplit[0],
+        });
+      }
     }
 
     return [rmkSplit.length === 1 ? "" : rmkSplit[1], remark];
@@ -1693,18 +1695,14 @@ export enum RemarkType {
   Unknown = "Unknown",
 
   // Processed with default command
-  ALQDS = "ALQDS",
   AO1 = "AO1",
   AO2 = "AO2",
-  BASED = "BASED",
-  DSNT = "DSNT",
-  FCST = "FCST",
-  FUNNELCLOUD = "FUNNELCLOUD",
   PRESFR = "PRESFR",
   PRESRR = "PRESRR",
   TORNADO = "TORNADO",
-  VIRGA = "VIRGA",
+  FUNNELCLOUD = "FUNNELCLOUD",
   WATERSPOUT = "WATERSPOUT",
+  VIRGA = "VIRGA",
 
   // Regular commands below
   WindPeak = "WindPeak",
