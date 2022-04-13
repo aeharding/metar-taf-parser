@@ -13,6 +13,7 @@ import {
   IValidity,
   IWeatherCondition,
 } from "model/model";
+import { DistanceUnit, DistanceType } from "model/enum";
 import * as converter from "commons/converter";
 import { pySplit } from "helpers/helpers";
 import { CommandSupplier } from "command/common";
@@ -174,7 +175,7 @@ export abstract class AbstractParser {
     // Hack for safari below...
     const splitRegex = /\s|=/;
     const smRegex = /^\d\/\dSM$/;
-    const digitRegex = /^\d$/;
+    const digitRegex = /^(P|M)?\d$/;
 
     // return input.split(this.#TOKENIZE_REGEX).filter((v) => v);
     const splitted = input.split(splitRegex);
@@ -203,14 +204,11 @@ export abstract class AbstractParser {
   ): boolean {
     if (input === this.#CAVOK) {
       abstractWeatherContainer.cavok = true;
-      const distance = "> 10km";
-
-      if (!abstractWeatherContainer.visibility)
-        abstractWeatherContainer.visibility = {
-          distance,
-        };
-
-      abstractWeatherContainer.visibility.distance = distance;
+      abstractWeatherContainer.visibility = {
+        type: DistanceType.GreaterThan,
+        value: 9999,
+        unit: DistanceUnit.Meters,
+      };
 
       return true;
     }

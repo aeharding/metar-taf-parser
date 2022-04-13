@@ -265,3 +265,13 @@ export enum Direction {
   WNW = "WNW",
   WSW = "WSW",
 }
+
+export enum DistanceUnit {
+  Meters = "m",
+  StatuteMiles = "SM",
+}
+
+export enum DistanceType {
+  GreaterThan = ">",
+  LessThan = "<",
+}

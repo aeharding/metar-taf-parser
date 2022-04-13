@@ -86,9 +86,10 @@ export class MainVisibilityCommand implements ICommand {
 
     const distance = converter.convertVisibility(matches[1]);
 
-    if (!container.visibility) container.visibility = { distance };
+    if (!container.visibility) container.visibility = distance;
 
-    container.visibility.distance = distance;
+    container.visibility = { ...container.visibility, ...distance };
+    if (matches[2] === "NDV") container.visibility.ndv = true;
 
     return true;
   }
@@ -200,8 +201,10 @@ export class MinimalVisibilityCommand implements ICommand {
     if (!container.visibility)
       throw new UnexpectedParseError("container.visibility not instantiated");
 
-    container.visibility.minDistance = +matches[1].slice(0, 4);
-    container.visibility.minDirection = matches[1].slice(4);
+    container.visibility.min = {
+      value: +matches[1].slice(0, 4),
+      direction: matches[1].slice(4),
+    };
 
     return true;
   }
@@ -212,16 +215,15 @@ export class MinimalVisibilityCommand implements ICommand {
 }
 
 export class MainVisibilityNauticalMilesCommand implements ICommand {
-  #regex = /^(\d)*(\s)?((\d\/\d)?SM)$/;
+  #regex = /^(P|M)?(\d)*(\s)?((\d\/\d)?SM)$/;
 
   execute(
     container: IAbstractWeatherContainer,
     visibilityString: string
   ): boolean {
-    if (!container.visibility)
-      container.visibility = { distance: visibilityString };
+    const distance = converter.convertNauticalMilesVisibility(visibilityString);
 
-    container.visibility.distance = visibilityString;
+    container.visibility = distance;
 
     return true;
   }

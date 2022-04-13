@@ -2,9 +2,11 @@ import {
   CloudQuantity,
   CloudType,
   Descriptive,
+  DistanceType,
   Phenomenon,
   TimeIndicator,
   WeatherChangeType,
+  DistanceUnit,
 } from "model/enum";
 import { Remark } from "src/command/remark";
 
@@ -40,11 +42,25 @@ export interface IWindShear extends IWind {
   height: number;
 }
 
-export interface Visibility {
-  distance: string;
-  minDistance?: number;
-  minDirection?: string;
+export interface Distance {
+  type?: DistanceType;
+  value: number;
+  unit: DistanceUnit;
+
+  /** No Directional Visibility */
+  ndv?: true;
 }
+
+export type Visibility = Distance & {
+  /**
+   * Never in North American METARs
+   */
+  min?: {
+    /** Always in meters */
+    value: number;
+    direction: string;
+  };
+};
 
 export interface IWeatherCondition {
   intensity?: string;

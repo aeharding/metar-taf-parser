@@ -1,4 +1,5 @@
 import * as converter from "commons/converter";
+import { DistanceUnit, DistanceType } from "model/enum";
 
 describe("degreesToCardinal", () => {
   test("VRB", () => {
@@ -27,11 +28,44 @@ describe("degreesToCardinal", () => {
 
 describe("convertVisibility", () => {
   test("convert visibility 10km", () => {
-    expect(converter.convertVisibility("9999")).toBe("> 10km");
+    expect(converter.convertVisibility("9999")).toEqual({
+      type: DistanceType.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
   });
 
   test("specific", () => {
-    expect(converter.convertVisibility("04512")).toBe("4512m");
+    expect(converter.convertVisibility("04512")).toEqual({
+      value: 4512,
+      unit: DistanceUnit.Meters,
+    });
+  });
+});
+
+describe("convertNauticalVisibility", () => {
+  test("convert visibility 1/2", () => {
+    expect(converter.convertNauticalMilesVisibility("1/2SM")).toEqual({
+      value: 0.5,
+      unit: DistanceUnit.StatuteMiles,
+    });
+
+    expect(converter.convertNauticalMilesVisibility("1 1/2SM")).toEqual({
+      value: 1.5,
+      unit: DistanceUnit.StatuteMiles,
+    });
+
+    expect(converter.convertNauticalMilesVisibility("M1/2SM")).toEqual({
+      type: DistanceType.LessThan,
+      value: 0.5,
+      unit: DistanceUnit.StatuteMiles,
+    });
+
+    expect(converter.convertNauticalMilesVisibility("P6SM")).toEqual({
+      type: DistanceType.GreaterThan,
+      value: 6,
+      unit: DistanceUnit.StatuteMiles,
+    });
   });
 });
 
