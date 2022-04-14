@@ -403,7 +403,7 @@ describe("MetarParser", () => {
   });
 
   test("parse less than 1/4 vis", () => {
-    const taf = new MetarParser(en).parse("TAF CZBF 300939Z M1/4SM");
+    const taf = new MetarParser(en).parse("SUMU 070520Z M1/4SM");
 
     expect(taf.visibility).toEqual({
       indicator: ValueIndicator.LessThan,
@@ -413,7 +413,7 @@ describe("MetarParser", () => {
   });
 
   test("parse less than P6SM vis", () => {
-    const taf = new MetarParser(en).parse("TAF CZBF 300939Z P6SM");
+    const taf = new MetarParser(en).parse("SUMU 070520Z P6SM");
 
     expect(taf.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
@@ -423,7 +423,7 @@ describe("MetarParser", () => {
   });
 
   test("parses 3 1/4 vis", () => {
-    const taf = new MetarParser(en).parse("TAF CZBF 300939Z 3 1/4SM");
+    const taf = new MetarParser(en).parse("SUMU 070520Z 3 1/4SM");
 
     expect(taf.visibility).toEqual({
       value: 3.25,
@@ -432,7 +432,7 @@ describe("MetarParser", () => {
   });
 
   test("parses more than 1 1/2 vis", () => {
-    const taf = new MetarParser(en).parse("TAF CZBF 300939Z P1 1/2SM");
+    const taf = new MetarParser(en).parse("SUMU 070520Z P1 1/2SM");
 
     expect(taf.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
