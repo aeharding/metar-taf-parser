@@ -51,11 +51,11 @@ test("convertInchesMercuryToPascal", () => {
 
 describe("convertTemperatureRemarks", () => {
   test("positive", () => {
-    expect(converter.convertTemperatureRemarks("0", "142")).toBe("14.2");
+    expect(converter.convertTemperatureRemarks("0", "142")).toBe(14.2);
   });
 
   test("negative", () => {
-    expect(converter.convertTemperatureRemarks("1", "021")).toBe("-2.1");
+    expect(converter.convertTemperatureRemarks("1", "021")).toBe(-2.1);
   });
 });
 

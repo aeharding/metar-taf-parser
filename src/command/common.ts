@@ -6,10 +6,7 @@ import {
 } from "model/model";
 import * as converter from "commons/converter";
 import { CloudQuantity, CloudType } from "model/enum";
-import {
-  InvalidWeatherStatementError,
-  UnexpectedParseError,
-} from "commons/errors";
+import { UnexpectedParseError } from "commons/errors";
 
 interface ICommand {
   canParse(str: string): boolean;
@@ -136,7 +133,7 @@ export class WindVariationCommand implements ICommand {
   }
 
   execute(container: IAbstractWeatherContainer, windString: string): boolean {
-    if (!container.wind) throw new InvalidWeatherStatementError();
+    if (!container.wind) throw new UnexpectedParseError();
 
     this.parseWindVariation(container.wind, windString);
     return true;

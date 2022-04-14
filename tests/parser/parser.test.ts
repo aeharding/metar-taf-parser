@@ -16,8 +16,10 @@ import {
   WeatherChangeType,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
+import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
+import { Remark, RemarkType } from "command/remark";
 
 describe("RemarkParser", () => {
   (() => {
@@ -26,12 +28,20 @@ describe("RemarkParser", () => {
     test(`parses "${code}"`, () => {
       const remarks = new RemarkParser(en).parse(code);
 
-      expect(remarks).toStrictEqual([
-        "Token",
-        en.Remark.AO1,
-        "End",
-        "of",
-        "remark",
+      expect(remarks).toStrictEqual<Remark[]>([
+        {
+          type: RemarkType.Unknown,
+          raw: "Token",
+        },
+        {
+          type: RemarkType.AO1,
+          description: en.Remark.AO1,
+          raw: "AO1",
+        },
+        {
+          type: RemarkType.Unknown,
+          raw: "End of remark",
+        },
       ]);
     });
   })();
@@ -787,7 +797,7 @@ describe("TAFParser", () => {
 
     expect(taf).toBeDefined();
     expect(taf.remark).toBeDefined();
-    expect(taf.remarks).toHaveLength(9);
+    expect(taf.remarks).toHaveLength(1);
   });
 
   test("parse with trend remark", () => {
@@ -797,7 +807,7 @@ describe("TAFParser", () => {
 
     expect(taf.trends).toHaveLength(3);
     expect(taf.trends[2].remark).toBeDefined();
-    expect(taf.trends[2].remarks).toHaveLength(9);
+    expect(taf.trends[2].remarks).toHaveLength(1);
   });
 });
 
@@ -805,138 +815,232 @@ describe("RemarkParser", () => {
   test("parse A01", () => {
     const remarks = new RemarkParser(en).parse("Token AO1 End of remark");
 
-    expect(remarks).toHaveLength(5);
-    expect(remarks[1]).toBe(_("Remark.AO1", en));
+    expect(remarks).toHaveLength(3);
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.AO1,
+      description: _("Remark.AO1", en),
+      raw: "AO1",
+    });
   });
 
-  test("parse A01", () => {
+  test("parse A02", () => {
     const remarks = new RemarkParser(en).parse("Token AO2 End of remark");
 
-    expect(remarks).toHaveLength(5);
-    expect(remarks[1]).toBe(_("Remark.AO2", en));
+    expect(remarks).toHaveLength(3);
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.AO2,
+      description: _("Remark.AO2", en),
+      raw: "AO2",
+    });
   });
 
   test("parse peak wind hour", () => {
     const remarks = new RemarkParser(en).parse("AO1 PK WND 28045/15");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[0]).toBe(_("Remark.AO1", en));
-    expect(remarks[1]).toBe(
-      format(_("Remark.PeakWind", en), "280", "45", "", "15")
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.AO1,
+      description: _("Remark.AO1", en),
+      raw: "AO1",
+    });
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.WindPeak,
+      description: format(_("Remark.PeakWind", en), "280", "45", "", "15"),
+      raw: "PK WND 28045/15",
+      speed: 45,
+      degrees: 280,
+      startMinute: 15,
+    });
   });
 
   test("parse peak wind another hour", () => {
     const remarks = new RemarkParser(en).parse("AO1 PK WND 28045/1515");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[0]).toBe(_("Remark.AO1", en));
-    expect(remarks[1]).toBe(
-      format(_("Remark.PeakWind", en), "280", "45", "15", "15")
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.AO1,
+      description: _("Remark.AO1", en),
+      raw: "AO1",
+    });
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.WindPeak,
+      description: format(_("Remark.PeakWind", en), "280", "45", "15", "15"),
+      raw: "PK WND 28045/1515",
+      speed: 45,
+      degrees: 280,
+      startHour: 15,
+      startMinute: 15,
+    });
   });
 
   test("parse wind shift hour", () => {
     const remarks = new RemarkParser(en).parse("AO1 WSHFT 30");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.WindShift.0", en), "", 30));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.WindShift,
+      description: format(_("Remark.WindShift.0", en), "", 30),
+      raw: "WSHFT 30",
+      startMinute: 30,
+    });
   });
 
   test("parse wind shift", () => {
     const remarks = new RemarkParser(en).parse("AO1 WSHFT 1530");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.WindShift.0", en), 15, 30));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.WindShift,
+      description: format(_("Remark.WindShift.0", en), 15, 30),
+      raw: "WSHFT 1530",
+      startHour: 15,
+      startMinute: 30,
+    });
   });
 
   test("parse wind shift frontal", () => {
     const remarks = new RemarkParser(en).parse("AO1 WSHFT 1530 FROPA");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.WindShift.FROPA", en), 15, 30));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.WindShiftFropa,
+      description: format(_("Remark.WindShift.FROPA", en), 15, 30),
+      raw: "WSHFT 1530 FROPA",
+      startHour: 15,
+      startMinute: 30,
+    });
   });
 
   test("parse wind shift frontal at hour", () => {
     const remarks = new RemarkParser(en).parse("AO1 WSHFT 30 FROPA");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.WindShift.FROPA", en), "", 30));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.WindShiftFropa,
+      description: format(_("Remark.WindShift.FROPA", en), "", 30),
+      raw: "WSHFT 30 FROPA",
+      startMinute: 30,
+    });
   });
 
   test("parse tower visibility", () => {
     const remarks = new RemarkParser(en).parse("AO1 TWR VIS 16 1/2");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.Tower.Visibility", en), "16 1/2"));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.TowerVisibility,
+      description: format(_("Remark.Tower.Visibility", en), "16 1/2"),
+      raw: "TWR VIS 16 1/2",
+      distance: "16 1/2",
+    });
   });
 
   test("parse surface visibility", () => {
     const remarks = new RemarkParser(en).parse("AO1 SFC VIS 16 1/2");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(_("Remark.Surface.Visibility", en), "16 1/2")
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SurfaceVisibility,
+      description: format(_("Remark.Surface.Visibility", en), "16 1/2"),
+      raw: "SFC VIS 16 1/2",
+      distance: "16 1/2",
+    });
   });
 
   test("parse prevailing visibility", () => {
     const remarks = new RemarkParser(en).parse("AO1 VIS 1/2V2");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(_("Remark.Variable.Prevailing.Visibility", en), "1/2", "2")
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.PrevailingVisibility,
+      description: format(
+        _("Remark.Variable.Prevailing.Visibility", en),
+        "1/2",
+        "2"
+      ),
+      raw: "VIS 1/2V2",
+      minVisibility: "1/2",
+      maxVisibility: "2",
+    });
   });
 
   test("parse sector visibility", () => {
     const remarks = new RemarkParser(en).parse("AO1 VIS NE 2 1/2");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(_("Remark.Sector.Visibility", en), _("Converter.NE", en), "2 1/2")
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SectorVisibility,
+      description: format(
+        _("Remark.Sector.Visibility", en),
+        _("Converter.NE", en),
+        "2 1/2"
+      ),
+      raw: "VIS NE 2 1/2",
+      distance: "2 1/2",
+      direction: Direction.NE,
+    });
   });
 
   test("parse second location visibility", () => {
     const remarks = new RemarkParser(en).parse("AO1 VIS 2 1/2 RWY11");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(_("Remark.Second.Location.Visibility", en), "2 1/2", "RWY11")
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SecondLocationVisibility,
+      description: format(
+        _("Remark.Second.Location.Visibility", en),
+        "2 1/2",
+        "RWY11"
+      ),
+      raw: "VIS 2 1/2 RWY11",
+      distance: "2 1/2",
+      location: "RWY11",
+    });
   });
 
   test("parse tornadic activity tornado", () => {
     const remarks = new RemarkParser(en).parse("AO1 TORNADO B13 6 NE");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.TornadicActivityBeg,
+      description: format(
         _("Remark.Tornadic.Activity.Beginning", en),
         _("Remark.TORNADO", en),
         "",
         13,
         6,
         _("Converter.NE", en)
-      )
-    );
+      ),
+      raw: "TORNADO B13 6 NE",
+      tornadicType: "TORNADO",
+      startMinute: 13,
+      distance: 6,
+      direction: Direction.NE,
+    });
   });
 
   test("parse tornadic activity tornado hour", () => {
     const remarks = new RemarkParser(en).parse("AO1 TORNADO B1513 6 NE");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.TornadicActivityBeg,
+      description: format(
         _("Remark.Tornadic.Activity.Beginning", en),
         _("Remark.TORNADO", en),
         15,
         13,
         6,
         _("Converter.NE", en)
-      )
-    );
+      ),
+      raw: "TORNADO B1513 6 NE",
+      tornadicType: "TORNADO",
+      startHour: 15,
+      startMinute: 13,
+      distance: 6,
+      direction: Direction.NE,
+    });
   });
 
   test("parse tornadic activity funnel cloud", () => {
@@ -945,8 +1049,9 @@ describe("RemarkParser", () => {
     );
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.TornadicActivityBegEnd,
+      description: format(
         _("Remark.Tornadic.Activity.BegEnd", en),
         _("Remark.FUNNELCLOUD", en),
         15,
@@ -955,48 +1060,70 @@ describe("RemarkParser", () => {
         30,
         6,
         _("Converter.NE", en)
-      )
-    );
+      ),
+      raw: "FUNNEL CLOUD B1513E1630 6 NE",
+      tornadicType: "FUNNEL CLOUD",
+      startHour: 15,
+      startMinute: 13,
+      endHour: 16,
+      endMinute: 30,
+      distance: 6,
+      direction: Direction.NE,
+    });
   });
 
   test("parse tornadic activity water spout ending time minutes", () => {
     const remarks = new RemarkParser(en).parse("AO1 WATERSPOUT E16 12 NE");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.TornadicActivityEnd,
+      description: format(
         _("Remark.Tornadic.Activity.Ending", en),
         _("Remark.WATERSPOUT", en),
         "",
         16,
         12,
         _("Converter.NE", en)
-      )
-    );
+      ),
+      raw: "WATERSPOUT E16 12 NE",
+      tornadicType: "WATERSPOUT",
+      endMinute: 16,
+      distance: 12,
+      direction: Direction.NE,
+    });
   });
 
   test("parse tornadic activity water spout ending time", () => {
     const remarks = new RemarkParser(en).parse("AO1 WATERSPOUT E1516 12 NE");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.TornadicActivityEnd,
+      description: format(
         _("Remark.Tornadic.Activity.Ending", en),
         _("Remark.WATERSPOUT", en),
         15,
         16,
         12,
         _("Converter.NE", en)
-      )
-    );
+      ),
+      raw: "WATERSPOUT E1516 12 NE",
+      tornadicType: "WATERSPOUT",
+      endHour: 15,
+      endMinute: 16,
+      distance: 12,
+      direction: Direction.NE,
+    });
   });
 
   test("parse precipitation start end", () => {
     const remarks = new RemarkParser(en).parse("AO1 RAB05E30SNB1520E1655");
 
     expect(remarks).toHaveLength(3);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.PrecipitationBegEnd,
+      description: format(
         _("Remark.Precipitation.Beg.End", en),
         "",
         _("Phenomenon.RA", en),
@@ -1004,10 +1131,15 @@ describe("RemarkParser", () => {
         "05",
         "",
         30
-      )
-    );
-    expect(remarks[2]).toBe(
-      format(
+      ),
+      raw: "RAB05E30",
+      phenomenon: Phenomenon.RAIN,
+      startMin: 5,
+      endMin: 30,
+    });
+    expect(remarks[2]).toEqual<Remark>({
+      type: RemarkType.PrecipitationBegEnd,
+      description: format(
         _("Remark.Precipitation.Beg.End", en),
         "",
         _("Phenomenon.SN", en),
@@ -1015,16 +1147,23 @@ describe("RemarkParser", () => {
         20,
         16,
         55
-      )
-    );
+      ),
+      raw: "SNB1520E1655",
+      phenomenon: Phenomenon.SNOW,
+      startHour: 15,
+      startMin: 20,
+      endHour: 16,
+      endMin: 55,
+    });
   });
 
   test("parse precipitation start end descriptive", () => {
     const remarks = new RemarkParser(en).parse("AO1 SHRAB05E30SHSNB20E55");
 
     expect(remarks).toHaveLength(3);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.PrecipitationBegEnd,
+      description: format(
         _("Remark.Precipitation.Beg.End", en),
         _("Descriptive.SH", en),
         _("Phenomenon.RA", en),
@@ -1032,10 +1171,16 @@ describe("RemarkParser", () => {
         "05",
         "",
         30
-      )
-    );
-    expect(remarks[2]).toBe(
-      format(
+      ),
+      raw: "SHRAB05E30",
+      descriptive: Descriptive.SHOWERS,
+      phenomenon: Phenomenon.RAIN,
+      startMin: 5,
+      endMin: 30,
+    });
+    expect(remarks[2]).toEqual<Remark>({
+      type: RemarkType.PrecipitationBegEnd,
+      description: format(
         _("Remark.Precipitation.Beg.End", en),
         _("Descriptive.SH", en),
         _("Phenomenon.SN", en),
@@ -1043,16 +1188,22 @@ describe("RemarkParser", () => {
         20,
         "",
         55
-      )
-    );
+      ),
+      raw: "SHSNB20E55",
+      descriptive: Descriptive.SHOWERS,
+      phenomenon: Phenomenon.SNOW,
+      startMin: 20,
+      endMin: 55,
+    });
   });
 
   test("parse thunderstorm start", () => {
     const remarks = new RemarkParser(en).parse("AO1 TSB0159E30");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.PrecipitationBegEnd,
+      description: format(
         _("Remark.Precipitation.Beg.End", en),
         "",
         _("Phenomenon.TS", en),
@@ -1060,147 +1211,221 @@ describe("RemarkParser", () => {
         59,
         "",
         30
-      )
-    );
+      ),
+      raw: "TSB0159E30",
+      phenomenon: Phenomenon.THUNDERSTORM,
+      startHour: 1,
+      startMin: 59,
+      endMin: 30,
+    });
   });
 
   test("parse thunderstorm location", () => {
     const remarks = new RemarkParser(en).parse("AO1 TS SE");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(_("Remark.Thunderstorm.Location.0", en), _("Converter.SE", en))
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.ThunderStormLocation,
+      description: format(
+        _("Remark.Thunderstorm.Location.0", en),
+        _("Converter.SE", en)
+      ),
+      raw: "TS SE",
+      location: Direction.SE,
+    });
   });
 
   test("parse thunderstorm location moving", () => {
     const remarks = new RemarkParser(en).parse("AO1 TS SE MOV NE");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.ThunderStormLocationMoving,
+      description: format(
         _("Remark.Thunderstorm.Location.Moving", en),
         _("Converter.SE", en),
         _("Converter.NE", en)
-      )
-    );
+      ),
+      raw: "TS SE MOV NE",
+      location: Direction.SE,
+      moving: Direction.NE,
+    });
   });
 
   test("parse hail size", () => {
     const remarks = new RemarkParser(en).parse("AO1 GR 1 3/4");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.Hail.0", en), "1 3/4"));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.HailSize,
+      description: format(_("Remark.Hail.0", en), "1 3/4"),
+      raw: "GR 1 3/4",
+      size: "1 3/4",
+    });
   });
 
   test("parse hail size less than", () => {
     const remarks = new RemarkParser(en).parse("AO1 GR LESS THAN 1/4");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.Hail.LesserThan", en), "1/4"));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SmallHailSize,
+      description: format(_("Remark.Hail.LesserThan", en), "1/4"),
+      raw: "GR LESS THAN 1/4",
+      size: "1/4",
+    });
   });
 
   test("parse snow pellets", () => {
     const remarks = new RemarkParser(en).parse("AO1 GS MOD");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(_("Remark.Snow.Pellets", en), _("Remark.MOD", en))
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SnowPellets,
+      description: format(_("Remark.Snow.Pellets", en), _("Remark.MOD", en)),
+      raw: "GS MOD",
+      amount: "MOD",
+    });
   });
 
   test("parse virga direction", () => {
     const remarks = new RemarkParser(en).parse("AO1 VIRGA SW");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(_("Remark.Virga.Direction", en), _("Converter.SW", en))
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.VirgaDirection,
+      description: format(
+        _("Remark.Virga.Direction", en),
+        _("Converter.SW", en)
+      ),
+      raw: "VIRGA SW",
+      direction: Direction.SW,
+    });
   });
 
   test("parse virga", () => {
     const remarks = new RemarkParser(en).parse("AO1 VIRGA");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.VIRGA", en)));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.VIRGA,
+      description: format(_("Remark.VIRGA", en)),
+      raw: "VIRGA",
+    });
   });
 
   test("parse ceiling height", () => {
     const remarks = new RemarkParser(en).parse("AO1 CIG 005V010");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(format(_("Remark.Ceiling.Height", en), 500, 1000));
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.CeilingHeight,
+      description: format(_("Remark.Ceiling.Height", en), 500, 1000),
+      raw: "CIG 005V010",
+      min: 500,
+      max: 1000,
+    });
   });
 
   test("parse obscurations", () => {
     const remarks = new RemarkParser(en).parse("AO1 FU BKN020");
 
     expect(remarks).toHaveLength(2);
-    expect(remarks[1]).toBe(
-      format(
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.Obscuration,
+      description: format(
         _("Remark.Obscuration", en),
         _("CloudQuantity.BKN", en),
         2000,
         _("Phenomenon.FU", en)
-      )
-    );
+      ),
+      raw: "FU BKN020",
+      quantity: CloudQuantity.BKN,
+      height: 2000,
+      phenomenon: Phenomenon.SMOKE,
+    });
   });
 
   test("parse variable sky condition without layer", () => {
     const remarks = new RemarkParser(en).parse("BKN V OVC");
 
-    expect(remarks[0]).toBe(
-      format(
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.VariableSky,
+      description: format(
         _("Remark.Variable.Sky.Condition.0", en),
         _("CloudQuantity.BKN", en),
         _("CloudQuantity.OVC", en)
-      )
-    );
+      ),
+      raw: "BKN V OVC",
+      cloudQuantityRange: [CloudQuantity.BKN, CloudQuantity.OVC],
+    });
   });
 
   test("parse variable sky condition", () => {
     const remarks = new RemarkParser(en).parse("BKN014 V OVC");
 
-    expect(remarks[0]).toBe(
-      format(
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.VariableSkyHeight,
+      description: format(
         _("Remark.Variable.Sky.Condition.Height", en),
         1400,
         _("CloudQuantity.BKN", en),
         _("CloudQuantity.OVC", en)
-      )
-    );
+      ),
+      raw: "BKN014 V OVC",
+      cloudQuantityRange: [CloudQuantity.BKN, CloudQuantity.OVC],
+      height: 1400,
+    });
   });
 
-  test("parseceiling second location", () => {
+  test("parse ceiling second location", () => {
     const remarks = new RemarkParser(en).parse("CIG 002 RWY11");
 
-    expect(remarks[0]).toBe(
-      format(_("Remark.Ceiling.Second.Location", en), 200, "RWY11")
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.CeilingSecondLocation,
+      description: format(
+        _("Remark.Ceiling.Second.Location", en),
+        200,
+        "RWY11"
+      ),
+      raw: "CIG 002 RWY11",
+      height: 200,
+      location: "RWY11",
+    });
   });
 
   test("parse sea level pressure", () => {
     const remarks = new RemarkParser(en).parse("AO1 SLP134");
 
-    expect(remarks[1]).toBe(
-      format(_("Remark.Sea.Level.Pressure", en), "1013.4")
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SeaLevelPressure,
+      description: format(_("Remark.Sea.Level.Pressure", en), "1013.4"),
+      raw: "SLP134",
+      pressure: 1013.4,
+    });
   });
 
   test("parse sea level pressure lower", () => {
     const remarks = new RemarkParser(en).parse("AO1 SLP982");
 
-    expect(remarks[1]).toBe(
-      format(_("Remark.Sea.Level.Pressure", en), "998.2")
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SeaLevelPressure,
+      description: format(_("Remark.Sea.Level.Pressure", en), "998.2"),
+      raw: "SLP982",
+      pressure: 998.2,
+    });
   });
 
   test("parse snow increasing rapidly", () => {
     const remarks = new RemarkParser(en).parse("AO1 SNINCR 2/10");
 
-    expect(remarks[1]).toBe(
-      format(_("Remark.Snow.Increasing.Rapidly", en), 2, 10)
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SnowIncrease,
+      description: format(_("Remark.Snow.Increasing.Rapidly", en), 2, 10),
+      raw: "SNINCR 2/10",
+      inchesLastHour: 2,
+      totalDepth: 10,
+    });
   });
 
   test("parse rmk slp", () => {
@@ -1208,112 +1433,184 @@ describe("RemarkParser", () => {
       "CF1AC8 CF TR SLP091 DENSITY ALT 200FT"
     );
 
-    expect(remarks[3]).toBe(
-      format(_("Remark.Sea.Level.Pressure", en), "1009.1")
-    );
+    expect(remarks[1]).toEqual<Remark>({
+      type: RemarkType.SeaLevelPressure,
+      description: format(_("Remark.Sea.Level.Pressure", en), "1009.1"),
+      raw: "SLP091",
+      pressure: 1009.1,
+    });
   });
 
   test("parse hourly maximum minimum temperature command", () => {
     const remarks = new RemarkParser(en).parse("401001015 AO1");
 
-    expect(remarks[0]).toBe(
-      "24-hour maximum temperature of 10.0°C and 24-hour minimum temperature of -1.5°C"
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyMaximumMinimumTemperature,
+      description:
+        "24-hour maximum temperature of 10.0°C and 24-hour minimum temperature of -1.5°C",
+      raw: "401001015",
+      max: 10,
+      min: -1.5,
+    });
   });
 
   test("parse hourly maximum temperature below zero", () => {
     const remarks = new RemarkParser(en).parse("11021 AO1");
 
-    expect(remarks[0]).toBe("6-hourly maximum temperature of -2.1°C");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyMaximumTemperature,
+      description: "6-hourly maximum temperature of -2.1°C",
+      raw: "11021",
+      max: -2.1,
+    });
   });
 
   test("parse hourly maximum temperature above zero", () => {
     const remarks = new RemarkParser(en).parse("10142");
 
-    expect(remarks[0]).toBe("6-hourly maximum temperature of 14.2°C");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyMaximumTemperature,
+      description: "6-hourly maximum temperature of 14.2°C",
+      raw: "10142",
+      max: 14.2,
+    });
   });
 
   test("parse hourly minimum temperature negative", () => {
     const remarks = new RemarkParser(en).parse("21001");
 
-    expect(remarks[0]).toBe("6-hourly minimum temperature of -0.1°C");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyMinimumTemperature,
+      description: "6-hourly minimum temperature of -0.1°C",
+      raw: "21001",
+      min: -0.1,
+    });
   });
 
   test("parse hourly minimum temperature positive", () => {
     const remarks = new RemarkParser(en).parse("20012");
 
-    expect(remarks[0]).toBe("6-hourly minimum temperature of 1.2°C");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyMinimumTemperature,
+      description: "6-hourly minimum temperature of 1.2°C",
+      raw: "20012",
+      min: 1.2,
+    });
   });
 
   test("parse hourly pressure", () => {
     const remarks = new RemarkParser(en).parse("52032");
 
-    expect(remarks[0]).toBe(
-      "steady or unsteady increase of 3.2 hectopascals in the past 3 hours"
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyPressure,
+      description:
+        "steady or unsteady increase of 3.2 hectopascals in the past 3 hours",
+      raw: "52032",
+      code: 2,
+      pressureChange: 3.2,
+    });
   });
 
   test("parse precipitation amount 24 hour", () => {
     const remarks = new RemarkParser(en).parse("70125");
 
-    expect(remarks[0]).toBe(
-      "1.25 inches of precipitation fell in the last 24 hours"
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.PrecipitationAmount24Hour,
+      description: "1.25 inches of precipitation fell in the last 24 hours",
+      raw: "70125",
+      amount: 1.25,
+    });
   });
 
   test("parse snow depth", () => {
     const remarks = new RemarkParser(en).parse("4/021");
 
-    expect(remarks[0]).toBe("snow depth of 21 inches");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.SnowDepth,
+      description: "snow depth of 21 inches",
+      raw: "4/021",
+      depth: 21,
+    });
   });
 
   test("parse sunshine duration", () => {
     const remarks = new RemarkParser(en).parse("98096");
 
-    expect(remarks[0]).toBe("96 minutes of sunshine");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.SunshineDuration,
+      description: "96 minutes of sunshine",
+      raw: "98096",
+      duration: 96,
+    });
   });
 
   test("parse water equivelant snow", () => {
     const remarks = new RemarkParser(en).parse("933036");
 
-    expect(remarks[0]).toBe("water equivalent of 3.6 inches of snow");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.WaterEquivalentSnow,
+      description: "water equivalent of 3.6 inches of snow",
+      raw: "933036",
+      amount: 3.6,
+    });
   });
 
   test("parse ice accretion", () => {
     const remarks = new RemarkParser(en).parse("l1004 AO1");
 
-    expect(remarks[0]).toBe(
-      "4/100 of an inch of ice accretion in the past 1 hour(s)"
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.IceAccretion,
+      description: "4/100 of an inch of ice accretion in the past 1 hour(s)",
+      raw: "l1004",
+      amount: 0.04,
+      periodInHours: 1,
+    });
   });
 
   test("parse hourly temperature", () => {
     const remarks = new RemarkParser(en).parse("T0026 AO1");
 
-    expect(remarks[0]).toBe("hourly temperature of 2.6°C");
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyTemperatureDewPoint,
+      description: "hourly temperature of 2.6°C",
+      raw: "T0026",
+      temperature: 2.6,
+    });
   });
 
   test("parse hourly temperature dew point", () => {
     const remarks = new RemarkParser(en).parse("T00261015 AO1");
 
-    expect(remarks[0]).toBe(
-      "hourly temperature of 2.6°C and dew point of -1.5°C"
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.HourlyTemperatureDewPoint,
+      description: "hourly temperature of 2.6°C and dew point of -1.5°C",
+      raw: "T00261015",
+      temperature: 2.6,
+      dewPoint: -1.5,
+    });
   });
 
   test("parse precipitation amount 3 hours", () => {
     const remarks = new RemarkParser(en).parse("30217");
 
-    expect(remarks[0]).toBe(
-      "2.17 inches of precipitation fell in the last 3 hours"
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.PrecipitationAmount36Hour,
+      description: "2.17 inches of precipitation fell in the last 3 hours",
+      raw: "30217",
+      amount: 2.17,
+      periodInHours: 3,
+    });
   });
 
   test("parse precipitation amount 6 hours", () => {
     const remarks = new RemarkParser(en).parse("60217");
 
-    expect(remarks[0]).toBe(
-      "2.17 inches of precipitation fell in the last 6 hours"
-    );
+    expect(remarks[0]).toEqual<Remark>({
+      type: RemarkType.PrecipitationAmount36Hour,
+      description: "2.17 inches of precipitation fell in the last 6 hours",
+      raw: "60217",
+      amount: 2.17,
+      periodInHours: 6,
+    });
   });
 });

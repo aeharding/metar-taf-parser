@@ -51,12 +51,12 @@ export function convertInchesMercuryToPascal(input: number): number {
 export function convertTemperatureRemarks(
   sign: string,
   temperature: string
-): string {
+): number {
   const temp = +temperature / 10;
 
-  if (sign === "0") return temp.toFixed(1);
+  if (sign === "0") return temp;
 
-  return (-temp).toFixed(1);
+  return -temp;
 }
 
 export function convertPrecipitationAmount(amount: string): number {
