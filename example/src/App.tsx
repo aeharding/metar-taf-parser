@@ -4,10 +4,13 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, Navigate } from "react-router";
 import { ParseMetar, ParseTAF } from "./Parse";
+import pjson from "metar-taf-parser/package.json";
 
 const globalStyles = css`
   html {
     box-sizing: border-box;
+
+    height: 100%;
   }
 
   *,
@@ -27,8 +30,19 @@ const globalStyles = css`
     color: white;
 
     max-width: 1000px;
-    padding: 0 1rem 1rem;
+    padding: 0 1rem;
     margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  #root {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
   }
 
   a {
@@ -45,34 +59,41 @@ const H1 = styled.h1`
   font-weight: 100;
 `;
 
+const Footer = styled.footer`
+  margin-top: auto;
+  text-align: center;
+  padding: 1rem 0;
+  opacity: 0.5;
+`;
+
 function App() {
   return (
     <BrowserRouter basename="/metar-taf-parser">
       <Global styles={globalStyles} />
 
-      <div className="App">
-        <header className="App-header">
-          <H1>metar-taf-parser</H1>
+      <header>
+        <H1>metar-taf-parser</H1>
+      </header>
 
-          <p>
-            Full documentation can be{" "}
-            <a href="https://github.com/aeharding/metar-taf-parser">
-              found on Github
-            </a>
-            . The package is{" "}
-            <a href="https://www.npmjs.com/package/metar-taf-parser">
-              available on npm
-            </a>
-            .
-          </p>
-
-          <Routes>
-            <Route path="/metar" element={<ParseMetar />} />
-            <Route path="/taf" element={<ParseTAF />} />
-            <Route path="*" element={<Navigate to="/metar" replace />} />
-          </Routes>
-        </header>
+      <div>
+        Full documentation can be{" "}
+        <a href="https://github.com/aeharding/metar-taf-parser">
+          found on Github
+        </a>
+        . The package is{" "}
+        <a href="https://www.npmjs.com/package/metar-taf-parser">
+          available on npm
+        </a>
+        .
       </div>
+
+      <Routes>
+        <Route path="/metar" element={<ParseMetar />} />
+        <Route path="/taf" element={<ParseTAF />} />
+        <Route path="*" element={<Navigate to="/metar" replace />} />
+      </Routes>
+
+      <Footer>metar-taf-parser v{pjson.version}</Footer>
     </BrowserRouter>
   );
 }

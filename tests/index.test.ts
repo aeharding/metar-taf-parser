@@ -1,4 +1,4 @@
-import { parseMetar } from "../src";
+import { parseMetar } from "index";
 
 describe("public API", () => {
   describe("parseMetar", () => {
