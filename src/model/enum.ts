@@ -283,3 +283,14 @@ export enum ValueIndicator {
   GreaterThan = "P",
   LessThan = "M",
 }
+
+export enum RunwayInfoTrend {
+  Uprising = "U",
+  Decreasing = "D",
+  NoSignificantChange = "N",
+}
+
+export enum RunwayInfoUnit {
+  Feet = "FT",
+  Meters = "m",
+}

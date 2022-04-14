@@ -1,3 +1,5 @@
+import { CommandExecutionError } from "commons/errors";
+
 /**
  * Split behaving similar to Python's implementation
  */
@@ -33,4 +35,22 @@ export function resolve(
   const properties = Array.isArray(path) ? path : path.split(separator);
 
   return properties.reduce((prev, curr) => prev?.[curr], obj);
+}
+
+/**
+ * For safely casting input values
+ * @param input String that is expected to be in the snum
+ * @param enumExpected The enum to cast the input value to
+ * @throws RemarkExecutionError when input is not a key of enum
+ */
+export function as<T extends Record<string, unknown>>(
+  input: string,
+  enumExpected: T
+): T[keyof T] {
+  if (!Object.values(enumExpected).includes(input))
+    throw new CommandExecutionError(
+      `${input} not found in ${Object.values(enumExpected)}`
+    );
+
+  return input as T[keyof T];
 }
