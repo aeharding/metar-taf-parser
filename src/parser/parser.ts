@@ -13,7 +13,7 @@ import {
   IValidity,
   IWeatherCondition,
 } from "model/model";
-import { DistanceUnit, DistanceType } from "model/enum";
+import { DistanceUnit, ValueIndicator } from "model/enum";
 import * as converter from "commons/converter";
 import { pySplit } from "helpers/helpers";
 import { CommandSupplier } from "command/common";
@@ -205,7 +205,7 @@ export abstract class AbstractParser {
     if (input === this.#CAVOK) {
       abstractWeatherContainer.cavok = true;
       abstractWeatherContainer.visibility = {
-        type: DistanceType.GreaterThan,
+        indicator: ValueIndicator.GreaterThan,
         value: 9999,
         unit: DistanceUnit.Meters,
       };

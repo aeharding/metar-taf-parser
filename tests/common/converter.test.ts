@@ -1,5 +1,5 @@
 import * as converter from "commons/converter";
-import { DistanceUnit, DistanceType } from "model/enum";
+import { DistanceUnit, ValueIndicator } from "model/enum";
 
 describe("degreesToCardinal", () => {
   test("VRB", () => {
@@ -29,7 +29,7 @@ describe("degreesToCardinal", () => {
 describe("convertVisibility", () => {
   test("convert visibility 10km", () => {
     expect(converter.convertVisibility("9999")).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });
@@ -56,13 +56,13 @@ describe("convertNauticalVisibility", () => {
     });
 
     expect(converter.convertNauticalMilesVisibility("M1/2SM")).toEqual({
-      type: DistanceType.LessThan,
+      indicator: ValueIndicator.LessThan,
       value: 0.5,
       unit: DistanceUnit.StatuteMiles,
     });
 
     expect(converter.convertNauticalMilesVisibility("P6SM")).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 6,
       unit: DistanceUnit.StatuteMiles,
     });

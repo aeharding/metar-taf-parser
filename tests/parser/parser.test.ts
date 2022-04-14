@@ -15,7 +15,7 @@ import {
   TimeIndicator,
   WeatherChangeType,
   DistanceUnit,
-  DistanceType,
+  ValueIndicator,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
 import { Direction } from "model/enum";
@@ -258,7 +258,7 @@ describe("MetarParser", () => {
     expect(trend.times[1].hour).toBe(18);
     expect(trend.times[1].minute).toBe(30);
     expect(metar.visibility).toStrictEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });
@@ -319,7 +319,7 @@ describe("MetarParser", () => {
     );
 
     expect(metar.visibility).toStrictEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
       ndv: true,
@@ -333,7 +333,7 @@ describe("MetarParser", () => {
 
     expect(metar.cavok).toBe(true);
     expect(metar.visibility).toStrictEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });
@@ -406,7 +406,7 @@ describe("MetarParser", () => {
     const taf = new MetarParser(en).parse("TAF CZBF 300939Z M1/4SM");
 
     expect(taf.visibility).toEqual({
-      type: DistanceType.LessThan,
+      indicator: ValueIndicator.LessThan,
       value: 0.25,
       unit: DistanceUnit.StatuteMiles,
     });
@@ -416,7 +416,7 @@ describe("MetarParser", () => {
     const taf = new MetarParser(en).parse("TAF CZBF 300939Z P6SM");
 
     expect(taf.visibility).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 6,
       unit: DistanceUnit.StatuteMiles,
     });
@@ -435,7 +435,7 @@ describe("MetarParser", () => {
     const taf = new MetarParser(en).parse("TAF CZBF 300939Z P1 1/2SM");
 
     expect(taf.visibility).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 1.5,
       unit: DistanceUnit.StatuteMiles,
     });
@@ -648,7 +648,7 @@ describe("TAFParser", () => {
 
     // Checks on visibility
     expect(taf.visibility).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });
@@ -727,7 +727,7 @@ describe("TAFParser", () => {
     expect(becmg1.validity?.endDay).toBe(30);
     expect(becmg1.validity?.endHour).toBe(9);
     expect(becmg1.visibility).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });
@@ -776,7 +776,7 @@ describe("TAFParser", () => {
 
     // Checks on visibility
     expect(taf.visibility).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });
@@ -810,7 +810,7 @@ describe("TAFParser", () => {
     expect(becmg1.validity?.endDay).toBe(12);
     expect(becmg1.validity?.endHour).toBe(18);
     expect(becmg1.visibility).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });
@@ -831,7 +831,7 @@ describe("TAFParser", () => {
     expect(becmg2.validity?.endDay).toBe(13);
     expect(becmg2.validity?.endHour).toBe(4);
     expect(becmg2.visibility).toEqual({
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
     });

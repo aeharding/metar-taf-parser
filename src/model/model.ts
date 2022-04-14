@@ -2,7 +2,7 @@ import {
   CloudQuantity,
   CloudType,
   Descriptive,
-  DistanceType,
+  ValueIndicator,
   Phenomenon,
   TimeIndicator,
   WeatherChangeType,
@@ -43,7 +43,7 @@ export interface IWindShear extends IWind {
 }
 
 export interface Distance {
-  type?: DistanceType;
+  indicator?: ValueIndicator;
   value: number;
   unit: DistanceUnit;
 

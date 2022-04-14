@@ -1,6 +1,6 @@
 import { pySplit } from "helpers/helpers";
 import { Distance } from "model/model";
-import { DistanceUnit, DistanceType } from "model/enum";
+import { DistanceUnit, ValueIndicator } from "model/enum";
 
 export function degreesToCardinal(input: number | string) {
   const degrees = +input;
@@ -34,7 +34,7 @@ export function degreesToCardinal(input: number | string) {
 export function convertVisibility(input: string): Distance {
   if (input === "9999")
     return {
-      type: DistanceType.GreaterThan,
+      indicator: ValueIndicator.GreaterThan,
       value: +input,
       unit: DistanceUnit.Meters,
     };
@@ -50,18 +50,18 @@ export function convertVisibility(input: string): Distance {
  * @returns Distance
  */
 export function convertNauticalMilesVisibility(input: string): Distance {
-  let type: DistanceType | undefined;
+  let indicator: ValueIndicator | undefined;
   let index = 0;
   if (input.startsWith("P")) {
-    type = DistanceType.GreaterThan;
+    indicator = ValueIndicator.GreaterThan;
     index = 1;
   } else if (input.startsWith("M")) {
-    type = DistanceType.LessThan;
+    indicator = ValueIndicator.LessThan;
     index = 1;
   }
 
   return {
-    type,
+    indicator,
     value: convertFractionalAmount(input.slice(index, -2)),
     unit: DistanceUnit.StatuteMiles,
   };
