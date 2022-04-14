@@ -265,3 +265,21 @@ export enum Direction {
   WNW = "WNW",
   WSW = "WSW",
 }
+
+export enum DistanceUnit {
+  Meters = "m",
+  StatuteMiles = "SM",
+}
+
+/**
+ * Used to indicate the actual value is greater than or less than the value written
+ *
+ * For example,
+ *
+ *  1. `P6SM` = visibility greater than 6 statute miles
+ *  2. `M1/4SM` = visibility less than 1/4 statute mile
+ */
+export enum ValueIndicator {
+  GreaterThan = "P",
+  LessThan = "M",
+}

@@ -14,6 +14,8 @@ import {
   Phenomenon,
   TimeIndicator,
   WeatherChangeType,
+  DistanceUnit,
+  ValueIndicator,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
 import { Direction } from "model/enum";
@@ -153,227 +155,289 @@ describe("MetarParser", () => {
     expect(metar.wind?.direction).toBe("N");
     expect(metar.wind?.unit).toBe("KT");
     expect(metar.visibility).toBeDefined();
-    expect(metar.visibility?.distance).toBe("350m");
+    expect(metar.visibility).toEqual({
+      value: 350,
+      unit: DistanceUnit.Meters,
+    });
     expect(metar.runwaysInfo).toHaveLength(8);
     expect(metar.runwaysInfo[0].name).toBe("27L");
     expect(metar.runwaysInfo[0].minRange).toBe(375);
     expect(metar.runwaysInfo[0].trend).toBe("N");
   });
 
-  describe("MetarParser", () => {
-    test("tempo", () => {
-      const input =
-        "LFBG 081130Z AUTO 23012KT 9999 SCT022 BKN072 BKN090 22/16 Q1011 TEMPO 26015G25KT 3000 TSRA SCT025CB BKN050";
+  test("tempo", () => {
+    const input =
+      "LFBG 081130Z AUTO 23012KT 9999 SCT022 BKN072 BKN090 22/16 Q1011 TEMPO 26015G25KT 3000 TSRA SCT025CB BKN050";
 
-      const metar = new MetarParser(en).parse(input);
+    const metar = new MetarParser(en).parse(input);
 
-      expect(metar.auto).toBe(true);
-      expect(metar.clouds).toHaveLength(3);
-      expect(metar.trends).toHaveLength(1);
+    expect(metar.auto).toBe(true);
+    expect(metar.clouds).toHaveLength(3);
+    expect(metar.trends).toHaveLength(1);
 
-      const trend = metar.trends[0];
+    const trend = metar.trends[0];
 
-      expect(trend.type).toBe(WeatherChangeType.TEMPO);
-      expect(trend.wind).toBeDefined();
-      expect(trend.wind?.degrees).toBe(260);
-      expect(trend.wind?.speed).toBe(15);
-      expect(trend.wind?.gust).toBe(25);
-      expect(trend.times).toHaveLength(0);
-      expect(trend.visibility?.distance).toBe("3000m");
-      expect(trend.weatherConditions).toHaveLength(1);
-
-      const wc = trend.weatherConditions[0];
-
-      expect(wc.phenomenons[0]).toBe(Phenomenon.RAIN);
-      expect(trend.clouds).toHaveLength(2);
-      expect(trend.clouds[0].quantity).toBe(CloudQuantity.SCT);
-      expect(trend.clouds[0].height).toBe(2500);
-      expect(trend.clouds[0].type).toBe(CloudType.CB);
-      expect(trend.clouds[1].quantity).toBe(CloudQuantity.BKN);
-      expect(trend.clouds[1].height).toBe(5000);
-      expect(trend.clouds[1].type).toBeUndefined();
+    expect(trend.type).toBe(WeatherChangeType.TEMPO);
+    expect(trend.wind).toBeDefined();
+    expect(trend.wind?.degrees).toBe(260);
+    expect(trend.wind?.speed).toBe(15);
+    expect(trend.wind?.gust).toBe(25);
+    expect(trend.times).toHaveLength(0);
+    expect(trend.visibility).toEqual({
+      value: 3000,
+      unit: DistanceUnit.Meters,
     });
+    expect(trend.weatherConditions).toHaveLength(1);
 
-    test("tempo becmg", () => {
-      const metar = new MetarParser(en).parse(
-        "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO SHRA BECMG SKC"
-      );
+    const wc = trend.weatherConditions[0];
 
-      expect(metar.trends).toHaveLength(2);
-      expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
-      expect(metar.trends[0].weatherConditions).toHaveLength(1);
-      expect(metar.trends[0].weatherConditions[0].descriptive).toBe(
-        Descriptive.SHOWERS
-      );
-      expect(metar.trends[0].weatherConditions[0].phenomenons[0]).toBe(
-        Phenomenon.RAIN
-      );
-      expect(metar.trends[1].type).toBe(WeatherChangeType.BECMG);
-      expect(metar.trends[1].clouds).toHaveLength(1);
+    expect(wc.phenomenons[0]).toBe(Phenomenon.RAIN);
+    expect(trend.clouds).toHaveLength(2);
+    expect(trend.clouds[0].quantity).toBe(CloudQuantity.SCT);
+    expect(trend.clouds[0].height).toBe(2500);
+    expect(trend.clouds[0].type).toBe(CloudType.CB);
+    expect(trend.clouds[1].quantity).toBe(CloudQuantity.BKN);
+    expect(trend.clouds[1].height).toBe(5000);
+    expect(trend.clouds[1].type).toBeUndefined();
+  });
+
+  test("tempo becmg", () => {
+    const metar = new MetarParser(en).parse(
+      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO SHRA BECMG SKC"
+    );
+
+    expect(metar.trends).toHaveLength(2);
+    expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
+    expect(metar.trends[0].weatherConditions).toHaveLength(1);
+    expect(metar.trends[0].weatherConditions[0].descriptive).toBe(
+      Descriptive.SHOWERS
+    );
+    expect(metar.trends[0].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.RAIN
+    );
+    expect(metar.trends[1].type).toBe(WeatherChangeType.BECMG);
+    expect(metar.trends[1].clouds).toHaveLength(1);
+  });
+
+  test("tempo fm", () => {
+    const metar = new MetarParser(en).parse(
+      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1830 SHRA"
+    );
+
+    expect(metar.trends).toHaveLength(1);
+    expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
+    expect(metar.trends[0].weatherConditions).toHaveLength(1);
+
+    const trend = metar.trends[0];
+
+    expect(trend.weatherConditions[0].descriptive).toBe(Descriptive.SHOWERS);
+    expect(trend.weatherConditions[0].phenomenons).toHaveLength(1);
+    expect(trend.times[0].type).toBe(TimeIndicator.FM);
+    expect(trend.times[0].hour).toBe(18);
+    expect(trend.times[0].minute).toBe(30);
+  });
+
+  test("tempo tl", () => {
+    const metar = new MetarParser(en).parse(
+      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1700 TL1830 SHRA"
+    );
+
+    expect(metar.trends).toHaveLength(1);
+    expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
+    expect(metar.trends[0].weatherConditions).toHaveLength(1);
+
+    const trend = metar.trends[0];
+
+    expect(trend.weatherConditions[0].descriptive).toBe(Descriptive.SHOWERS);
+    expect(trend.weatherConditions[0].phenomenons).toHaveLength(1);
+    expect(trend.weatherConditions[0].phenomenons[0]).toBe(Phenomenon.RAIN);
+    expect(trend.times[0].type).toBe(TimeIndicator.FM);
+    expect(trend.times[0].hour).toBe(17);
+    expect(trend.times[0].minute).toBe(0);
+    expect(trend.times[1].type).toBe(TimeIndicator.TL);
+    expect(trend.times[1].hour).toBe(18);
+    expect(trend.times[1].minute).toBe(30);
+    expect(metar.visibility).toStrictEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
     });
+  });
 
-    test("tempo fm", () => {
-      const metar = new MetarParser(en).parse(
-        "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1830 SHRA"
-      );
+  test("minVisibility", () => {
+    const metar = new MetarParser(en).parse(
+      "LFPG 161430Z 24015G25KT 5000 1100w"
+    );
 
-      expect(metar.trends).toHaveLength(1);
-      expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
-      expect(metar.trends[0].weatherConditions).toHaveLength(1);
-
-      const trend = metar.trends[0];
-
-      expect(trend.weatherConditions[0].descriptive).toBe(Descriptive.SHOWERS);
-      expect(trend.weatherConditions[0].phenomenons).toHaveLength(1);
-      expect(trend.times[0].type).toBe(TimeIndicator.FM);
-      expect(trend.times[0].hour).toBe(18);
-      expect(trend.times[0].minute).toBe(30);
+    expect(metar.day).toBe(16);
+    expect(metar.hour).toBe(14);
+    expect(metar.minute).toBe(30);
+    expect(metar.wind?.degrees).toBe(240);
+    expect(metar.wind?.speed).toBe(15);
+    expect(metar.wind?.gust).toBe(25);
+    expect(metar.visibility).toStrictEqual({
+      value: 5000,
+      unit: DistanceUnit.Meters,
+      min: {
+        value: 1100,
+        direction: "w",
+      },
     });
+  });
 
-    test("tempo tl", () => {
-      const metar = new MetarParser(en).parse(
-        "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1700 TL1830 SHRA"
-      );
+  test("wind variation", () => {
+    const metar = new MetarParser(en).parse("LFPG 161430Z 24015G25KT 180V300");
 
-      expect(metar.trends).toHaveLength(1);
-      expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
-      expect(metar.trends[0].weatherConditions).toHaveLength(1);
+    expect(metar.wind?.degrees).toBe(240);
+    expect(metar.wind?.speed).toBe(15);
+    expect(metar.wind?.gust).toBe(25);
+    expect(metar.wind?.unit).toBe("KT");
+    expect(metar.wind?.minVariation).toBe(180);
+    expect(metar.wind?.maxVariation).toBe(300);
+  });
 
-      const trend = metar.trends[0];
+  test("vertical visibility", () => {
+    const metar = new MetarParser(en).parse(
+      "LFLL 160730Z 28002KT 0350 FG VV002"
+    );
 
-      expect(trend.weatherConditions[0].descriptive).toBe(Descriptive.SHOWERS);
-      expect(trend.weatherConditions[0].phenomenons).toHaveLength(1);
-      expect(trend.weatherConditions[0].phenomenons[0]).toBe(Phenomenon.RAIN);
-      expect(trend.times[0].type).toBe(TimeIndicator.FM);
-      expect(trend.times[0].hour).toBe(17);
-      expect(trend.times[0].minute).toBe(0);
-      expect(trend.times[1].type).toBe(TimeIndicator.TL);
-      expect(trend.times[1].hour).toBe(18);
-      expect(trend.times[1].minute).toBe(30);
-      expect(metar.visibility?.distance).toBe("> 10km");
+    expect(metar.day).toBe(16);
+    expect(metar.hour).toBe(7);
+    expect(metar.minute).toBe(30);
+    expect(metar.wind?.degrees).toBe(280);
+    expect(metar.visibility).toStrictEqual({
+      value: 350,
+      unit: DistanceUnit.Meters,
     });
+    expect(metar.verticalVisibility).toBe(200);
+    expect(metar.weatherConditions[0].phenomenons[0]).toBe(Phenomenon.FOG);
+  });
 
-    test("minVisibility", () => {
-      const metar = new MetarParser(en).parse(
-        "LFPG 161430Z 24015G25KT 5000 1100w"
-      );
+  test("Ndv", () => {
+    const metar = new MetarParser(en).parse(
+      "LSZL 300320Z AUTO 00000KT 9999NDV BKN060 OVC074 00/M04 Q1001\n RMK="
+    );
 
-      expect(metar.day).toBe(16);
-      expect(metar.hour).toBe(14);
-      expect(metar.minute).toBe(30);
-      expect(metar.wind?.degrees).toBe(240);
-      expect(metar.wind?.speed).toBe(15);
-      expect(metar.wind?.gust).toBe(25);
-      expect(metar.visibility?.distance).toBe("5000m");
-      expect(metar.visibility?.minDistance).toBe(1100);
-      expect(metar.visibility?.minDirection).toBe("w");
+    expect(metar.visibility).toStrictEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+      ndv: true,
     });
+  });
 
-    test("wind variation", () => {
-      const metar = new MetarParser(en).parse(
-        "LFPG 161430Z 24015G25KT 180V300"
-      );
+  test("cavok", () => {
+    const metar = new MetarParser(en).parse(
+      "LFPG 212030Z 03003KT CAVOK 09/06 Q1031 NOSIG"
+    );
 
-      expect(metar.wind?.degrees).toBe(240);
-      expect(metar.wind?.speed).toBe(15);
-      expect(metar.wind?.gust).toBe(25);
-      expect(metar.wind?.unit).toBe("KT");
-      expect(metar.wind?.minVariation).toBe(180);
-      expect(metar.wind?.maxVariation).toBe(300);
+    expect(metar.cavok).toBe(true);
+    expect(metar.visibility).toStrictEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
     });
+    expect(metar.temperature).toBe(9);
+    expect(metar.dewPoint).toBe(6);
+    expect(metar.altimeter).toBe(1031);
+    expect(metar.nosig).toBe(true);
+  });
 
-    test("vertical visibility", () => {
-      const metar = new MetarParser(en).parse(
-        "LFLL 160730Z 28002KT 0350 FG VV002"
-      );
+  test("altimeter mercury", () => {
+    const metar = new MetarParser(en).parse(
+      "KTTN 051853Z 04011KT 9999 VCTS SN FZFG BKN003 OVC010 M02/M02 A3006"
+    );
 
-      expect(metar.day).toBe(16);
-      expect(metar.hour).toBe(7);
-      expect(metar.minute).toBe(30);
-      expect(metar.wind?.degrees).toBe(280);
-      expect(metar.visibility?.distance).toBe("350m");
-      expect(metar.verticalVisibility).toBe(200);
-      expect(metar.weatherConditions[0].phenomenons[0]).toBe(Phenomenon.FOG);
+    expect(metar.altimeter).toBe(1017);
+    expect(metar.weatherConditions).toHaveLength(3);
+  });
+
+  test("wind alternative form", () => {
+    const metar = new MetarParser(en).parse(
+      "ENLK 081350Z 26026G40 240V300 9999 VCSH FEW025 BKN030 02/M01 Q0996"
+    );
+
+    expect(metar.wind?.degrees).toBe(260);
+    expect(metar.wind?.speed).toBe(26);
+    expect(metar.wind?.gust).toBe(40);
+    expect(metar.wind?.unit).toBe("KT");
+    expect(metar.wind?.minVariation).toBe(240);
+    expect(metar.wind?.maxVariation).toBe(300);
+  });
+
+  test("descriptive only", () => {
+    const metar = new MetarParser(en).parse(
+      "AGGH 140340Z 05010KT 9999 TS FEW020 SCT021CB BKN300 32/26 Q1010"
+    );
+
+    expect(metar.weatherConditions).toHaveLength(1);
+    expect(metar.weatherConditions[0].descriptive).toBe(
+      Descriptive.THUNDERSTORM
+    );
+  });
+
+  test("with runway deposit", () => {
+    const metar = new MetarParser(en).parse(
+      "UNAA 240830Z 34002MPS CAVOK M14/M18 Q1019 R02/190054 NOSIG RMK QFE741"
+    );
+
+    expect(metar.station).toBe("UNAA");
+    expect(metar.wind?.degrees).toBe(340);
+    expect(metar.wind?.speed).toBe(2);
+    expect(metar.wind?.unit).toBe("MPS");
+    expect(metar.cavok).toBe(true);
+    expect(metar.nosig).toBe(true);
+    expect(metar.remark).toBe("QFE741");
+    expect(metar.remarks).toHaveLength(1);
+  });
+
+  test("with minimum visibility", () => {
+    const metar = new MetarParser(en).parse(
+      "SUMU 070520Z 34025KT 8000 2000SW VCSH SCT013CB BKN026 00/M05 Q1012 TEMPO 2000 SHSN="
+    );
+
+    expect(metar.station).toBe("SUMU");
+    expect(metar.visibility).toBeDefined();
+    expect(metar.visibility?.min?.value).toBe(2000);
+    expect(metar.visibility?.min?.direction).toBe("SW");
+  });
+
+  test("parse less than 1/4 vis", () => {
+    const taf = new MetarParser(en).parse("SUMU 070520Z M1/4SM");
+
+    expect(taf.visibility).toEqual({
+      indicator: ValueIndicator.LessThan,
+      value: 0.25,
+      unit: DistanceUnit.StatuteMiles,
     });
+  });
 
-    test("Ndv", () => {
-      const metar = new MetarParser(en).parse(
-        "LSZL 300320Z AUTO 00000KT 9999NDV BKN060 OVC074 00/M04 Q1001\n RMK="
-      );
+  test("parse less than P6SM vis", () => {
+    const taf = new MetarParser(en).parse("SUMU 070520Z P6SM");
 
-      expect(metar.visibility?.distance).toBe("> 10km");
+    expect(taf.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 6,
+      unit: DistanceUnit.StatuteMiles,
     });
+  });
 
-    test("cavok", () => {
-      const metar = new MetarParser(en).parse(
-        "LFPG 212030Z 03003KT CAVOK 09/06 Q1031 NOSIG"
-      );
+  test("parses 3 1/4 vis", () => {
+    const taf = new MetarParser(en).parse("SUMU 070520Z 3 1/4SM");
 
-      expect(metar.cavok).toBe(true);
-      expect(metar.visibility?.distance).toBe("> 10km");
-      expect(metar.temperature).toBe(9);
-      expect(metar.dewPoint).toBe(6);
-      expect(metar.altimeter).toBe(1031);
-      expect(metar.nosig).toBe(true);
+    expect(taf.visibility).toEqual({
+      value: 3.25,
+      unit: DistanceUnit.StatuteMiles,
     });
+  });
 
-    test("altimeter mercury", () => {
-      const metar = new MetarParser(en).parse(
-        "KTTN 051853Z 04011KT 9999 VCTS SN FZFG BKN003 OVC010 M02/M02 A3006"
-      );
+  test("parses more than 1 1/2 vis", () => {
+    const taf = new MetarParser(en).parse("SUMU 070520Z P1 1/2SM");
 
-      expect(metar.altimeter).toBe(1017);
-      expect(metar.weatherConditions).toHaveLength(3);
-    });
-
-    test("wind alternative form", () => {
-      const metar = new MetarParser(en).parse(
-        "ENLK 081350Z 26026G40 240V300 9999 VCSH FEW025 BKN030 02/M01 Q0996"
-      );
-
-      expect(metar.wind?.degrees).toBe(260);
-      expect(metar.wind?.speed).toBe(26);
-      expect(metar.wind?.gust).toBe(40);
-      expect(metar.wind?.unit).toBe("KT");
-      expect(metar.wind?.minVariation).toBe(240);
-      expect(metar.wind?.maxVariation).toBe(300);
-    });
-
-    test("descriptive only", () => {
-      const metar = new MetarParser(en).parse(
-        "AGGH 140340Z 05010KT 9999 TS FEW020 SCT021CB BKN300 32/26 Q1010"
-      );
-
-      expect(metar.weatherConditions).toHaveLength(1);
-      expect(metar.weatherConditions[0].descriptive).toBe(
-        Descriptive.THUNDERSTORM
-      );
-    });
-
-    test("with runway deposit", () => {
-      const metar = new MetarParser(en).parse(
-        "UNAA 240830Z 34002MPS CAVOK M14/M18 Q1019 R02/190054 NOSIG RMK QFE741"
-      );
-
-      expect(metar.station).toBe("UNAA");
-      expect(metar.wind?.degrees).toBe(340);
-      expect(metar.wind?.speed).toBe(2);
-      expect(metar.wind?.unit).toBe("MPS");
-      expect(metar.cavok).toBe(true);
-      expect(metar.nosig).toBe(true);
-      expect(metar.remark).toBe("QFE741");
-      expect(metar.remarks).toHaveLength(1);
-    });
-
-    test("with minimum visibility", () => {
-      const metar = new MetarParser(en).parse(
-        "SUMU 070520Z 34025KT 8000 2000SW VCSH SCT013CB BKN026 00/M05 Q1012 TEMPO 2000 SHSN="
-      );
-
-      expect(metar.station).toBe("SUMU");
-      expect(metar.visibility).toBeDefined();
-      expect(metar.visibility?.minDistance).toBe(2000);
-      expect(metar.visibility?.minDirection).toBe("SW");
+    expect(taf.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 1.5,
+      unit: DistanceUnit.StatuteMiles,
     });
   });
 });
@@ -434,7 +498,10 @@ describe("TAFParser", () => {
     expect(taf.wind?.gust).toBeUndefined();
     expect(taf.wind?.unit).toBe("KT");
 
-    expect(taf.visibility?.distance).toBe("6000m");
+    expect(taf.visibility).toEqual({
+      value: 6000,
+      unit: DistanceUnit.Meters,
+    });
 
     expect(taf.clouds).toHaveLength(1);
     expect(taf.clouds[0].quantity).toBe(CloudQuantity.SCT);
@@ -452,7 +519,10 @@ describe("TAFParser", () => {
     expect(trend0.validity?.startHour).toBe(6);
     expect(trend0.validity?.endDay).toBe(15);
     expect(trend0.validity?.endHour).toBe(9);
-    expect(trend0.visibility?.distance).toBe("3000m");
+    expect(trend0.visibility).toEqual({
+      value: 3000,
+      unit: DistanceUnit.Meters,
+    });
     expect(trend0.weatherConditions).toHaveLength(1);
     expect(trend0.weatherConditions[0].intensity).toBeUndefined();
     expect(trend0.weatherConditions[0].descriptive).toBeUndefined();
@@ -469,7 +539,10 @@ describe("TAFParser", () => {
     expect(trend1.validity?.endDay).toBe(15);
     expect(trend1.validity?.endHour).toBe(8);
     expect(trend1.wind).toBeUndefined();
-    expect(trend1.visibility?.distance).toBe("400m");
+    expect(trend1.visibility).toEqual({
+      value: 400,
+      unit: DistanceUnit.Meters,
+    });
     expect(trend1.weatherConditions).toHaveLength(1);
     expect(trend1.weatherConditions[0].intensity).toBeUndefined();
     expect(trend1.weatherConditions[0].descriptive).toBe(Descriptive.PATCHES);
@@ -486,7 +559,10 @@ describe("TAFParser", () => {
     expect(trend2.validity?.startHour).toBe(12);
     expect(trend2.validity?.endDay).toBe(15);
     expect(trend2.validity?.endHour).toBe(16);
-    expect(trend2.visibility?.distance).toBe("4000m");
+    expect(trend2.visibility).toEqual({
+      value: 4000,
+      unit: DistanceUnit.Meters,
+    });
     expect(trend2.weatherConditions).toHaveLength(1);
     expect(trend2.weatherConditions[0].intensity).toBe(Intensity.LIGHT);
     expect(trend2.weatherConditions[0].descriptive).toBe(Descriptive.SHOWERS);
@@ -512,7 +588,10 @@ describe("TAFParser", () => {
     expect(trend4.validity?.startHour).toBe(3);
     expect(trend4.validity?.endDay).toBe(16);
     expect(trend4.validity?.endHour).toBe(8);
-    expect(trend4.visibility?.distance).toBe("3000m");
+    expect(trend4.visibility).toEqual({
+      value: 3000,
+      unit: DistanceUnit.Meters,
+    });
     expect(trend4.weatherConditions).toHaveLength(1);
     expect(trend4.weatherConditions[0].intensity).toBeUndefined();
     expect(trend4.weatherConditions[0].descriptive).toBeUndefined();
@@ -529,7 +608,10 @@ describe("TAFParser", () => {
     expect(trend5.validity?.startHour).toBe(4);
     expect(trend5.validity?.endDay).toBe(16);
     expect(trend5.validity?.endHour).toBe(7);
-    expect(trend5.visibility?.distance).toBe("400m");
+    expect(trend5.visibility).toEqual({
+      value: 400,
+      unit: DistanceUnit.Meters,
+    });
     expect(trend5.weatherConditions).toHaveLength(1);
     expect(trend5.weatherConditions[0].intensity).toBeUndefined();
     expect(trend5.weatherConditions[0].descriptive).toBe(Descriptive.PATCHES);
@@ -565,7 +647,11 @@ describe("TAFParser", () => {
     expect(taf.wind?.unit).toBe("KT");
 
     // Checks on visibility
-    expect(taf.visibility?.distance).toBe("> 10km");
+    expect(taf.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
 
     // Checks on clouds
     expect(taf.clouds).toHaveLength(2);
@@ -605,7 +691,10 @@ describe("TAFParser", () => {
     expect(becmg0.validity?.startHour).toBe(1);
     expect(becmg0.validity?.endDay).toBe(30);
     expect(becmg0.validity?.endHour).toBe(4);
-    expect(becmg0.visibility?.distance).toBe("4000m");
+    expect(becmg0.visibility).toEqual({
+      value: 4000,
+      unit: DistanceUnit.Meters,
+    });
     expect(becmg0.weatherConditions[0].intensity).toBeUndefined();
     expect(becmg0.weatherConditions[0].descriptive).toBe(Descriptive.SHALLOW);
     expect(becmg0.weatherConditions[0].phenomenons).toHaveLength(1);
@@ -618,7 +707,10 @@ describe("TAFParser", () => {
     expect(prob0.validity?.startHour).toBe(3);
     expect(prob0.validity?.endDay).toBe(30);
     expect(prob0.validity?.endHour).toBe(7);
-    expect(prob0.visibility?.distance).toBe("1500m");
+    expect(prob0.visibility).toEqual({
+      value: 1500,
+      unit: DistanceUnit.Meters,
+    });
     expect(prob0.weatherConditions[0].intensity).toBeUndefined();
     expect(prob0.weatherConditions[0].descriptive).toBe(Descriptive.PATCHES);
     expect(prob0.weatherConditions[0].phenomenons).toHaveLength(1);
@@ -634,7 +726,11 @@ describe("TAFParser", () => {
     expect(becmg1.validity?.startHour).toBe(6);
     expect(becmg1.validity?.endDay).toBe(30);
     expect(becmg1.validity?.endHour).toBe(9);
-    expect(becmg1.visibility?.distance).toBe("> 10km");
+    expect(becmg1.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
     expect(becmg1.weatherConditions).toHaveLength(0);
     expect(becmg1.clouds).toHaveLength(1);
     expect(becmg1.clouds[0].quantity).toBe(CloudQuantity.FEW);
@@ -679,7 +775,11 @@ describe("TAFParser", () => {
     expect(taf.wind?.unit).toBe("KT");
 
     // Checks on visibility
-    expect(taf.visibility?.distance).toBe("> 10km");
+    expect(taf.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
 
     // Checks on clouds
     expect(taf.clouds).toHaveLength(1);
@@ -709,7 +809,11 @@ describe("TAFParser", () => {
     expect(becmg1.validity?.startHour).toBe(17);
     expect(becmg1.validity?.endDay).toBe(12);
     expect(becmg1.validity?.endHour).toBe(18);
-    expect(becmg1.visibility?.distance).toBe("> 10km");
+    expect(becmg1.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
     expect(becmg1.wind?.degrees).toBe(100);
     expect(becmg1.wind?.speed).toBe(10);
     expect(becmg1.wind?.gust).toBe(15);
@@ -726,7 +830,11 @@ describe("TAFParser", () => {
     expect(becmg2.validity?.startHour).toBe(3);
     expect(becmg2.validity?.endDay).toBe(13);
     expect(becmg2.validity?.endHour).toBe(4);
-    expect(becmg2.visibility?.distance).toBe("> 10km");
+    expect(becmg2.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
     expect(becmg2.wind?.degrees).toBeUndefined();
     expect(becmg2.wind?.speed).toBe(6);
     expect(becmg2.wind?.gust).toBeUndefined();
@@ -780,13 +888,25 @@ describe("TAFParser", () => {
     );
 
     // THEN the visibility of the main event is 6 SM
-    expect(taf.visibility?.distance).toBe("6SM");
+    expect(taf.visibility).toEqual({
+      value: 6,
+      unit: DistanceUnit.StatuteMiles,
+    });
     // THEN the visibility of the first tempo is 11/2 SM
-    expect(taf.trends[0].visibility?.distance).toBe("11/2SM");
+    expect(taf.trends[0].visibility).toEqual({
+      value: 5.5,
+      unit: DistanceUnit.StatuteMiles,
+    });
     // THEN the visibility of the second tempo is 3/4 SM
-    expect(taf.trends[2].visibility?.distance).toBe("3/4SM");
+    expect(taf.trends[2].visibility).toEqual({
+      value: 0.75,
+      unit: DistanceUnit.StatuteMiles,
+    });
     // Then the visibility of the FROM part is 2SN
-    expect(taf.trends[1].visibility?.distance).toBe("2SM");
+    expect(taf.trends[1].visibility).toEqual({
+      value: 2,
+      unit: DistanceUnit.StatuteMiles,
+    });
     expect(taf.amendment).toBe(true);
   });
 

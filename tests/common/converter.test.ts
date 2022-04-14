@@ -1,4 +1,5 @@
 import * as converter from "commons/converter";
+import { DistanceUnit, ValueIndicator } from "model/enum";
 
 describe("degreesToCardinal", () => {
   test("VRB", () => {
@@ -27,11 +28,44 @@ describe("degreesToCardinal", () => {
 
 describe("convertVisibility", () => {
   test("convert visibility 10km", () => {
-    expect(converter.convertVisibility("9999")).toBe("> 10km");
+    expect(converter.convertVisibility("9999")).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
   });
 
   test("specific", () => {
-    expect(converter.convertVisibility("04512")).toBe("4512m");
+    expect(converter.convertVisibility("04512")).toEqual({
+      value: 4512,
+      unit: DistanceUnit.Meters,
+    });
+  });
+});
+
+describe("convertNauticalVisibility", () => {
+  test("convert visibility 1/2", () => {
+    expect(converter.convertNauticalMilesVisibility("1/2SM")).toEqual({
+      value: 0.5,
+      unit: DistanceUnit.StatuteMiles,
+    });
+
+    expect(converter.convertNauticalMilesVisibility("1 1/2SM")).toEqual({
+      value: 1.5,
+      unit: DistanceUnit.StatuteMiles,
+    });
+
+    expect(converter.convertNauticalMilesVisibility("M1/2SM")).toEqual({
+      indicator: ValueIndicator.LessThan,
+      value: 0.5,
+      unit: DistanceUnit.StatuteMiles,
+    });
+
+    expect(converter.convertNauticalMilesVisibility("P6SM")).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 6,
+      unit: DistanceUnit.StatuteMiles,
+    });
   });
 });
 
@@ -61,4 +95,18 @@ describe("convertTemperatureRemarks", () => {
 
 test("convertPrecipitationAmount", () => {
   expect(converter.convertPrecipitationAmount("0217")).toBe(2.17);
+});
+
+describe("convertFractionalAmount", () => {
+  test("whole", () => {
+    expect(converter.convertFractionalAmount("12")).toBe(12);
+  });
+
+  test("whole + fraction", () => {
+    expect(converter.convertFractionalAmount("3 1/4")).toBe(3.25);
+  });
+
+  test("fraction", () => {
+    expect(converter.convertFractionalAmount("1/4")).toBe(0.25);
+  });
 });
