@@ -28,7 +28,7 @@ import { CommandSupplier as MetarCommandSupplier } from "command/metar";
 import { Locale } from "commons/i18n";
 import {
   InvalidWeatherStatementError,
-  RemarkExecutionError,
+  CommandExecutionError,
 } from "commons/errors";
 
 /**
@@ -513,7 +513,7 @@ export class RemarkParser {
       try {
         [rmkStr, rmkList] = this.#supplier.get(rmkStr).execute(rmkStr, rmkList);
       } catch (e) {
-        if (e instanceof RemarkExecutionError) {
+        if (e instanceof CommandExecutionError) {
           [rmkStr, rmkList] = this.#supplier.defaultCommand.execute(
             rmkStr,
             rmkList

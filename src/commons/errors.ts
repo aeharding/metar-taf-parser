@@ -24,11 +24,11 @@ export class InvalidWeatherStatementError extends ParseError {
 }
 
 /**
- * Thrown when remark command marked as canParse, but couldn't parse when
+ * Thrown when command marked as canParse, but couldn't parse when
  * executing (for example, an invalid CloudQuantity)
  */
-export class RemarkExecutionError extends ParseError {
-  name = "RemarkExecutionError";
+export class CommandExecutionError extends ParseError {
+  name = "CommandExecutionError";
 
   constructor(message: string) {
     super(message);

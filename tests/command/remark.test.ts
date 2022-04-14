@@ -43,7 +43,7 @@ import {
 } from "command/remark";
 import en from "locale/en";
 import { CloudQuantity, Phenomenon, Descriptive, Direction } from "model/enum";
-import { RemarkExecutionError } from "commons/errors";
+import { CommandExecutionError } from "commons/errors";
 
 describe("CeilingHeightCommand", () => {
   const command = new CeilingHeightCommand(en);
@@ -397,13 +397,13 @@ describe("ObscurationCommand", () => {
 
   test("invalid CloudQuantity should throw on execute", () => {
     expect(() => command.execute("FU BKG020", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 
   test("invalid Phenomenon should throw on execute", () => {
     expect(() => command.execute("FB BKN020", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -547,13 +547,13 @@ describe("PrecipitationBegEndCommand", () => {
 
   test("invalid descriptive should throw on execute", () => {
     expect(() => command.execute("BBRAB0120E0151", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 
   test("invalid phenomenon should throw on execute", () => {
     expect(() => command.execute("BLRRB0120E0151", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -663,7 +663,7 @@ describe("SectorVisibilityCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("VIS SS 1 1/2", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -847,7 +847,7 @@ describe("ThunderStormLocationCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("TS NN", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -880,13 +880,13 @@ describe("ThunderStormLocationMovingCommand", () => {
 
   test("invalid location should throw on execute", () => {
     expect(() => command.execute("TS SS MOV NE", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 
   test("invalid moving direction should throw on execute", () => {
     expect(() => command.execute("TS SE MOV NN", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -922,7 +922,7 @@ describe("TornadicActivityBegCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("TORNADO B1112 4 EE", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -960,7 +960,7 @@ describe("TornadicActivityBegEndCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("TORNADO B1112E1234 4 WW", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -995,7 +995,7 @@ describe("TornadicActivityEndCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("TORNADO E1234 4 NS", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -1051,13 +1051,13 @@ describe("VariableSkyCommand", () => {
 
   test("invalid 1st CloudQuantity should throw on execute", () => {
     expect(() => command.execute("RRR V BKN", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 
   test("invalid 2nd CloudQuantity should throw on execute", () => {
     expect(() => command.execute("BKN V GGG", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -1090,13 +1090,13 @@ describe("VariableSkyHeightCommand", () => {
 
   test("invalid 1st CloudQuantity should throw on execute", () => {
     expect(() => command.execute("RRR008 V BKN", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 
   test("invalid 2nd CloudQuantity should throw on execute", () => {
     expect(() => command.execute("BKN008 V GGG", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });
@@ -1127,7 +1127,7 @@ describe("VirgaDirectionCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("VIRGA WE", [])).toThrowError(
-      RemarkExecutionError
+      CommandExecutionError
     );
   });
 });

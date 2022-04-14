@@ -1,29 +1,11 @@
-import { pySplit } from "helpers/helpers";
+import { as, pySplit } from "helpers/helpers";
 import {
   convertPrecipitationAmount,
   convertTemperatureRemarks,
 } from "commons/converter";
 import { format, _, Locale } from "commons/i18n";
-import { RemarkExecutionError, UnexpectedParseError } from "commons/errors";
+import { UnexpectedParseError } from "commons/errors";
 import { CloudQuantity, Descriptive, Direction, Phenomenon } from "model/enum";
-
-/**
- * For safely casting input values
- * @param input String that is expected to be in the snum
- * @param enumExpected The enum to cast the input value to
- * @throws RemarkExecutionError when input is not a key of enum
- */
-function as<T extends Record<string, unknown>>(
-  input: string,
-  enumExpected: T
-): T[keyof T] {
-  if (!Object.values(enumExpected).includes(input))
-    throw new RemarkExecutionError(
-      `${input} not found in ${Object.values(enumExpected)}`
-    );
-
-  return input as T[keyof T];
-}
 
 export interface IBaseRemark {
   type: RemarkType;

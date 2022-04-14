@@ -1,5 +1,6 @@
 import { RunwayCommand } from "command/metar";
 import { IMetar } from "model/model";
+import { RunwayInfoTrend, RunwayInfoUnit, ValueIndicator } from "model/enum";
 
 describe("RunwayCommand", () => {
   const command = new RunwayCommand();
@@ -37,10 +38,13 @@ describe("RunwayCommand", () => {
         command.execute(metar, code);
 
         expect(metar.runwaysInfo).toHaveLength(1);
-        expect(metar.runwaysInfo[0].name).toBe("26L");
-        expect(metar.runwaysInfo[0].minRange).toBe(550);
-        expect(metar.runwaysInfo[0].maxRange).toBe(700);
-        expect(metar.runwaysInfo[0].trend).toBe("U");
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "26L",
+          minRange: 550,
+          maxRange: 700,
+          trend: RunwayInfoTrend.Uprising,
+          unit: RunwayInfoUnit.Meters,
+        });
       });
     });
   })();
@@ -58,6 +62,74 @@ describe("RunwayCommand", () => {
         command.execute(metar, code);
 
         expect(metar.runwaysInfo).toHaveLength(0);
+      });
+    });
+  })();
+
+  (() => {
+    const code = "R01L/0600V1000FT"; // runway info range feet variable
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(1);
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "01L",
+          minRange: 600,
+          maxRange: 1000,
+          unit: RunwayInfoUnit.Feet,
+        });
+      });
+    });
+  })();
+
+  (() => {
+    const code = "R01L/0800FT"; // runway info range feet simple
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(1);
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "01L",
+          minRange: 800,
+          unit: RunwayInfoUnit.Feet,
+        });
+      });
+    });
+  })();
+
+  (() => {
+    const code = "R01L/P0600FT"; // runway info with greater than indicator
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(1);
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "01L",
+          minRange: 600,
+          unit: RunwayInfoUnit.Feet,
+          indicator: ValueIndicator.GreaterThan,
+        });
       });
     });
   })();

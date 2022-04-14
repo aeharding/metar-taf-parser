@@ -7,8 +7,10 @@ import {
   TimeIndicator,
   WeatherChangeType,
   DistanceUnit,
+  RunwayInfoTrend,
+  RunwayInfoUnit,
 } from "model/enum";
-import { Remark } from "src/command/remark";
+import { Remark } from "command/remark";
 
 export interface ICountry {
   name: string;
@@ -85,7 +87,18 @@ export interface IRunwayInfo {
   name: string;
   minRange: number;
   maxRange?: number;
-  trend: string;
+
+  /**
+   * Only used in North American runway ranges (feet unit of measurement)
+   */
+  indicator?: ValueIndicator;
+
+  /**
+   * Only used in IACO runway ranges (meters unit of measurement)
+   */
+  trend?: RunwayInfoTrend;
+
+  unit: RunwayInfoUnit;
 }
 
 export interface ICloud {
