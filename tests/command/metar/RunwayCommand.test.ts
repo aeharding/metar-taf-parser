@@ -1,4 +1,4 @@
-import { RunwayCommand } from "command/metar";
+import { RunwayCommand } from "command/metar/RunwayCommand";
 import { IMetar } from "model/model";
 import { RunwayInfoTrend, RunwayInfoUnit, ValueIndicator } from "model/enum";
 

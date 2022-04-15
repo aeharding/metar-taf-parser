@@ -8,6 +8,48 @@ export { Locale } from "commons/i18n";
 export * from "commons/errors";
 export * from "model/model";
 export * from "model/enum";
+export {
+  RemarkType,
+  // Special remarks
+  IBaseRemark,
+  IUnknownRemark,
+  Remark,
+  // Rest of remark types
+  ICeilingHeightRemark,
+  ICeilingSecondLocationRemark,
+  IHourlyMaximumMinimumTemperatureRemark,
+  IHourlyMaximumTemperatureRemark,
+  IHourlyMinimumTemperatureRemark,
+  IHourlyPrecipitationAmountRemark,
+  IHourlyPressureRemark,
+  IHourlyTemperatureDewPointRemark,
+  IIceAccretionRemark,
+  IObscurationRemark,
+  IPrecipitationAmount24HourRemark,
+  IPrecipitationAmount36HourRemark,
+  IPrecipitationBegEndRemark,
+  IPrevailingVisibilityRemark,
+  ISeaLevelPressureRemark,
+  ISecondLocationVisibilityRemark,
+  ISectorVisibilityRemark,
+  ISmallHailSizeRemark,
+  ISnowIncreaseRemark,
+  ISnowPelletsRemark,
+  ISunshineDurationRemark,
+  ISurfaceVisibilityRemark,
+  IThunderStormLocationRemark,
+  IThunderStormLocationMovingRemark,
+  ITornadicActivityBegRemark,
+  ITornadicActivityBegEndRemark,
+  ITornadicActivityEndRemark,
+  ITowerVisibilityRemark,
+  IVariableSkyRemark,
+  IVariableSkyHeightRemark,
+  IVirgaDirectionRemark,
+  IWaterEquivalentSnowRemark,
+  IWindPeakCommandRemark,
+  IWindShiftFropaRemark,
+} from "command/remark";
 
 export interface IMetarTAFParserOptions {
   locale?: Locale;

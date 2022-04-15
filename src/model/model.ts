@@ -9,6 +9,7 @@ import {
   DistanceUnit,
   RunwayInfoTrend,
   RunwayInfoUnit,
+  Intensity,
 } from "model/enum";
 import { Remark } from "command/remark";
 
@@ -65,7 +66,7 @@ export type Visibility = Distance & {
 };
 
 export interface IWeatherCondition {
-  intensity?: string;
+  intensity?: Intensity;
   descriptive?: Descriptive;
   phenomenons: Phenomenon[];
 }

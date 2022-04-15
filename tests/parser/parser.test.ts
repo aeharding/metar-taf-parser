@@ -1,3 +1,4 @@
+import { Remark, RemarkType } from "command/remark";
 import {
   AbstractParser,
   MetarParser,
@@ -21,7 +22,6 @@ import { IAbstractWeatherContainer } from "model/model";
 import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
-import { Remark, RemarkType } from "command/remark";
 
 describe("RemarkParser", () => {
   (() => {
