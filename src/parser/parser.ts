@@ -8,10 +8,11 @@ import {
   IMetarTrendTime,
   isWeatherConditionValid,
   ITAF,
-  ITAFTrend,
+  TAFTrend,
   ITemperatureDated,
   IValidity,
   IWeatherCondition,
+  IValidityDated,
 } from "model/model";
 import { DistanceUnit, ValueIndicator } from "model/enum";
 import * as converter from "commons/converter";
@@ -30,6 +31,7 @@ import {
   InvalidWeatherStatementError,
   CommandExecutionError,
 } from "commons/errors";
+import { determineReportIssuedDate, getReportDate } from "helpers/date";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -95,7 +97,10 @@ export function parseTemperature(input: string): ITemperatureDated {
  * @param input the string containing the validity
  * @returns Validity object
  */
-export function parseValidity(input: string): IValidity {
+export function parseValidity(
+  input: string,
+  date?: Date
+): IValidityDated | IValidity {
   const parts = pySplit(input, "/");
 
   return {
@@ -156,6 +161,9 @@ export abstract class AbstractParser {
     };
 
     for (const key of Object.values(Phenomenon)) {
+      // Thunderstorm as descriptive should not be added as a phenomenon
+      if ((descriptive as string) === key) continue;
+
       if (input.includes(key))
         weatherCondition.phenomenons.push(key as Phenomenon);
     }
@@ -450,30 +458,64 @@ export class TAFParser extends AbstractParser {
    */
   parseLine(taf: ITAF, lineTokens: string[]) {
     let index = 1;
-    let trend: ITAFTrend;
+    let trend: TAFTrend;
 
     if (lineTokens[0].startsWith(this.FM)) {
       trend = {
-        ...this.makeEmptyTAFTrend(WeatherChangeType.FM),
+        ...this.makeEmptyTAFTrend(),
+        type: WeatherChangeType.FM,
         validity: parseFromValidity(lineTokens[0]),
       };
     } else if (lineTokens[0].startsWith(this.PROB)) {
-      trend = this.makeEmptyTAFTrend(WeatherChangeType.PROB);
+      const validity = this.findLineValidity(index, lineTokens);
+      if (!validity) return;
+
+      trend = {
+        ...this.makeEmptyTAFTrend(),
+        type: WeatherChangeType.PROB,
+        validity,
+      };
+
       if (lineTokens.length > 1 && lineTokens[1] === this.TEMPO) {
-        trend = this.makeEmptyTAFTrend(
-          WeatherChangeType[lineTokens[1] as WeatherChangeType]
-        );
+        trend = {
+          ...this.makeEmptyTAFTrend(),
+          type: WeatherChangeType[lineTokens[1] as WeatherChangeType],
+          validity,
+        };
         index = 2;
       }
+
       trend.probability = +lineTokens[0].slice(4);
     } else {
-      trend = this.makeEmptyTAFTrend(
-        WeatherChangeType[lineTokens[0] as WeatherChangeType]
-      );
+      const validity = this.findLineValidity(index, lineTokens);
+      if (!validity) return;
+
+      trend = {
+        ...this.makeEmptyTAFTrend(),
+        type: WeatherChangeType[lineTokens[0] as WeatherChangeType],
+        validity,
+      };
     }
 
     this.parseTrend(index, lineTokens, trend);
     taf.trends.push(trend);
+  }
+
+  /**
+   * Finds a non-FM validity in a line
+   * @param index the index at which the array should be parsed
+   * @param line The array of string containing the line
+   * @param trend The trend object to update
+   */
+  findLineValidity(index: number, line: string[]): IValidity | undefined {
+    let validity: IValidity | undefined;
+
+    for (let i = index; i < line.length; i++) {
+      if (this.#validityPattern.test(line[i]))
+        validity = parseValidity(line[i]);
+    }
+
+    return validity;
   }
 
   /**
@@ -482,18 +524,17 @@ export class TAFParser extends AbstractParser {
    * @param line The array of string containing the line
    * @param trend The trend object to update
    */
-  parseTrend(index: number, line: string[], trend: ITAFTrend) {
+  parseTrend(index: number, line: string[], trend: TAFTrend) {
     for (let i = index; i < line.length; i++) {
       if (line[i] === this.RMK) parseRemark(trend, line, i, this.locale);
-      else if (this.#validityPattern.test(line[i]))
-        trend.validity = parseValidity(line[i]);
+      // already parsed
+      else if (this.#validityPattern.test(line[i])) continue;
       else super.generalParse(trend, line[i]);
     }
   }
 
-  makeEmptyTAFTrend(type: WeatherChangeType): ITAFTrend {
+  makeEmptyTAFTrend(): Omit<TAFTrend, "type" | "validity"> {
     return {
-      type,
       remarks: [],
       clouds: [],
       weatherConditions: [],

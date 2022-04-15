@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, Navigate } from "react-router";
 import { ParseMetar, ParseTAF } from "./Parse";
 import pjson from "metar-taf-parser/package.json";
+import Forecast from "./forecast/Forecast";
 
 const globalStyles = css`
   html {
@@ -90,6 +91,7 @@ function App() {
       <Routes>
         <Route path="/metar" element={<ParseMetar />} />
         <Route path="/taf" element={<ParseTAF />} />
+        <Route path="/forecast/:icaoId" element={<Forecast />} />
         <Route path="*" element={<Navigate to="/metar" replace />} />
       </Routes>
 
