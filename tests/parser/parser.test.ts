@@ -949,6 +949,30 @@ describe("TAFParser", () => {
     expect(taf.trends[2].remark).toBeDefined();
     expect(taf.trends[2].remarks).toHaveLength(1);
   });
+
+  test("stops parsing weather conditions after base remark", () => {
+    // Fixes #3
+    const taf = new TAFParser(en)
+      .parse(`TAF CYTL 121940Z 1220/1308 RMK FCST BASED ON AUTO OBS. FCST BASED ON OBS BY OTHER SRCS. WIND SENSOR INOP. NXT FCST BY 130200Z
+    TEMPO 1303/1308 2SM -SN`);
+
+    expect(taf.trends).toHaveLength(1);
+    expect(taf.weatherConditions).toHaveLength(0);
+  });
+
+  test("stops parsing weather conditions after trend remark", () => {
+    // Fixes #3
+    const taf = new TAFParser(en).parse(`TAF CYTL 121940Z 1220/1308
+    TEMPO 1303/1308 2SM -SN RMK FCST BASED ON AUTO OBS. FCST BASED ON OBS BY OTHER SRCS. WIND SENSOR INOP. NXT FCST BY 130200Z`);
+
+    expect(taf.trends).toHaveLength(1);
+    expect(taf.trends[0].weatherConditions).toHaveLength(1);
+    expect(taf.trends[0].weatherConditions[0].intensity).toBe(Intensity.LIGHT);
+    expect(taf.trends[0].weatherConditions[0].phenomenons).toHaveLength(1);
+    expect(taf.trends[0].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.SNOW
+    );
+  });
 });
 
 describe("RemarkParser", () => {

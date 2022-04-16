@@ -392,8 +392,10 @@ export class TAFParser extends AbstractParser {
     for (let i = index + 1; i < lines[0].length; i++) {
       const token = lines[0][i];
 
-      if (token == this.RMK) parseRemark(taf, lines[0], i, this.locale);
-      else if (token.startsWith(this.TX))
+      if (token == this.RMK) {
+        parseRemark(taf, lines[0], i, this.locale);
+        break;
+      } else if (token.startsWith(this.TX))
         taf.maxTemperature = parseTemperature(token);
       else if (token.startsWith(this.TN))
         taf.minTemperature = parseTemperature(token);
@@ -526,7 +528,10 @@ export class TAFParser extends AbstractParser {
    */
   parseTrend(index: number, line: string[], trend: TAFTrend) {
     for (let i = index; i < line.length; i++) {
-      if (line[i] === this.RMK) parseRemark(trend, line, i, this.locale);
+      if (line[i] === this.RMK) {
+        parseRemark(trend, line, i, this.locale);
+        break;
+      }
       // already parsed
       else if (this.#validityPattern.test(line[i])) continue;
       else super.generalParse(trend, line[i]);
