@@ -1,4 +1,3 @@
-import { pySplit } from "helpers/helpers";
 import { _, Locale } from "commons/i18n";
 import {
   CeilingHeightCommand,
@@ -141,6 +140,14 @@ import {
 } from "./remark/WindShiftFropaCommand";
 import { Command } from "./remark/Command";
 import { DefaultCommand, IDefaultCommandRemark } from "./remark/DefaultCommand";
+import {
+  IPrecipitationBegRemark,
+  PrecipitationBegCommand,
+} from "./remark/PrecipitationBegCommand";
+import {
+  IPrecipitationEndRemark,
+  PrecipitationEndCommand,
+} from "./remark/PrecipitationEndCommand";
 
 export type {
   ICeilingHeightRemark,
@@ -208,6 +215,8 @@ export class RemarkCommandSupplier {
       new TornadicActivityBegCommand(locale),
       new TornadicActivityEndCommand(locale),
       new PrecipitationBegEndCommand(locale),
+      new PrecipitationBegCommand(locale),
+      new PrecipitationEndCommand(locale),
       new ThunderStormLocationMovingCommand(locale),
       new ThunderStormLocationCommand(locale),
       new SmallHailSizeCommand(locale),
@@ -273,7 +282,9 @@ export enum RemarkType {
   TornadicActivityBegEnd = "TornadicActivityBegEnd",
   TornadicActivityBeg = "TornadicActivityBeg",
   TornadicActivityEnd = "TornadicActivityEnd",
+  PrecipitationBeg = "PrecipitationBeg",
   PrecipitationBegEnd = "PrecipitationBegEnd",
+  PrecipitationEnd = "PrecipitationEnd",
   ThunderStormLocationMoving = "ThunderStormLocationMoving",
   ThunderStormLocation = "ThunderStormLocation",
   SmallHailSize = "SmallHailSize",
@@ -319,7 +330,9 @@ export type Remark =
   | IPrecipitationAmount24HourRemark
   | IPrecipitationAmount36HourRemark
   | IPrecipitationAmount36HourRemark
+  | IPrecipitationBegRemark
   | IPrecipitationBegEndRemark
+  | IPrecipitationEndRemark
   | IPrevailingVisibilityRemark
   | ISeaLevelPressureRemark
   | ISecondLocationVisibilityRemark
