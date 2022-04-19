@@ -363,6 +363,8 @@ describe("MetarParser", () => {
     expect(metar.wind?.unit).toBe("KT");
     expect(metar.wind?.minVariation).toBe(240);
     expect(metar.wind?.maxVariation).toBe(300);
+    expect(metar.weatherConditions[0].intensity).toBe(Intensity.IN_VICINITY);
+    expect(metar.weatherConditions[0].descriptive).toBe(Descriptive.SHOWERS);
   });
 
   test("descriptive only", () => {
@@ -374,6 +376,14 @@ describe("MetarParser", () => {
     expect(metar.weatherConditions[0].descriptive).toBe(
       Descriptive.THUNDERSTORM
     );
+  });
+
+  test("invalid weather condition", () => {
+    const metar = new MetarParser(en).parse(
+      "ENLK 081350Z 26026G40 240V300 9999 VCMI"
+    );
+
+    expect(metar.weatherConditions).toHaveLength(0);
   });
 
   test("with runway deposit", () => {
@@ -515,10 +525,10 @@ describe("TAFParser", () => {
     const trend0 = taf.trends[0];
 
     expect(trend0.type).toBe(WeatherChangeType.TEMPO);
-    expect(trend0.validity?.startDay).toBe(15);
-    expect(trend0.validity?.startHour).toBe(6);
-    expect(trend0.validity?.endDay).toBe(15);
-    expect(trend0.validity?.endHour).toBe(9);
+    expect(trend0.validity.startDay).toBe(15);
+    expect(trend0.validity.startHour).toBe(6);
+    expect(trend0.validity.endDay).toBe(15);
+    expect(trend0.validity.endHour).toBe(9);
     expect(trend0.visibility).toEqual({
       value: 3000,
       unit: DistanceUnit.Meters,
@@ -534,10 +544,10 @@ describe("TAFParser", () => {
     // Second trend
     const trend1 = taf.trends[1];
     expect(trend1.type).toBe(WeatherChangeType.TEMPO);
-    expect(trend1.validity?.startDay).toBe(15);
-    expect(trend1.validity?.startHour).toBe(6);
-    expect(trend1.validity?.endDay).toBe(15);
-    expect(trend1.validity?.endHour).toBe(8);
+    expect(trend1.validity.startDay).toBe(15);
+    expect(trend1.validity.startHour).toBe(6);
+    expect(trend1.validity.endDay).toBe(15);
+    expect(trend1.validity.endHour).toBe(8);
     expect(trend1.wind).toBeUndefined();
     expect(trend1.visibility).toEqual({
       value: 400,
@@ -555,10 +565,10 @@ describe("TAFParser", () => {
 
     const trend2 = taf.trends[2];
     expect(trend2.type).toBe(WeatherChangeType.TEMPO);
-    expect(trend2.validity?.startDay).toBe(15);
-    expect(trend2.validity?.startHour).toBe(12);
-    expect(trend2.validity?.endDay).toBe(15);
-    expect(trend2.validity?.endHour).toBe(16);
+    expect(trend2.validity.startDay).toBe(15);
+    expect(trend2.validity.startHour).toBe(12);
+    expect(trend2.validity.endDay).toBe(15);
+    expect(trend2.validity.endHour).toBe(16);
     expect(trend2.visibility).toEqual({
       value: 4000,
       unit: DistanceUnit.Meters,
@@ -577,17 +587,17 @@ describe("TAFParser", () => {
 
     const trend3 = taf.trends[3];
     expect(trend3.type).toBe(WeatherChangeType.BECMG);
-    expect(trend3.validity?.startDay).toBe(15);
-    expect(trend3.validity?.startHour).toBe(20);
-    expect(trend3.validity?.endDay).toBe(15);
-    expect(trend3.validity?.endHour).toBe(22);
+    expect(trend3.validity.startDay).toBe(15);
+    expect(trend3.validity.startHour).toBe(20);
+    expect(trend3.validity.endDay).toBe(15);
+    expect(trend3.validity.endHour).toBe(22);
 
     // Fourth Tempo
     const trend4 = taf.trends[4];
-    expect(trend4.validity?.startDay).toBe(16);
-    expect(trend4.validity?.startHour).toBe(3);
-    expect(trend4.validity?.endDay).toBe(16);
-    expect(trend4.validity?.endHour).toBe(8);
+    expect(trend4.validity.startDay).toBe(16);
+    expect(trend4.validity.startHour).toBe(3);
+    expect(trend4.validity.endDay).toBe(16);
+    expect(trend4.validity.endHour).toBe(8);
     expect(trend4.visibility).toEqual({
       value: 3000,
       unit: DistanceUnit.Meters,
@@ -604,10 +614,10 @@ describe("TAFParser", () => {
 
     // Fifth Tempo
     const trend5 = taf.trends[5];
-    expect(trend5.validity?.startDay).toBe(16);
-    expect(trend5.validity?.startHour).toBe(4);
-    expect(trend5.validity?.endDay).toBe(16);
-    expect(trend5.validity?.endHour).toBe(7);
+    expect(trend5.validity.startDay).toBe(16);
+    expect(trend5.validity.startHour).toBe(4);
+    expect(trend5.validity.endDay).toBe(16);
+    expect(trend5.validity.endHour).toBe(7);
     expect(trend5.visibility).toEqual({
       value: 400,
       unit: DistanceUnit.Meters,
@@ -674,10 +684,10 @@ describe("TAFParser", () => {
 
     // First TEMPO
     const tempo0 = taf.trends[0];
-    expect(tempo0.validity?.startDay).toBe(29);
-    expect(tempo0.validity?.startHour).toBe(21);
-    expect(tempo0.validity?.endDay).toBe(29);
-    expect(tempo0.validity?.endHour).toBe(23);
+    expect(tempo0.validity.startDay).toBe(29);
+    expect(tempo0.validity.startHour).toBe(21);
+    expect(tempo0.validity.endDay).toBe(29);
+    expect(tempo0.validity.endHour).toBe(23);
     expect(tempo0.weatherConditions).toHaveLength(1);
     expect(tempo0.weatherConditions[0].intensity).toBeUndefined();
     expect(tempo0.weatherConditions[0].descriptive).toBe(Descriptive.SHOWERS);
@@ -687,10 +697,10 @@ describe("TAFParser", () => {
 
     // First BECOMG
     const becmg0 = taf.trends[1];
-    expect(becmg0.validity?.startDay).toBe(30);
-    expect(becmg0.validity?.startHour).toBe(1);
-    expect(becmg0.validity?.endDay).toBe(30);
-    expect(becmg0.validity?.endHour).toBe(4);
+    expect(becmg0.validity.startDay).toBe(30);
+    expect(becmg0.validity.startHour).toBe(1);
+    expect(becmg0.validity.endDay).toBe(30);
+    expect(becmg0.validity.endHour).toBe(4);
     expect(becmg0.visibility).toEqual({
       value: 4000,
       unit: DistanceUnit.Meters,
@@ -703,10 +713,10 @@ describe("TAFParser", () => {
 
     // First PROB
     const prob0 = taf.trends[2];
-    expect(prob0.validity?.startDay).toBe(30);
-    expect(prob0.validity?.startHour).toBe(3);
-    expect(prob0.validity?.endDay).toBe(30);
-    expect(prob0.validity?.endHour).toBe(7);
+    expect(prob0.validity.startDay).toBe(30);
+    expect(prob0.validity.startHour).toBe(3);
+    expect(prob0.validity.endDay).toBe(30);
+    expect(prob0.validity.endHour).toBe(7);
     expect(prob0.visibility).toEqual({
       value: 1500,
       unit: DistanceUnit.Meters,
@@ -722,10 +732,10 @@ describe("TAFParser", () => {
 
     // Second BECOMG
     const becmg1 = taf.trends[4];
-    expect(becmg1.validity?.startDay).toBe(30);
-    expect(becmg1.validity?.startHour).toBe(6);
-    expect(becmg1.validity?.endDay).toBe(30);
-    expect(becmg1.validity?.endHour).toBe(9);
+    expect(becmg1.validity.startDay).toBe(30);
+    expect(becmg1.validity.startHour).toBe(6);
+    expect(becmg1.validity.endDay).toBe(30);
+    expect(becmg1.validity.endHour).toBe(9);
     expect(becmg1.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
@@ -739,10 +749,10 @@ describe("TAFParser", () => {
 
     // Second TEMPO
     const tempo1 = taf.trends[5];
-    expect(tempo1.validity?.startDay).toBe(30);
-    expect(tempo1.validity?.startHour).toBe(12);
-    expect(tempo1.validity?.endDay).toBe(30);
-    expect(tempo1.validity?.endHour).toBe(17);
+    expect(tempo1.validity.startDay).toBe(30);
+    expect(tempo1.validity.startHour).toBe(12);
+    expect(tempo1.validity.endDay).toBe(30);
+    expect(tempo1.validity.endHour).toBe(17);
     expect(tempo1.weatherConditions).toHaveLength(0);
     expect(tempo1.wind?.degrees).toBe(300);
     expect(tempo1.wind?.speed).toBe(8);
@@ -805,10 +815,10 @@ describe("TAFParser", () => {
 
     // First BECOMG
     const becmg1 = taf.trends[0];
-    expect(becmg1.validity?.startDay).toBe(12);
-    expect(becmg1.validity?.startHour).toBe(17);
-    expect(becmg1.validity?.endDay).toBe(12);
-    expect(becmg1.validity?.endHour).toBe(18);
+    expect(becmg1.validity.startDay).toBe(12);
+    expect(becmg1.validity.startHour).toBe(17);
+    expect(becmg1.validity.endDay).toBe(12);
+    expect(becmg1.validity.endHour).toBe(18);
     expect(becmg1.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
@@ -826,10 +836,10 @@ describe("TAFParser", () => {
 
     // Second BECOMG
     const becmg2 = taf.trends[1];
-    expect(becmg2.validity?.startDay).toBe(13);
-    expect(becmg2.validity?.startHour).toBe(3);
-    expect(becmg2.validity?.endDay).toBe(13);
-    expect(becmg2.validity?.endHour).toBe(4);
+    expect(becmg2.validity.startDay).toBe(13);
+    expect(becmg2.validity.startHour).toBe(3);
+    expect(becmg2.validity.endDay).toBe(13);
+    expect(becmg2.validity.endHour).toBe(4);
     expect(becmg2.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
@@ -848,7 +858,7 @@ describe("TAFParser", () => {
 
   test("parse with 2 taf", () => {
     const taf = new TAFParser(en).parse(
-      "TAF TAF LFPG 191100Z 1912/2018 02010KT 9999 FEW040 PROB30"
+      "TAF TAF LFPG 191100Z 1912/2018 02010KT 9999 FEW040 PROB30 1217/1218"
     );
 
     expect(taf).toBeDefined();
@@ -910,6 +920,16 @@ describe("TAFParser", () => {
     expect(taf.amendment).toBe(true);
   });
 
+  test("thunderstorms", () => {
+    const taf = new TAFParser(en).parse(`TAF 
+    AMD KGWO 161553Z 1616/1712 21005KT 4SM -TSRA BR SCT010 OVC070CB `);
+
+    expect(taf.weatherConditions[0].descriptive).toBe(Descriptive.THUNDERSTORM);
+    expect(taf.weatherConditions[0].intensity).toBe(Intensity.LIGHT);
+    expect(taf.weatherConditions[0].phenomenons).toHaveLength(1);
+    expect(taf.weatherConditions[0].phenomenons[0]).toBe(Phenomenon.RAIN);
+  });
+
   test("parse with remark", () => {
     const taf = new TAFParser(en).parse(
       "TAF CZBF 300939Z 3010/3022 VRB03KT 6SM -SN OVC015 RMK FCST BASED ON AUTO OBS. NXT FCST BY 301400Z\n TEMPO 3010/3012 11/2SM -SN OVC009 FM301200 10008KT 2SM -SN OVC010 \nTEMPO 3012/3022 3/4SM -SN VV007"
@@ -928,6 +948,30 @@ describe("TAFParser", () => {
     expect(taf.trends).toHaveLength(3);
     expect(taf.trends[2].remark).toBeDefined();
     expect(taf.trends[2].remarks).toHaveLength(1);
+  });
+
+  test("stops parsing weather conditions after base remark", () => {
+    // Fixes #3
+    const taf = new TAFParser(en)
+      .parse(`TAF CYTL 121940Z 1220/1308 RMK FCST BASED ON AUTO OBS. FCST BASED ON OBS BY OTHER SRCS. WIND SENSOR INOP. NXT FCST BY 130200Z
+    TEMPO 1303/1308 2SM -SN`);
+
+    expect(taf.trends).toHaveLength(1);
+    expect(taf.weatherConditions).toHaveLength(0);
+  });
+
+  test("stops parsing weather conditions after trend remark", () => {
+    // Fixes #3
+    const taf = new TAFParser(en).parse(`TAF CYTL 121940Z 1220/1308
+    TEMPO 1303/1308 2SM -SN RMK FCST BASED ON AUTO OBS. FCST BASED ON OBS BY OTHER SRCS. WIND SENSOR INOP. NXT FCST BY 130200Z`);
+
+    expect(taf.trends).toHaveLength(1);
+    expect(taf.trends[0].weatherConditions).toHaveLength(1);
+    expect(taf.trends[0].weatherConditions[0].intensity).toBe(Intensity.LIGHT);
+    expect(taf.trends[0].weatherConditions[0].phenomenons).toHaveLength(1);
+    expect(taf.trends[0].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.SNOW
+    );
   });
 });
 

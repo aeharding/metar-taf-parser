@@ -74,7 +74,9 @@ export interface IWeatherCondition {
 export function isWeatherConditionValid(weather: IWeatherCondition): boolean {
   return (
     weather.phenomenons.length !== 0 ||
-    weather.descriptive == Descriptive.THUNDERSTORM
+    weather.descriptive == Descriptive.THUNDERSTORM ||
+    (weather.intensity === Intensity.IN_VICINITY &&
+      weather.descriptive == Descriptive.SHOWERS)
   );
 }
 
@@ -141,6 +143,10 @@ export interface IAbstractWeatherCode extends IAbstractWeatherContainer, ITime {
   trends: IAbstractTrend[];
 }
 
+export interface IAbstractWeatherCodeDated extends IAbstractWeatherCode {
+  issued: Date;
+}
+
 export interface IMetar extends IAbstractWeatherCode {
   temperature?: number;
   dewPoint?: number;
@@ -148,6 +154,10 @@ export interface IMetar extends IAbstractWeatherCode {
   nosig?: true;
   auto?: true;
   runwaysInfo: IRunwayInfo[];
+
+  /**
+   * Not used in North America
+   */
   trends: IMetarTrend[];
 }
 
@@ -156,7 +166,7 @@ export interface ITAF extends IAbstractWeatherCode {
   maxTemperature?: ITemperatureDated;
   minTemperature?: ITemperatureDated;
   amendment?: true;
-  trends: ITAFTrend[];
+  trends: TAFTrend[];
 }
 
 export interface IAbstractTrend extends IAbstractWeatherContainer {
@@ -171,10 +181,50 @@ export interface IMetarTrend extends IAbstractTrend {
   times: IMetarTrendTime[];
 }
 
-export interface ITAFTrend extends IAbstractTrend {
+export interface IBaseTAFTrend extends IAbstractTrend {
+  /**
+   * Will not be found on FM trends. May exist on others.
+   *
+   * If does not exist, probability is > 40%
+   */
   probability?: number;
-  validity?: IFMValidity;
+
+  /**
+   * All trends have `startDay` and `startHour` defined. Additionally:
+   *
+   * - FM trends also have `startMinutes`. They **DO NOT** have an explicit end
+   *   validity (it is implied by the following FM).
+   * - All others (PROB, TEMPO, BECMG) have `endDay` and `endHour`.
+   *
+   * All properties are allowed to be accessed (as optionals), but if you want
+   * type guarantees, you can check the trend type. For example:
+   *
+   * ```ts
+   * switch (trend.type) {
+   *   case WeatherChangeType.FM:
+   *     // trend.validity now has startMinutes defined
+   *     break;
+   *   case WeatherChangeType.PROB:
+   *   case WeatherChangeType.BECMG:
+   *   case WeatherChangeType.TEMPO:
+   *     // trend.validity now has endHour, endDay defined
+   * }
+   * ```
+   */
+  validity: IAbstractValidity & Partial<IFMValidity> & Partial<IValidity>;
 }
+
+export type TAFTrend = IBaseTAFTrend &
+  (
+    | {
+        type: WeatherChangeType.FM;
+        validity: IFMValidity;
+      }
+    | {
+        type: WeatherChangeType;
+        validity: IValidity;
+      }
+  );
 
 export interface IEndValidity {
   endHour: number;
@@ -182,7 +232,11 @@ export interface IEndValidity {
 }
 
 export interface IValidity extends IAbstractValidity, IEndValidity {}
+export interface IValidityDated extends IAbstractValidity, IEndValidity {
+  start: Date;
+  end: Date;
+}
 
-export interface IFMValidity extends IAbstractValidity, Partial<IEndValidity> {
-  startMinutes?: number;
+export interface IFMValidity extends IAbstractValidity {
+  startMinutes: number;
 }

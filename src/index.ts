@@ -1,8 +1,12 @@
-import { IMetar, ITAF } from "model/model";
+import { IFMValidity, IMetar, ITAF, IValidity, TAFTrend } from "model/model";
 import { MetarParser, TAFParser } from "parser/parser";
 import { ParseError, InvalidWeatherStatementError } from "commons/errors";
 import { Locale } from "commons/i18n";
 import en from "locale/en";
+import { WeatherChangeType } from "model/enum";
+import { IMetarDated, metarDatesHydrator } from "./dates/metar";
+import { ITAFDated, tafDatesHydrator } from "./dates/taf";
+import { getForecastFromTAF, IForecastContainer } from "forecast/forecast";
 
 export { Locale } from "commons/i18n";
 export * from "commons/errors";
@@ -50,20 +54,68 @@ export {
   IWindPeakCommandRemark,
   IWindShiftFropaRemark,
 } from "command/remark";
+export {
+  getCompositeForecastForDate,
+  IForecastContainer,
+  Forecast,
+  TimestampOutOfBoundsError,
+} from "forecast/forecast";
+export { TAFTrendDated } from "dates/taf";
 
 export interface IMetarTAFParserOptions {
   locale?: Locale;
 }
 
-export function parseMetar(
-  metar: string,
-  options?: IMetarTAFParserOptions
-): IMetar {
-  return parse<IMetar>(metar, options, MetarParser);
+export interface IMetarTAFParserOptionsDated extends IMetarTAFParserOptions {
+  /**
+   * This date should ideally be the date the report was issued. Otherwise, it
+   * can be be +/- one week of the actual report date and work properly.
+   *
+   * So if you know the report was recently issued, you can pass `new Date()`
+   *
+   * This date is needed to create actual timestamps since the report only has
+   * day of month, hour, and minute.
+   */
+  date: Date;
 }
 
-export function parseTAF(taf: string, options?: IMetarTAFParserOptions): ITAF {
-  return parse<ITAF>(taf, options, TAFParser);
+export function parseMetar(
+  rawMetar: string,
+  options?: IMetarTAFParserOptions
+): IMetar;
+export function parseMetar(
+  rawMetar: string,
+  options?: IMetarTAFParserOptionsDated
+): IMetarDated;
+export function parseMetar(
+  rawMetar: string,
+  options?: IMetarTAFParserOptions | IMetarTAFParserOptionsDated
+): IMetar | IMetarDated {
+  return parse(rawMetar, options, MetarParser, metarDatesHydrator);
+}
+
+export function parseTAF(
+  rawTAF: string,
+  options?: IMetarTAFParserOptions
+): ITAF;
+export function parseTAF(
+  rawTAF: string,
+  options?: IMetarTAFParserOptionsDated
+): ITAFDated;
+export function parseTAF(
+  rawTAF: string,
+  options?: IMetarTAFParserOptions
+): ITAF | ITAFDated {
+  return parse(rawTAF, options, TAFParser, tafDatesHydrator);
+}
+
+export function parseTAFAsForecast(
+  rawTAF: string,
+  options: IMetarTAFParserOptionsDated
+): IForecastContainer {
+  const taf = parseTAF(rawTAF, options);
+
+  return getForecastFromTAF(taf as ITAFDated);
 }
 
 interface Parser<T> {
@@ -72,15 +124,22 @@ interface Parser<T> {
   };
 }
 
-function parse<T>(
-  report: string,
-  options: IMetarTAFParserOptions | undefined,
-  parser: Parser<T>
-): T {
+function parse<T, TDated>(
+  rawReport: string,
+  options: IMetarTAFParserOptions | IMetarTAFParserOptionsDated | undefined,
+  parser: Parser<T>,
+  datesHydrator: (report: T, date: Date) => TDated
+): T | TDated {
   const lang = options?.locale || en;
 
   try {
-    return new parser(lang).parse(report);
+    const report = new parser(lang).parse(rawReport);
+
+    if (options && "date" in options) {
+      return datesHydrator(report, options.date);
+    }
+
+    return report;
   } catch (e) {
     if (e instanceof ParseError) throw e;
 
