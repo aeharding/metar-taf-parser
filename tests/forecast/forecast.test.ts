@@ -1,8 +1,9 @@
 import {
   getForecastFromTAF,
   getCompositeForecastForDate,
+  TimestampOutOfBoundsError,
 } from "forecast/forecast";
-import { parseTAF } from "index";
+import { parseTAF, WeatherChangeType } from "index";
 
 describe("getForecastFromTAF", () => {
   test("simple case", () => {
@@ -75,6 +76,26 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     expect(forecast.forecast[3].validity.end).toBeUndefined();
   });
 
+  test("should have right trend types", () => {
+    const taf = parseTAF(
+      `
+TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
+    TEMPO 1500/1501 6SM -SHRASN BKN035
+    FM150100 25012G25KT P6SM VCSH SCT040 BKN070
+    FM150300 26011G21KT P6SM SCT080
+    `,
+      { date: new Date("2022-04-29") }
+    );
+
+    const forecast = getForecastFromTAF(taf);
+
+    expect(forecast.forecast).toHaveLength(4);
+    expect(forecast.forecast[0].type).toBeUndefined();
+    expect(forecast.forecast[1].type).toBe(WeatherChangeType.TEMPO);
+    expect(forecast.forecast[2].type).toBe(WeatherChangeType.FM);
+    expect(forecast.forecast[3].type).toBe(WeatherChangeType.FM);
+  });
+
   test("another TAF", () => {
     const taf = parseTAF(
       `
@@ -125,6 +146,22 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
 
       expect(composite.base).toBeDefined();
       expect(composite.additional).toHaveLength(0);
+    });
+
+    test("throws out of bounds", () => {
+      expect(() =>
+        getCompositeForecastForDate(
+          new Date("2023-04-15T00:00:00.000Z"),
+          forecast
+        )
+      ).toThrowError(TimestampOutOfBoundsError);
+
+      expect(() =>
+        getCompositeForecastForDate(
+          new Date("2020-04-15T00:00:00.000Z"),
+          forecast
+        )
+      ).toThrowError(TimestampOutOfBoundsError);
     });
   });
 });

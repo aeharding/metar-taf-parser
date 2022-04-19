@@ -13,7 +13,6 @@ import it from "metar-taf-parser/dist/locale/it";
 import pl from "metar-taf-parser/dist/locale/pl";
 import zh from "metar-taf-parser/dist/locale/zh-CN";
 import { css } from "@emotion/react";
-import Tabs from "./Tabs";
 
 // Types are broke
 const Json = ReactJson as any;
@@ -171,7 +170,6 @@ function Parse({ entityName, parse, example: EXAMPLE }: ParseProps) {
 
   return (
     <>
-      <Tabs />
       <Container>
         <InputContainer>
           <div>

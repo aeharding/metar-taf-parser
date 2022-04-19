@@ -1,4 +1,9 @@
-import { parseMetar, parseTAF, WeatherChangeType } from "index";
+import {
+  parseMetar,
+  parseTAF,
+  parseTAFAsForecast,
+  WeatherChangeType,
+} from "index";
 
 describe("public API", () => {
   describe("parseMetar", () => {
@@ -85,6 +90,23 @@ TAF
         );
         expect(tafDated.trends[3].validity.end).toBeUndefined();
       });
+    });
+  });
+
+  describe("parseTAFAsForecast", () => {
+    const rawTAF = `
+TAF 
+    AMD KMSN 152044Z 1521/1618 24009G16KT P6SM SCT100 
+    TEMPO 1521/1523 BKN100 
+   FM160000 27008KT P6SM SCT150 
+   FM160300 30006KT P6SM FEW230 
+   FM161700 30011G18KT P6SM BKN050
+   `;
+
+    test("parses", () => {
+      expect(
+        parseTAFAsForecast(rawTAF, { date: new Date("2022-01-01") }).forecast
+      ).toHaveLength(5);
     });
   });
 });

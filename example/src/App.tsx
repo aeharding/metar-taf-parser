@@ -5,7 +5,8 @@ import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, Navigate } from "react-router";
 import { ParseMetar, ParseTAF } from "./Parse";
 import pjson from "metar-taf-parser/package.json";
-import Forecast from "./forecast/Forecast";
+import Tabs from "./Tabs";
+import ForecastWrapper from "./forecast/ForecastWrapper";
 
 const globalStyles = css`
   html {
@@ -29,6 +30,7 @@ const globalStyles = css`
 
     background: rgb(14, 38, 60);
     color: white;
+    line-height: 1.35;
 
     max-width: 1000px;
     padding: 0 1rem;
@@ -88,10 +90,12 @@ function App() {
         .
       </div>
 
+      <Tabs />
+
       <Routes>
         <Route path="/metar" element={<ParseMetar />} />
         <Route path="/taf" element={<ParseTAF />} />
-        <Route path="/forecast/:icaoId" element={<Forecast />} />
+        <Route path="/forecast/*" element={<ForecastWrapper />} />
         <Route path="*" element={<Navigate to="/metar" replace />} />
       </Routes>
 

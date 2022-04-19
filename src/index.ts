@@ -6,6 +6,7 @@ import en from "locale/en";
 import { WeatherChangeType } from "model/enum";
 import { IMetarDated, metarDatesHydrator } from "./dates/metar";
 import { ITAFDated, tafDatesHydrator } from "./dates/taf";
+import { getForecastFromTAF, IForecastContainer } from "forecast/forecast";
 
 export { Locale } from "commons/i18n";
 export * from "commons/errors";
@@ -54,9 +55,10 @@ export {
   IWindShiftFropaRemark,
 } from "command/remark";
 export {
-  getForecastFromTAF,
   getCompositeForecastForDate,
   IForecastContainer,
+  Forecast,
+  TimestampOutOfBoundsError,
 } from "forecast/forecast";
 export { TAFTrendDated } from "dates/taf";
 
@@ -105,6 +107,15 @@ export function parseTAF(
   options?: IMetarTAFParserOptions
 ): ITAF | ITAFDated {
   return parse(rawTAF, options, TAFParser, tafDatesHydrator);
+}
+
+export function parseTAFAsForecast(
+  rawTAF: string,
+  options: IMetarTAFParserOptionsDated
+): IForecastContainer {
+  const taf = parseTAF(rawTAF, options);
+
+  return getForecastFromTAF(taf as ITAFDated);
 }
 
 interface Parser<T> {

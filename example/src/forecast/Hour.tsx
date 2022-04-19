@@ -50,9 +50,10 @@ export default function Hour({ hour }: HourProps) {
       ? hour.additional[0]?.wind?.degrees
       : hour.base.wind?.degrees;
 
-  const ceiling = determineCeilingFromClouds(
-    hour.additional[0]?.clouds || hour.base.clouds
-  );
+  const ceiling = determineCeilingFromClouds([
+    ...hour.additional.flatMap(({ clouds }) => clouds),
+    ...hour.base.clouds,
+  ]);
 
   return (
     <Column>

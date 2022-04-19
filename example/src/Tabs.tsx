@@ -46,9 +46,11 @@ export default function Tabs() {
   return (
     <TabContainer>
       <Rest />
-      <Tab to={{ pathname: "/metar", search: "" }}>METAR</Tab>
+      <Tab to={{ pathname: "/metar", search: "" }}>parseMetar</Tab>
       <Rest />
-      <Tab to={{ pathname: "/taf", search: "" }}>TAF</Tab>
+      <Tab to={{ pathname: "/taf", search: "" }}>parseTAF</Tab>
+      <Rest />
+      <Tab to={{ pathname: "/forecast", search: "" }}>Forecast demo</Tab>
       <Rest />
     </TabContainer>
   );

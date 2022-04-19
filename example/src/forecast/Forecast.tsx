@@ -1,17 +1,33 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import {
-  parseTAF,
-  getForecastFromTAF,
   getCompositeForecastForDate,
   TAFTrendDated,
   IForecastContainer,
+  parseTAFAsForecast,
 } from "metar-taf-parser";
 import * as noaa from "../services/noaa";
 import { eachHourOfInterval, format, formatDistanceToNow } from "date-fns";
 import Hour, { Cell, Column } from "./Hour";
 import styled from "@emotion/styled";
 import useInterval from "../helpers/useInterval";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+
+export const Button = styled(Link)`
+  display: inline-block;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.4);
+`;
+
+export const Failed = styled.div`
+  background: #8c0000;
+  color: white;
+  padding: 1rem;
+`;
 
 const HoursTable = styled.div`
   display: flex;
@@ -64,13 +80,31 @@ export default function Forecast() {
   const [forecast, setForecast] = useState<IForecastContainer | undefined>();
   const [hours, setHours] = useState<IHour[] | undefined>();
   const [issuedRelative, setIssuedRelative] = useState("");
+  const [error, setError] = useState<Error | undefined>();
+
+  const updateIssued = useCallback(() => {
+    if (!forecast) return;
+
+    setIssuedRelative(
+      formatDistanceToNow(forecast.issued, { addSuffix: true })
+    );
+  }, [forecast]);
 
   useEffect(() => {
     if (!icaoId) return;
+
     (async () => {
-      const [date, rawTaf] = await noaa.getTAF(icaoId);
-      const taf = parseTAF(rawTaf, { date });
-      const forecast = getForecastFromTAF(taf);
+      let date: Date, rawTaf: string;
+
+      try {
+        [date, rawTaf] = await noaa.getTAF(icaoId);
+      } catch (error) {
+        if (error instanceof Error) setError(error);
+
+        throw error;
+      }
+
+      const forecast = parseTAFAsForecast(rawTaf, { date });
 
       const forecastPerHour = eachHourOfInterval({
         start: forecast.start,
@@ -87,22 +121,40 @@ export default function Forecast() {
     })();
   }, [icaoId]);
 
+  useEffect(() => {
+    updateIssued();
+  }, [forecast, updateIssued]);
+
   useInterval(
     () => {
-      if (!forecast) return;
-
-      setIssuedRelative(
-        formatDistanceToNow(forecast.issued, { addSuffix: true })
-      );
+      updateIssued();
     },
     forecast ? 1000 : null
   );
 
+  const backButton = (
+    <Button to="/forecast">
+      <FontAwesomeIcon icon={faArrowLeft} /> Back
+    </Button>
+  );
+
+  if (error)
+    return (
+      <div>
+        {backButton}
+        <Failed>
+          Error loading TAF report. Is {icaoId} a valid US airport that produces
+          a TAF report? (Otherwise the service may be down.)
+        </Failed>
+      </div>
+    );
   if (!hours || !forecast) return <>Loading...</>;
 
   return (
     <>
       <p>
+        {backButton}
+        <br />
         Station: {forecast.station}
         <br />
         TAF issued: {format(forecast.issued, "Pp")} ({issuedRelative})
@@ -126,6 +178,12 @@ export default function Forecast() {
 
       <div>
         <RawReport>{forecast.message}</RawReport>
+      </div>
+
+      <div>
+        <Button to={`/taf?input=${encodeURIComponent(forecast.message)}`}>
+          View parseTAF output
+        </Button>
       </div>
     </>
   );

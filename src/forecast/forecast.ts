@@ -1,7 +1,14 @@
 import { getReportDate } from "helpers/date";
 import { TAFTrendDated } from "dates/taf";
-import { WeatherChangeType } from "../model/enum";
 import { ITAFDated } from "dates/taf";
+import { ParseError, UnexpectedParseError } from "commons/errors";
+
+/**
+ * The initial forecast, extracted from the first line of the TAF, does not have
+ * a trend type (FM, BECMG, etc)
+ */
+export type Forecast = Omit<TAFTrendDated, "type"> &
+  Partial<Pick<TAFTrendDated, "type">>;
 
 export interface IForecastContainer {
   station: string;
@@ -9,7 +16,7 @@ export interface IForecastContainer {
   start: Date;
   end: Date;
   message: string;
-  forecast: TAFTrendDated[];
+  forecast: Forecast[];
 }
 
 export function getForecastFromTAF(taf: ITAFDated): IForecastContainer {
@@ -30,7 +37,7 @@ export function getForecastFromTAF(taf: ITAFDated): IForecastContainer {
 /**
  * Treat the base of the TAF as a FM
  */
-function makeInitialForecast(taf: ITAFDated): TAFTrendDated {
+function makeInitialForecast(taf: ITAFDated): Forecast {
   return {
     wind: taf.wind,
     visibility: taf.visibility,
@@ -48,7 +55,6 @@ function makeInitialForecast(taf: ITAFDated): TAFTrendDated {
       startMinutes: 0,
       start: taf.validity.start,
     },
-    type: WeatherChangeType.FM,
   };
 }
 
@@ -56,7 +62,7 @@ interface ICompositeForecast {
   /**
    * The base forecast (type is `FM` or initial group)
    */
-  base: TAFTrendDated;
+  base: Forecast;
 
   /**
    * Any forecast here should pre-empt the base forecast. These forecasts may
@@ -65,7 +71,16 @@ interface ICompositeForecast {
    *
    * `type` is (`BECMG`, `TEMPO` or `PROB`)
    */
-  additional: TAFTrendDated[];
+  additional: Forecast[];
+}
+
+export class TimestampOutOfBoundsError extends ParseError {
+  name = "TimestampOutOfBoundsError";
+
+  constructor(message?: string) {
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
 }
 
 export function getCompositeForecastForDate(
@@ -77,10 +92,12 @@ export function getCompositeForecastForDate(
     date.getTime() > forecastContainer.end.getTime() ||
     date.getTime() < forecastContainer.start.getTime()
   )
-    throw new Error("TODO useful error type");
+    throw new TimestampOutOfBoundsError(
+      "Provided timestamp is outside the report validity period"
+    );
 
-  let base: TAFTrendDated | undefined;
-  let additional: TAFTrendDated[] = [];
+  let base: Forecast | undefined;
+  let additional: Forecast[] = [];
 
   for (let i = 0; i < forecastContainer.forecast.length; i++) {
     const forecast = forecastContainer.forecast[i];
@@ -103,8 +120,7 @@ export function getCompositeForecastForDate(
     }
   }
 
-  // TODO
-  if (!base) throw new Error("broke!");
+  if (!base) throw new UnexpectedParseError("Unable to find trend for date");
 
   return { base, additional };
 }
