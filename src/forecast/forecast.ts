@@ -58,7 +58,7 @@ function makeInitialForecast(taf: ITAFDated): Forecast {
   };
 }
 
-interface ICompositeForecast {
+export interface ICompositeForecast {
   /**
    * The base forecast (type is `FM` or initial group)
    */

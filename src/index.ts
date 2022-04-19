@@ -57,6 +57,7 @@ export {
 export {
   getCompositeForecastForDate,
   IForecastContainer,
+  ICompositeForecast,
   Forecast,
   TimestampOutOfBoundsError,
 } from "forecast/forecast";

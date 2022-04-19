@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import {
   getCompositeForecastForDate,
-  TAFTrendDated,
+  ICompositeForecast,
   IForecastContainer,
   parseTAFAsForecast,
 } from "metar-taf-parser";
@@ -69,9 +69,7 @@ const RawReport = styled.div`
   background: rgba(0, 0, 0, 0.2);
 `;
 
-export interface IHour {
-  base: TAFTrendDated;
-  additional: TAFTrendDated[];
+export interface IHour extends ICompositeForecast {
   hour: Date;
 }
 
