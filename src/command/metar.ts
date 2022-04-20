@@ -18,9 +18,7 @@ export class CommandSupplier {
   ];
 
   get(input: string): ICommand | undefined {
-    for (let i = 0; i < this.#commands.length; i++) {
-      const command = this.#commands[i];
-
+    for (const command of this.#commands) {
       if (command.canParse(input)) return command;
     }
   }

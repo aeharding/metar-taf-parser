@@ -1,8 +1,20 @@
 # ✈️ [metar-taf-parser](https://aeharding.github.io/metar-taf-parser)
 
-Parser for METeorological Aerodrome Reports (METARs) and Terminal Aerodrome Forecasts (TAFs). This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to Typescript. It's dependency-free, fully typed, tested, has i18n support, and can run on Node or in the browser.
+Parser for METeorological Aerodrome Reports (METARs) and Terminal Aerodrome Forecasts (TAFs). This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to Typescript with some additional features.
 
 [Check out the demo here](https://aeharding.github.io/metar-taf-parser)
+
+Features:
+
+- ✈️ Complete METAR and TAF parsing
+- 🛠 Fully typed
+- 🪶 Dependency free
+- 🧪 Full test suite
+- ✅ Runs anywhere: Web browser or Node
+- 🌎 i18n: Translations
+- 🌏 i18n: Handling international TAF & METAR report format differences
+- 🌪 Remark parsing to human and machine readable formats
+- 🗓 [`Forecast` abstraction](https://aeharding.github.io/metar-taf-parser/forecast) to easily query TAF reports by `Date`
 
 ## Installation
 
@@ -112,6 +124,33 @@ const metarResult = parseMetar(rawMetarReport, {
 });
 
 console.log(metarReport.remarks[0].description);
+```
+
+## Handling remarks
+
+Remarks may be found on base TAF and METARs, along with TAF trends.
+
+Each Remark will have a `description` (if translated), `type` and `raw` properties. There are additional properties for each unique remark, depending on the remark's `type`. We can type guard on `type` to access these unique properties.
+
+If the remark is not understood, it will have `type` as `RemarkType.Unknown`, with `raw` containing everything until the next understood remark.
+
+### Example
+
+```ts
+import { Remark, RemarkType } from "metar-taf-parser";
+
+/**
+ * Find the sea level pressure given remarks, if defined
+ */
+function findSeaLevelPressure(remarks: Remark[]): number | undefined {
+  for (const remark of remarks) {
+    switch (remark.type) {
+      case RemarkType.SeaLevelPressure:
+        // can now access remark.pressure
+        return remark.pressure;
+    }
+  }
+}
 ```
 
 ## Development
