@@ -21,7 +21,7 @@ describe("SecondLocationVisibilityCommand", () => {
           description:
             "visibility of 1/2 SM mesured by a second sensor located at RWY12",
           raw: code,
-          distance: "1/2",
+          distance: 0.5,
           location: "RWY12",
         },
       ]);

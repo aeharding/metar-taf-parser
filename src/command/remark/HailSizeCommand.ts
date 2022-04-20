@@ -2,11 +2,12 @@ import { format, _ } from "commons/i18n";
 import { UnexpectedParseError } from "commons/errors";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";
+import { convertFractionalAmount } from "commons/converter";
 
 export interface IHailSizeRemark extends IBaseRemark {
   type: RemarkType.HailSize;
 
-  size: string;
+  size: number;
 }
 
 export class HailSizeCommand extends Command {
@@ -28,7 +29,7 @@ export class HailSizeCommand extends Command {
       description,
       raw: matches[0],
 
-      size: matches[1],
+      size: convertFractionalAmount(matches[1]),
     });
 
     return [code.replace(this.#regex, "").trim(), remark];

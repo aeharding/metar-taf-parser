@@ -20,8 +20,8 @@ describe("PrevailingVisibilityCommand", () => {
           type: RemarkType.PrevailingVisibility,
           description: "variable prevailing visibility between 1/2 and 2 SM",
           raw: code,
-          minVisibility: "1/2",
-          maxVisibility: "2",
+          minVisibility: 0.5,
+          maxVisibility: 2,
         },
       ]);
     });

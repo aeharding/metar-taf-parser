@@ -22,7 +22,7 @@ describe("HailSizeCommand", () => {
             type: RemarkType.HailSize,
             description: "largest hailstones with a diameter of 4 inches",
             raw: code,
-            size: "4",
+            size: 4,
           },
         ]);
       });
@@ -46,7 +46,7 @@ describe("HailSizeCommand", () => {
             type: RemarkType.HailSize,
             description: "largest hailstones with a diameter of 1 1/2 inches",
             raw: code,
-            size: "1 1/2",
+            size: 1.5,
           },
         ]);
       });
