@@ -23,7 +23,7 @@ describe("SectorVisibilityCommand", () => {
           description: "visibility of 1 1/2 SM in the South West direction",
           raw: code,
           direction: Direction.SW,
-          distance: "1 1/2",
+          distance: 1.5,
         },
       ]);
     });

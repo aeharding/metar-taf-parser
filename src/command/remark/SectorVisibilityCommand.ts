@@ -4,11 +4,12 @@ import { UnexpectedParseError } from "commons/errors";
 import { Direction } from "model/enum";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";
+import { convertFractionalAmount } from "commons/converter";
 
 export interface ISectorVisibilityRemark extends IBaseRemark {
   type: RemarkType.SectorVisibility;
   direction: Direction;
-  distance: string;
+  distance: number;
 }
 
 export class SectorVisibilityCommand extends Command {
@@ -37,7 +38,7 @@ export class SectorVisibilityCommand extends Command {
       raw: matches[0],
 
       direction,
-      distance: matches[2],
+      distance: convertFractionalAmount(matches[2]),
     });
 
     return [code.replace(this.#regex, "").trim(), remark];

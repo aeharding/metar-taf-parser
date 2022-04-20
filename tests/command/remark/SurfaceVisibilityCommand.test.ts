@@ -20,7 +20,7 @@ describe("SurfaceVisibilityCommand", () => {
           type: RemarkType.SurfaceVisibility,
           description: "surface visibility of 8 statute miles",
           raw: code,
-          distance: "8",
+          distance: 8,
         },
       ]);
     });

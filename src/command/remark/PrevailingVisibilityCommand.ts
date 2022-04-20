@@ -2,11 +2,12 @@ import { format, _ } from "commons/i18n";
 import { UnexpectedParseError } from "commons/errors";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";
+import { convertFractionalAmount } from "commons/converter";
 
 export interface IPrevailingVisibilityRemark extends IBaseRemark {
   type: RemarkType.PrevailingVisibility;
-  minVisibility: string;
-  maxVisibility: string;
+  minVisibility: number;
+  maxVisibility: number;
 }
 
 export class PrevailingVisibilityCommand extends Command {
@@ -35,8 +36,8 @@ export class PrevailingVisibilityCommand extends Command {
       description,
       raw: matches[0],
 
-      minVisibility,
-      maxVisibility,
+      minVisibility: convertFractionalAmount(minVisibility),
+      maxVisibility: convertFractionalAmount(maxVisibility),
     });
 
     return [code.replace(this.#regex, "").trim(), remark];

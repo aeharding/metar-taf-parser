@@ -2,10 +2,11 @@ import { format, _ } from "commons/i18n";
 import { UnexpectedParseError } from "commons/errors";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";
+import { convertFractionalAmount } from "commons/converter";
 
 export interface ISecondLocationVisibilityRemark extends IBaseRemark {
   type: RemarkType.SecondLocationVisibility;
-  distance: string;
+  distance: number;
   location: string;
 }
 
@@ -34,7 +35,7 @@ export class SecondLocationVisibilityCommand extends Command {
       description,
       raw: matches[0],
 
-      distance,
+      distance: convertFractionalAmount(distance),
       location,
     });
 

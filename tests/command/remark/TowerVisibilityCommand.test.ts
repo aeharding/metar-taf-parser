@@ -20,7 +20,7 @@ describe("TowerVisibilityCommand", () => {
           type: RemarkType.TowerVisibility,
           description: "control tower visibility of 3 statute miles",
           raw: code,
-          distance: "3",
+          distance: 3,
         },
       ]);
     });

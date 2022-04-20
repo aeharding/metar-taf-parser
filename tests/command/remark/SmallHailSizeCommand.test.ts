@@ -21,7 +21,7 @@ describe("SmallHailSizeCommand", () => {
           description:
             "largest hailstones with a diameter less than 1/4 inches",
           raw: code,
-          size: "1/4",
+          size: 0.25,
         },
       ]);
     });

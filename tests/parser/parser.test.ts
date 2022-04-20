@@ -1095,7 +1095,7 @@ describe("RemarkParser", () => {
       type: RemarkType.TowerVisibility,
       description: format(_("Remark.Tower.Visibility", en), "16 1/2"),
       raw: "TWR VIS 16 1/2",
-      distance: "16 1/2",
+      distance: 16.5,
     });
   });
 
@@ -1107,7 +1107,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SurfaceVisibility,
       description: format(_("Remark.Surface.Visibility", en), "16 1/2"),
       raw: "SFC VIS 16 1/2",
-      distance: "16 1/2",
+      distance: 16.5,
     });
   });
 
@@ -1123,8 +1123,8 @@ describe("RemarkParser", () => {
         "2"
       ),
       raw: "VIS 1/2V2",
-      minVisibility: "1/2",
-      maxVisibility: "2",
+      minVisibility: 0.5,
+      maxVisibility: 2,
     });
   });
 
@@ -1140,7 +1140,7 @@ describe("RemarkParser", () => {
         "2 1/2"
       ),
       raw: "VIS NE 2 1/2",
-      distance: "2 1/2",
+      distance: 2.5,
       direction: Direction.NE,
     });
   });
@@ -1157,7 +1157,7 @@ describe("RemarkParser", () => {
         "RWY11"
       ),
       raw: "VIS 2 1/2 RWY11",
-      distance: "2 1/2",
+      distance: 2.5,
       location: "RWY11",
     });
   });
@@ -1496,7 +1496,7 @@ describe("RemarkParser", () => {
       type: RemarkType.HailSize,
       description: format(_("Remark.Hail.0", en), "1 3/4"),
       raw: "GR 1 3/4",
-      size: "1 3/4",
+      size: 1.75,
     });
   });
 
@@ -1508,7 +1508,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SmallHailSize,
       description: format(_("Remark.Hail.LesserThan", en), "1/4"),
       raw: "GR LESS THAN 1/4",
-      size: "1/4",
+      size: 0.25,
     });
   });
 
