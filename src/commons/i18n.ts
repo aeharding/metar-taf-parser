@@ -45,8 +45,8 @@ export function format(
   if (!message) return;
 
   // All arguments must be defined, otherwise nothing is returned
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === undefined) return;
+  for (const arg of args) {
+    if (arg === undefined) return;
   }
 
   return message.replace(/{\d+}/g, (match) => {

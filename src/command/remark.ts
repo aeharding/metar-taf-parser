@@ -246,9 +246,7 @@ export class RemarkCommandSupplier {
   }
 
   get(code: string): Command {
-    for (let i = 0; i < this.commandList.length; i++) {
-      const command = this.commandList[i];
-
+    for (const command of this.commandList) {
       if (command.canParse(code)) return command;
     }
 

@@ -99,9 +99,7 @@ export function getCompositeForecastForDate(
   let base: Forecast | undefined;
   let additional: Forecast[] = [];
 
-  for (let i = 0; i < forecastContainer.forecast.length; i++) {
-    const forecast = forecastContainer.forecast[i];
-
+  for (const forecast of forecastContainer.forecast) {
     if (
       !forecast.validity.end &&
       forecast.validity.start.getTime() <= date.getTime()
