@@ -973,6 +973,60 @@ describe("TAFParser", () => {
       Phenomenon.SNOW
     );
   });
+
+  test("should parse the same without beginning TAF", () => {
+    const taf = `CYTL 121940Z 1220/1308
+    TEMPO 1303/1308 2SM -SN RMK FCST BASED ON AUTO OBS. FCST BASED ON OBS BY OTHER SRCS. WIND SENSOR INOP. NXT FCST BY 130200Z`;
+
+    const parser = new TAFParser(en);
+
+    let actual = parser.parse(taf) as any;
+    let expected = parser.parse(`TAF ${taf}`) as any;
+
+    delete actual.message;
+    delete expected.message;
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("should parse the same with double TAF", () => {
+    const taf = `TAF CYTL 121940Z 1220/1308
+    TEMPO 1303/1308 2SM -SN RMK FCST BASED ON AUTO OBS. FCST BASED ON OBS BY OTHER SRCS. WIND SENSOR INOP. NXT FCST BY 130200Z`;
+
+    const parser = new TAFParser(en);
+
+    let actual = parser.parse(taf) as any;
+    let expected = parser.parse(`TAF ${taf}`) as any;
+
+    delete actual.message;
+    delete expected.message;
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("should parse the same with random word followed by TAF", () => {
+    const taf = `TAF CYTL 121940Z 1220/1308
+    TEMPO 1303/1308 2SM -SN RMK FCST BASED ON AUTO OBS. FCST BASED ON OBS BY OTHER SRCS. WIND SENSOR INOP. NXT FCST BY 130200Z`;
+
+    const parser = new TAFParser(en);
+
+    let actual = parser.parse(taf) as any;
+    let expected = parser.parse(`somethingrandom ${taf}`) as any;
+
+    delete actual.message;
+    delete expected.message;
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
+  // (https://www.aviationweather.gov/taf/decoder#Date)
+  //
+  // test("should parse without issued date", () => {
+  //   const taf = new TAFParser(en).parse(
+  //     `TAF KNYG 2021/2121 15007KT 9999 SKC QNH3038INS BECMG 2112/2114 19009G25KT 9999 BKN150 QNH3033INS T08/2111Z T21/2119Z`
+  //   );
+  // });
 });
 
 describe("RemarkParser", () => {
