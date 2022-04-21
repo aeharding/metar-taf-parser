@@ -61,7 +61,7 @@ export {
   Forecast,
   TimestampOutOfBoundsError,
 } from "forecast/forecast";
-export { TAFTrendDated } from "dates/taf";
+export { TAFTrendDated, ITAFDated } from "dates/taf";
 
 export interface IMetarTAFParserOptions {
   locale?: Locale;
