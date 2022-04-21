@@ -357,13 +357,9 @@ export class TAFParser extends AbstractParser {
     let amendment: true | undefined;
     const lines = this.extractLinesTokens(input);
 
-    if (lines[0][0] !== this.TAF)
-      throw new InvalidWeatherStatementError(
-        'TAF report must begin with "TAF"'
-      );
+    let index = 0;
 
-    let index = 1;
-
+    if (lines[0][0] === this.TAF) index = 1;
     if (lines[0][1] === this.TAF) index = 2;
 
     if (lines[0][index] === "AMD") {
