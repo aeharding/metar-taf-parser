@@ -1,4 +1,4 @@
-import { IMetar } from "model/model";
+import { IMetar } from "../model/model";
 import { AltimeterCommand } from "./metar/AltimeterCommand";
 import { AltimeterMercuryCommand } from "./metar/AltimeterMercuryCommand";
 import { RunwayCommand } from "./metar/RunwayCommand";

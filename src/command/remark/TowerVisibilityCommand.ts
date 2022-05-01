@@ -1,8 +1,8 @@
-import { format, _ } from "commons/i18n";
-import { UnexpectedParseError } from "commons/errors";
+import { format, _ } from "../../commons/i18n";
+import { UnexpectedParseError } from "../../commons/errors";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";
-import { convertFractionalAmount } from "commons/converter";
+import { convertFractionalAmount } from "../../commons/converter";
 
 export interface ITowerVisibilityRemark extends IBaseRemark {
   type: RemarkType.TowerVisibility;

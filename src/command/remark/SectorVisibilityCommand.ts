@@ -1,10 +1,10 @@
-import { as } from "helpers/helpers";
-import { format, _ } from "commons/i18n";
-import { UnexpectedParseError } from "commons/errors";
-import { Direction } from "model/enum";
+import { as } from "../../helpers/helpers";
+import { format, _ } from "../../commons/i18n";
+import { UnexpectedParseError } from "../../commons/errors";
+import { Direction } from "../../model/enum";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";
-import { convertFractionalAmount } from "commons/converter";
+import { convertFractionalAmount } from "../../commons/converter";
 
 export interface ISectorVisibilityRemark extends IBaseRemark {
   type: RemarkType.SectorVisibility;

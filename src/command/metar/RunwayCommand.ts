@@ -1,7 +1,11 @@
-import { UnexpectedParseError } from "commons/errors";
-import { IMetar } from "model/model";
-import { as } from "helpers/helpers";
-import { RunwayInfoTrend, RunwayInfoUnit, ValueIndicator } from "model/enum";
+import { UnexpectedParseError } from "../../commons/errors";
+import { IMetar } from "../../model/model";
+import { as } from "../../helpers/helpers";
+import {
+  RunwayInfoTrend,
+  RunwayInfoUnit,
+  ValueIndicator,
+} from "../../model/enum";
 import { ICommand } from "../metar";
 
 export class RunwayCommand implements ICommand {

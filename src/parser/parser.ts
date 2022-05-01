@@ -1,4 +1,4 @@
-import { Remark, RemarkCommandSupplier } from "command/remark";
+import { Remark, RemarkCommandSupplier } from "../command/remark";
 import {
   IAbstractWeatherCode,
   IAbstractWeatherContainer,
@@ -13,25 +13,25 @@ import {
   IValidity,
   IWeatherCondition,
   IValidityDated,
-} from "model/model";
-import { DistanceUnit, ValueIndicator } from "model/enum";
-import * as converter from "commons/converter";
-import { pySplit } from "helpers/helpers";
-import { CommandSupplier } from "command/common";
+} from "../model/model";
+import { DistanceUnit, ValueIndicator } from "../model/enum";
+import * as converter from "../commons/converter";
+import { pySplit } from "../helpers/helpers";
+import { CommandSupplier } from "../command/common";
 import {
   Intensity,
   Phenomenon,
   Descriptive,
   TimeIndicator,
   WeatherChangeType,
-} from "model/enum";
-import { CommandSupplier as MetarCommandSupplier } from "command/metar";
-import { Locale } from "commons/i18n";
+} from "../model/enum";
+import { CommandSupplier as MetarCommandSupplier } from "../command/metar";
+import { Locale } from "../commons/i18n";
 import {
   InvalidWeatherStatementError,
   CommandExecutionError,
-} from "commons/errors";
-import { determineReportIssuedDate, getReportDate } from "helpers/date";
+} from "../commons/errors";
+import { determineReportIssuedDate, getReportDate } from "../helpers/date";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -65,7 +65,7 @@ function parseRemark(
   container: IAbstractWeatherContainer,
   line: string[],
   index: number,
-  locale: Locale
+  locale?: Locale
 ) {
   const remarks = new RemarkParser(locale).parse(
     line.slice(index + 1).join(" ")
@@ -140,7 +140,7 @@ export abstract class AbstractParser {
   #CAVOK = "CAVOK";
   #commonSupplier = new CommandSupplier();
 
-  constructor(protected locale: Locale) {}
+  constructor(protected locale?: Locale) {}
 
   parseWeatherCondition(input: string): IWeatherCondition {
     let intensity: Intensity | undefined;
@@ -544,7 +544,7 @@ export class TAFParser extends AbstractParser {
 }
 
 export class RemarkParser {
-  constructor(private locale: Locale) {}
+  constructor(private locale?: Locale) {}
 
   #supplier = new RemarkCommandSupplier(this.locale);
 

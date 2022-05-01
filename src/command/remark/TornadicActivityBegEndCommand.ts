@@ -1,7 +1,7 @@
-import { as } from "helpers/helpers";
-import { format, _ } from "commons/i18n";
-import { UnexpectedParseError } from "commons/errors";
-import { Direction } from "model/enum";
+import { as } from "../../helpers/helpers";
+import { format, _ } from "../../commons/i18n";
+import { UnexpectedParseError } from "../../commons/errors";
+import { Direction } from "../../model/enum";
 import { ITornadicActivityBegRemark } from "./TornadicActivityBegCommand";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";

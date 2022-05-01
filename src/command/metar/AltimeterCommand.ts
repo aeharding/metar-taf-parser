@@ -1,5 +1,5 @@
-import { UnexpectedParseError } from "commons/errors";
-import { IMetar } from "model/model";
+import { UnexpectedParseError } from "../../commons/errors";
+import { IMetar } from "../../model/model";
 import { ICommand } from "../metar";
 
 export class AltimeterCommand implements ICommand {

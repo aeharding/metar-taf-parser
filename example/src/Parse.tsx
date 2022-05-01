@@ -113,6 +113,7 @@ const langs = [
   { name: "it", locale: it, label: "🇮🇹 Italiano" },
   { name: "pl", locale: pl, label: "🇵🇱 Polskie" },
   { name: "zh", locale: zh, label: "🇨🇳 中国人" },
+  { name: "none", locale: undefined, label: "(None)" },
 ];
 
 function findLocale(selectedName: string): Locale | undefined {

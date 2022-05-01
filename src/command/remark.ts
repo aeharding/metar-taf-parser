@@ -1,4 +1,4 @@
-import { _, Locale } from "commons/i18n";
+import { _, Locale } from "../commons/i18n";
 import {
   CeilingHeightCommand,
   ICeilingHeightRemark,
@@ -200,7 +200,7 @@ export class RemarkCommandSupplier {
   defaultCommand: Command;
   commandList: Command[];
 
-  constructor(private locale: Locale) {
+  constructor(private locale?: Locale) {
     this.defaultCommand = new DefaultCommand(locale);
     this.commandList = [
       new WindPeakCommand(locale),

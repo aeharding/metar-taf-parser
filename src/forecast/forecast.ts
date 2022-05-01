@@ -1,7 +1,7 @@
-import { getReportDate } from "helpers/date";
-import { TAFTrendDated } from "dates/taf";
-import { ITAFDated } from "dates/taf";
-import { ParseError, UnexpectedParseError } from "commons/errors";
+import { getReportDate } from "../helpers/date";
+import { TAFTrendDated } from "../dates/taf";
+import { ITAFDated } from "../dates/taf";
+import { ParseError, UnexpectedParseError } from "../commons/errors";
 
 /**
  * The initial forecast, extracted from the first line of the TAF, does not have

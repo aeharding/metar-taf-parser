@@ -1,4 +1,4 @@
-import { CommandExecutionError } from "commons/errors";
+import { CommandExecutionError } from "../commons/errors";
 
 /**
  * Split behaving similar to Python's implementation

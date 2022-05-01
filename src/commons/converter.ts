@@ -1,6 +1,6 @@
-import { pySplit } from "helpers/helpers";
-import { Distance } from "model/model";
-import { DistanceUnit, ValueIndicator } from "model/enum";
+import { pySplit } from "../helpers/helpers";
+import { Distance } from "../model/model";
+import { DistanceUnit, ValueIndicator } from "../model/enum";
 
 export function degreesToCardinal(input: number | string) {
   const degrees = +input;

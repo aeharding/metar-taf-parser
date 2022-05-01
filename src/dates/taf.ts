@@ -1,12 +1,12 @@
-import { WeatherChangeType } from "model/enum";
+import { WeatherChangeType } from "../model/enum";
 import {
   IAbstractTrend,
   IFMValidity,
   ITAF,
   IBaseTAFTrend,
   IValidity,
-} from "model/model";
-import { determineReportIssuedDate, getReportDate } from "helpers/date";
+} from "../model/model";
+import { determineReportIssuedDate, getReportDate } from "../helpers/date";
 
 export type TAFTrendDated = IAbstractTrend &
   IBaseTAFTrend & {
