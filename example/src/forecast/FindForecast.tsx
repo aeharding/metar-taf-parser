@@ -15,7 +15,7 @@ export default function FindForecast() {
     }
 
     let code = search.toUpperCase();
-    if (!search.startsWith("K")) code = `K${code}`;
+    if (!code.startsWith("K")) code = `K${code}`;
 
     navigate(`/forecast/${code}`);
   }
