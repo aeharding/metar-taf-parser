@@ -1,7 +1,6 @@
 import { exec } from "child_process";
 import { camelCase } from "lodash";
 import typescript from "@rollup/plugin-typescript";
-import json from "rollup-plugin-json";
 import dts from "rollup-plugin-dts";
 
 const tscAlias = () => {
@@ -45,7 +44,7 @@ export default [
     watch: {
       include: "src/**",
     },
-    plugins: [json(), typescript(), tscAlias()],
+    plugins: [typescript(), tscAlias()],
   },
   {
     input: "./dist/index.d.ts",
