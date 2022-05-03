@@ -3,7 +3,7 @@ import {
   parseTAF,
   parseTAFAsForecast,
   WeatherChangeType,
-} from "index";
+} from "../src";
 
 describe("public API", () => {
   describe("parseMetar", () => {

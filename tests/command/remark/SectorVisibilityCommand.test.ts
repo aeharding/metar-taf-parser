@@ -1,8 +1,8 @@
-import en from "locale/en";
-import { CommandExecutionError } from "commons/errors";
-import { Direction } from "model/enum";
-import { Remark, RemarkType } from "command/remark";
-import { SectorVisibilityCommand } from "command/remark/SectorVisibilityCommand";
+import en from "../../../src/locale/en";
+import { CommandExecutionError } from "../../../src/commons/errors";
+import { Direction } from "../../../src/model/enum";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { SectorVisibilityCommand } from "../../../src/command/remark/SectorVisibilityCommand";
 
 describe("SectorVisibilityCommand", () => {
   const command = new SectorVisibilityCommand(en);

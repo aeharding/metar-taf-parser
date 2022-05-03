@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { IceAccretionCommand } from "command/remark/IceAccretionCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { IceAccretionCommand } from "../../../src/command/remark/IceAccretionCommand";
 
 describe("IceAccretionCommand", () => {
   const command = new IceAccretionCommand(en);

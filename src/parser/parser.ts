@@ -65,7 +65,7 @@ function parseRemark(
   container: IAbstractWeatherContainer,
   line: string[],
   index: number,
-  locale?: Locale
+  locale: Locale
 ) {
   const remarks = new RemarkParser(locale).parse(
     line.slice(index + 1).join(" ")
@@ -140,7 +140,7 @@ export abstract class AbstractParser {
   #CAVOK = "CAVOK";
   #commonSupplier = new CommandSupplier();
 
-  constructor(protected locale?: Locale) {}
+  constructor(protected locale: Locale) {}
 
   parseWeatherCondition(input: string): IWeatherCondition {
     let intensity: Intensity | undefined;
@@ -544,7 +544,7 @@ export class TAFParser extends AbstractParser {
 }
 
 export class RemarkParser {
-  constructor(private locale?: Locale) {}
+  constructor(private locale: Locale) {}
 
   #supplier = new RemarkCommandSupplier(this.locale);
 

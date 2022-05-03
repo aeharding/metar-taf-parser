@@ -1,7 +1,7 @@
-import { RemarkCommandSupplier } from "command/remark";
-import { WindShiftFropaCommand } from "command/remark/WindShiftFropaCommand";
-import en from "locale/en";
-import { DefaultCommand } from "command/remark/DefaultCommand";
+import { RemarkCommandSupplier } from "../../src/command/remark";
+import { WindShiftFropaCommand } from "../../src/command/remark/WindShiftFropaCommand";
+import en from "../../src/locale/en";
+import { DefaultCommand } from "../../src/command/remark/DefaultCommand";
 
 describe("RemarkCommandSupplier", () => {
   const supplier = new RemarkCommandSupplier(en);

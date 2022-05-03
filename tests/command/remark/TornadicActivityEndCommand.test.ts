@@ -1,8 +1,8 @@
-import en from "locale/en";
-import { CommandExecutionError } from "commons/errors";
-import { Direction } from "model/enum";
-import { Remark, RemarkType } from "command/remark";
-import { TornadicActivityEndCommand } from "command/remark/TornadicActivityEndCommand";
+import en from "../../../src/locale/en";
+import { CommandExecutionError } from "../../../src/commons/errors";
+import { Direction } from "../../../src/model/enum";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { TornadicActivityEndCommand } from "../../../src/command/remark/TornadicActivityEndCommand";
 
 describe("TornadicActivityEndCommand", () => {
   const command = new TornadicActivityEndCommand(en);

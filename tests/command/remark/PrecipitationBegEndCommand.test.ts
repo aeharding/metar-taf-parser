@@ -1,8 +1,8 @@
-import en from "locale/en";
-import { Descriptive, Phenomenon } from "model/enum";
-import { CommandExecutionError } from "commons/errors";
-import { Remark, RemarkType } from "command/remark";
-import { PrecipitationBegEndCommand } from "command/remark/PrecipitationBegEndCommand";
+import en from "../../../src/locale/en";
+import { Descriptive, Phenomenon } from "../../../src/model/enum";
+import { CommandExecutionError } from "../../../src/commons/errors";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { PrecipitationBegEndCommand } from "../../../src/command/remark/PrecipitationBegEndCommand";
 
 describe("PrecipitationBegEndCommand", () => {
   const command = new PrecipitationBegEndCommand(en);

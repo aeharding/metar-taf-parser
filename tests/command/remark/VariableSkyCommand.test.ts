@@ -1,8 +1,8 @@
-import en from "locale/en";
-import { CommandExecutionError } from "commons/errors";
-import { CloudQuantity } from "model/enum";
-import { Remark, RemarkType } from "command/remark";
-import { VariableSkyCommand } from "command/remark/VariableSkyCommand";
+import en from "../../../src/locale/en";
+import { CommandExecutionError } from "../../../src/commons/errors";
+import { CloudQuantity } from "../../../src/model/enum";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { VariableSkyCommand } from "../../../src/command/remark/VariableSkyCommand";
 
 describe("VariableSkyCommand", () => {
   const command = new VariableSkyCommand(en);

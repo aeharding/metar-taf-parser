@@ -29,7 +29,7 @@ type Join<T extends string[], D extends string> = T extends []
 
 export function _(
   path: Join<PathsToStringProps<typeof en>, ".">,
-  lang?: Locale
+  lang: Locale
 ): string | undefined {
   const translation = resolve(lang, path);
 

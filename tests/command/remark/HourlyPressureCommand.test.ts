@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { HourlyPressureCommand } from "command/remark/HourlyPressureCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { HourlyPressureCommand } from "../../../src/command/remark/HourlyPressureCommand";
 
 describe("HourlyPressureCommand", () => {
   const command = new HourlyPressureCommand(en);

@@ -1,11 +1,11 @@
-import { IFMValidity, IMetar, ITAF, IValidity, TAFTrend } from "./model/model";
+import { IMetar, ITAF } from "./model/model";
 import { MetarParser, TAFParser } from "./parser/parser";
 import { ParseError, InvalidWeatherStatementError } from "./commons/errors";
 import { Locale } from "./commons/i18n";
-import { WeatherChangeType } from "./model/enum";
 import { IMetarDated, metarDatesHydrator } from "./dates/metar";
 import { ITAFDated, tafDatesHydrator } from "./dates/taf";
 import { getForecastFromTAF, IForecastContainer } from "./forecast/forecast";
+import en from "./locale/en";
 
 export { Locale } from "./commons/i18n";
 export * from "./commons/errors";
@@ -119,7 +119,7 @@ export function parseTAFAsForecast(
 }
 
 interface Parser<T> {
-  new (lang?: Locale): {
+  new (lang: Locale): {
     parse(report: string): T;
   };
 }
@@ -130,8 +130,10 @@ function parse<T, TDated>(
   parser: Parser<T>,
   datesHydrator: (report: T, date: Date) => TDated
 ): T | TDated {
+  const locale = options?.locale || en;
+
   try {
-    const report = new parser(options?.locale).parse(rawReport);
+    const report = new parser(locale).parse(rawReport);
 
     if (options && "date" in options) {
       return datesHydrator(report, options.date);

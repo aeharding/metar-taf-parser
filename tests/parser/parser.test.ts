@@ -1,4 +1,4 @@
-import { Remark, RemarkType } from "command/remark";
+import { Remark, RemarkType } from "../../src/command/remark";
 import {
   AbstractParser,
   MetarParser,
@@ -6,7 +6,7 @@ import {
   parseValidity,
   RemarkParser,
   TAFParser,
-} from "parser/parser";
+} from "../../src/parser/parser";
 import {
   CloudQuantity,
   CloudType,
@@ -17,11 +17,11 @@ import {
   WeatherChangeType,
   DistanceUnit,
   ValueIndicator,
-} from "model/enum";
-import { IAbstractWeatherContainer } from "model/model";
-import { Direction } from "model/enum";
-import en from "locale/en";
-import { _, format } from "commons/i18n";
+} from "../../src/model/enum";
+import { IAbstractWeatherContainer } from "../../src/model/model";
+import { Direction } from "../../src/model/enum";
+import en from "../../src/locale/en";
+import { _, format } from "../../src/commons/i18n";
 
 describe("RemarkParser", () => {
   (() => {

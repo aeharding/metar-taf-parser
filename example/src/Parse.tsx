@@ -6,12 +6,12 @@ import ReactJson from "react-json-view";
 import Error from "./Error";
 import { useNavigate } from "react-router";
 import { createSearchParams, useSearchParams } from "react-router-dom";
-import en from "metar-taf-parser/dist/locale/en";
-import fr from "metar-taf-parser/dist/locale/fr";
-import de from "metar-taf-parser/dist/locale/de";
-import it from "metar-taf-parser/dist/locale/it";
-import pl from "metar-taf-parser/dist/locale/pl";
-import zh from "metar-taf-parser/dist/locale/zh-CN";
+import en from "metar-taf-parser/locale/en";
+import fr from "metar-taf-parser/locale/fr";
+import de from "metar-taf-parser/locale/de";
+import it from "metar-taf-parser/locale/it";
+import pl from "metar-taf-parser/locale/pl";
+import zh from "metar-taf-parser/locale/zh-CN";
 import { css } from "@emotion/react";
 
 // Types are broke
@@ -113,7 +113,6 @@ const langs = [
   { name: "it", locale: it, label: "🇮🇹 Italiano" },
   { name: "pl", locale: pl, label: "🇵🇱 Polskie" },
   { name: "zh", locale: zh, label: "🇨🇳 中国人" },
-  { name: "none", locale: undefined, label: "(None)" },
 ];
 
 function findLocale(selectedName: string): Locale | undefined {

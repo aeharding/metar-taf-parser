@@ -115,7 +115,7 @@ The `description` property in the `Remark` is translated, if available.
 
 ```ts
 import { parseMetar } from "metar-taf-parser";
-import de from "metar-taf-parser/dist/locale/de";
+import de from "metar-taf-parser/locale/de";
 
 const rawMetarReport = "KTTN 051853Z 04011KT RMK SLP176";
 

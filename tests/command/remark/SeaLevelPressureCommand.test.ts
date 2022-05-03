@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { SeaLevelPressureCommand } from "command/remark/SeaLevelPressureCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { SeaLevelPressureCommand } from "../../../src/command/remark/SeaLevelPressureCommand";
 
 describe("SeaLevelPressureCommand", () => {
   const command = new SeaLevelPressureCommand(en);

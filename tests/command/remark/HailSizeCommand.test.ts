@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { HailSizeCommand } from "command/remark/HailSizeCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { HailSizeCommand } from "../../../src/command/remark/HailSizeCommand";
 
 describe("HailSizeCommand", () => {
   const command = new HailSizeCommand(en);

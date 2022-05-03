@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { SnowDepthCommand } from "command/remark/SnowDepthCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { SnowDepthCommand } from "../../../src/command/remark/SnowDepthCommand";
 
 describe("SnowDepthCommand", () => {
   const command = new SnowDepthCommand(en);

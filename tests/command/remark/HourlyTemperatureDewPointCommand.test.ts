@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { HourlyTemperatureDewPointCommand } from "command/remark/HourlyTemperatureDewPointCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { HourlyTemperatureDewPointCommand } from "../../../src/command/remark/HourlyTemperatureDewPointCommand";
 
 describe("HourlyTemperatureDewPointCommand", () => {
   const command = new HourlyTemperatureDewPointCommand(en);

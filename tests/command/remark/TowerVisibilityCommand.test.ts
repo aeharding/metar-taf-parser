@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { TowerVisibilityCommand } from "command/remark/TowerVisibilityCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { TowerVisibilityCommand } from "../../../src/command/remark/TowerVisibilityCommand";
 
 describe("TowerVisibilityCommand", () => {
   const command = new TowerVisibilityCommand(en);

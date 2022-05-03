@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { SurfaceVisibilityCommand } from "command/remark/SurfaceVisibilityCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { SurfaceVisibilityCommand } from "../../../src/command/remark/SurfaceVisibilityCommand";
 
 describe("SurfaceVisibilityCommand", () => {
   const command = new SurfaceVisibilityCommand(en);

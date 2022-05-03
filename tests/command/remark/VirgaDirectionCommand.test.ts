@@ -1,8 +1,8 @@
-import en from "locale/en";
-import { CommandExecutionError } from "commons/errors";
-import { Direction } from "model/enum";
-import { Remark, RemarkType } from "command/remark";
-import { VirgaDirectionCommand } from "command/remark/VirgaDirectionCommand";
+import en from "../../../src/locale/en";
+import { CommandExecutionError } from "../../../src/commons/errors";
+import { Direction } from "../../../src/model/enum";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { VirgaDirectionCommand } from "../../../src/command/remark/VirgaDirectionCommand";
 
 describe("VirgaDirectionCommand", () => {
   const command = new VirgaDirectionCommand(en);

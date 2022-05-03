@@ -1,6 +1,6 @@
-import en from "locale/en";
-import { Remark, RemarkType } from "command/remark";
-import { SunshineDurationCommand } from "command/remark/SunshineDurationCommand";
+import en from "../../../src/locale/en";
+import { Remark, RemarkType } from "../../../src/command/remark";
+import { SunshineDurationCommand } from "../../../src/command/remark/SunshineDurationCommand";
 
 describe("SunshineDurationCommand", () => {
   const command = new SunshineDurationCommand(en);
