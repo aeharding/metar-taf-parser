@@ -1,4 +1,4 @@
-import { _, Locale } from "../commons/i18n";
+import { _, Locale } from "commons/i18n";
 import {
   CeilingHeightCommand,
   ICeilingHeightRemark,

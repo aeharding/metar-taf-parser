@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { CeilingHeightCommand } from "../../../src/command/remark/CeilingHeightCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { CeilingHeightCommand } from "command/remark/CeilingHeightCommand";
 
 describe("CeilingHeightCommand", () => {
   const command = new CeilingHeightCommand(en);

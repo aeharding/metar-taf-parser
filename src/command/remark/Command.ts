@@ -1,4 +1,4 @@
-import { Locale } from "../../commons/i18n";
+import { Locale } from "commons/i18n";
 import { Remark } from "../remark";
 
 export abstract class Command {

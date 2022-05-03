@@ -1,16 +1,17 @@
-import { IMetar, ITAF } from "./model/model";
-import { MetarParser, TAFParser } from "./parser/parser";
-import { ParseError, InvalidWeatherStatementError } from "./commons/errors";
-import { Locale } from "./commons/i18n";
+import { IFMValidity, IMetar, ITAF, IValidity, TAFTrend } from "model/model";
+import { MetarParser, TAFParser } from "parser/parser";
+import { ParseError, InvalidWeatherStatementError } from "commons/errors";
+import { Locale } from "commons/i18n";
+import en from "locale/en";
+import { WeatherChangeType } from "model/enum";
 import { IMetarDated, metarDatesHydrator } from "./dates/metar";
 import { ITAFDated, tafDatesHydrator } from "./dates/taf";
-import { getForecastFromTAF, IForecastContainer } from "./forecast/forecast";
-import en from "./locale/en";
+import { getForecastFromTAF, IForecastContainer } from "forecast/forecast";
 
-export { Locale } from "./commons/i18n";
-export * from "./commons/errors";
-export * from "./model/model";
-export * from "./model/enum";
+export { Locale } from "commons/i18n";
+export * from "commons/errors";
+export * from "model/model";
+export * from "model/enum";
 export {
   RemarkType,
   // Special remarks
@@ -52,15 +53,15 @@ export {
   IWaterEquivalentSnowRemark,
   IWindPeakCommandRemark,
   IWindShiftFropaRemark,
-} from "./command/remark";
+} from "command/remark";
 export {
   getCompositeForecastForDate,
   IForecastContainer,
   ICompositeForecast,
   Forecast,
   TimestampOutOfBoundsError,
-} from "./forecast/forecast";
-export { TAFTrendDated, ITAFDated } from "./dates/taf";
+} from "forecast/forecast";
+export { TAFTrendDated, ITAFDated } from "dates/taf";
 
 export interface IMetarTAFParserOptions {
   locale?: Locale;
@@ -130,10 +131,10 @@ function parse<T, TDated>(
   parser: Parser<T>,
   datesHydrator: (report: T, date: Date) => TDated
 ): T | TDated {
-  const locale = options?.locale || en;
+  const lang = options?.locale || en;
 
   try {
-    const report = new parser(locale).parse(rawReport);
+    const report = new parser(lang).parse(rawReport);
 
     if (options && "date" in options) {
       return datesHydrator(report, options.date);

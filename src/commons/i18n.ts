@@ -1,5 +1,5 @@
-import en from "../locale/en";
-import { resolve } from "../helpers/helpers";
+import en from "locale/en";
+import { resolve } from "helpers/helpers";
 
 export default en;
 

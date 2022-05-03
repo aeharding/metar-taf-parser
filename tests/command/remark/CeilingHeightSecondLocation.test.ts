@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { CeilingSecondLocationCommand } from "../../../src/command/remark/CeilingSecondLocationCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { CeilingSecondLocationCommand } from "command/remark/CeilingSecondLocationCommand";
 
 describe("CeilingSecondLocationCommand", () => {
   const command = new CeilingSecondLocationCommand(en);

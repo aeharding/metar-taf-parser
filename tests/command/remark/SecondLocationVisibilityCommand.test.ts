@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { SecondLocationVisibilityCommand } from "../../../src/command/remark/SecondLocationVisibilityCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { SecondLocationVisibilityCommand } from "command/remark/SecondLocationVisibilityCommand";
 
 describe("SecondLocationVisibilityCommand", () => {
   const command = new SecondLocationVisibilityCommand(en);

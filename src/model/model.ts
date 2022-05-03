@@ -10,8 +10,8 @@ import {
   RunwayInfoTrend,
   RunwayInfoUnit,
   Intensity,
-} from "../model/enum";
-import { Remark } from "../command/remark";
+} from "model/enum";
+import { Remark } from "command/remark";
 
 export interface ICountry {
   name: string;

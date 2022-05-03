@@ -1,4 +1,4 @@
-import { determineReportIssuedDate } from "../../src/helpers/date";
+import { determineReportIssuedDate } from "helpers/date";
 
 describe("determineDate", () => {
   test("simple case", () => {

@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { PrevailingVisibilityCommand } from "../../../src/command/remark/PrevailingVisibilityCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { PrevailingVisibilityCommand } from "command/remark/PrevailingVisibilityCommand";
 
 describe("PrevailingVisibilityCommand", () => {
   const command = new PrevailingVisibilityCommand(en);

@@ -2,8 +2,8 @@ import {
   getForecastFromTAF,
   getCompositeForecastForDate,
   TimestampOutOfBoundsError,
-} from "../../src/forecast/forecast";
-import { parseTAF, WeatherChangeType } from "../../src";
+} from "forecast/forecast";
+import { parseTAF, WeatherChangeType } from "index";
 
 describe("getForecastFromTAF", () => {
   test("simple case", () => {

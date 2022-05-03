@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { DefaultCommand } from "../../../src/command/remark/DefaultCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { DefaultCommand } from "command/remark/DefaultCommand";
 
 describe("DefaultCommand", () => {
   const command = new DefaultCommand(en);

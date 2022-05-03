@@ -3,10 +3,10 @@ import {
   ICloud,
   IWind,
   IWindShear,
-} from "../model/model";
-import * as converter from "../commons/converter";
-import { CloudQuantity, CloudType } from "../model/enum";
-import { UnexpectedParseError } from "../commons/errors";
+} from "model/model";
+import * as converter from "commons/converter";
+import { CloudQuantity, CloudType } from "model/enum";
+import { UnexpectedParseError } from "commons/errors";
 
 interface ICommand {
   canParse(str: string): boolean;

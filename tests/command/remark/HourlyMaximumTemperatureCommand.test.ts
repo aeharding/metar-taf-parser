@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { HourlyMaximumTemperatureCommand } from "../../../src/command/remark/HourlyMaximumTemperatureCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { HourlyMaximumTemperatureCommand } from "command/remark/HourlyMaximumTemperatureCommand";
 
 describe("HourlyMaximumTemperatureCommand", () => {
   const command = new HourlyMaximumTemperatureCommand(en);

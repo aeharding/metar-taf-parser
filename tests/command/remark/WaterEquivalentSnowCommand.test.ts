@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { WaterEquivalentSnowCommand } from "../../../src/command/remark/WaterEquivalentSnowCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { WaterEquivalentSnowCommand } from "command/remark/WaterEquivalentSnowCommand";
 
 describe("WaterEquivalentSnowCommand", () => {
   const command = new WaterEquivalentSnowCommand(en);

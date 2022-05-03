@@ -1,8 +1,8 @@
-import en from "../../../src/locale/en";
-import { CommandExecutionError } from "../../../src/commons/errors";
-import { CloudQuantity, Phenomenon } from "../../../src/model/enum";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { ObscurationCommand } from "../../../src/command/remark/ObscurationCommand";
+import en from "locale/en";
+import { CommandExecutionError } from "commons/errors";
+import { CloudQuantity, Phenomenon } from "model/enum";
+import { Remark, RemarkType } from "command/remark";
+import { ObscurationCommand } from "command/remark/ObscurationCommand";
 
 describe("ObscurationCommand", () => {
   const command = new ObscurationCommand(en);

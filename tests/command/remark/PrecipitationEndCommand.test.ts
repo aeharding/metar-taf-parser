@@ -1,6 +1,6 @@
-import { PrecipitationEndCommand } from "../../../src/command/remark/PrecipitationEndCommand";
-import en from "../../../src/locale/en";
-import { Descriptive, Phenomenon, Remark, RemarkType } from "../../../src";
+import { PrecipitationEndCommand } from "command/remark/PrecipitationEndCommand";
+import en from "locale/en";
+import { Descriptive, Phenomenon, Remark, RemarkType } from "index";
 
 describe("PrecipitationEndCommand", () => {
   const command = new PrecipitationEndCommand(en);

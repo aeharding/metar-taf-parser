@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { WindPeakCommand } from "../../../src/command/remark/WindPeakCommandCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { WindPeakCommand } from "command/remark/WindPeakCommandCommand";
 
 describe("WindPeakCommand", () => {
   const command = new WindPeakCommand(en);

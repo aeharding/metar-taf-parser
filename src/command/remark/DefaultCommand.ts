@@ -1,5 +1,5 @@
-import { pySplit } from "../../helpers/helpers";
-import { _ } from "../../commons/i18n";
+import { pySplit } from "helpers/helpers";
+import { _ } from "commons/i18n";
 import { IBaseRemark, Remark, RemarkType } from "../remark";
 import { Command } from "./Command";
 

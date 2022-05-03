@@ -1,4 +1,4 @@
-import { pySplit } from "../../src/helpers/helpers";
+import { pySplit } from "helpers/helpers";
 
 describe("pySplit", () => {
   it("no limit", () => {

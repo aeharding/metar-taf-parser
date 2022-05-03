@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { WindShiftFropaCommand } from "../../../src/command/remark/WindShiftFropaCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { WindShiftFropaCommand } from "command/remark/WindShiftFropaCommand";
 
 describe("WindShiftFropaCommand", () => {
   const command = new WindShiftFropaCommand(en);

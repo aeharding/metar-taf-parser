@@ -1,6 +1,6 @@
-import { convertTemperatureRemarks } from "../../commons/converter";
-import { format, _ } from "../../commons/i18n";
-import { UnexpectedParseError } from "../../commons/errors";
+import { convertTemperatureRemarks } from "commons/converter";
+import { format, _ } from "commons/i18n";
+import { UnexpectedParseError } from "commons/errors";
 import { IBaseRemark, RemarkType, Remark } from "../remark";
 import { Command } from "./Command";
 

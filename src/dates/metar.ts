@@ -1,5 +1,5 @@
-import { IMetar } from "../model/model";
-import { determineReportIssuedDate } from "../helpers/date";
+import { IMetar } from "model/model";
+import { determineReportIssuedDate } from "helpers/date";
 
 export interface IMetarDated extends IMetar {
   issued: Date;

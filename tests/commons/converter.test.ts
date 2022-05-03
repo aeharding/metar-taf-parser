@@ -1,5 +1,5 @@
-import * as converter from "../../src/commons/converter";
-import { DistanceUnit, ValueIndicator } from "../../src/model/enum";
+import * as converter from "commons/converter";
+import { DistanceUnit, ValueIndicator } from "model/enum";
 
 describe("degreesToCardinal", () => {
   test("VRB", () => {

@@ -1,10 +1,6 @@
-import { RunwayCommand } from "../../../src/command/metar/RunwayCommand";
-import { IMetar } from "../../../src/model/model";
-import {
-  RunwayInfoTrend,
-  RunwayInfoUnit,
-  ValueIndicator,
-} from "../../../src/model/enum";
+import { RunwayCommand } from "command/metar/RunwayCommand";
+import { IMetar } from "model/model";
+import { RunwayInfoTrend, RunwayInfoUnit, ValueIndicator } from "model/enum";
 
 describe("RunwayCommand", () => {
   const command = new RunwayCommand();

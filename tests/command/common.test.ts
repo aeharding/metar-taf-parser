@@ -1,5 +1,5 @@
-import { CloudCommand, WindCommand } from "../../src/command/common";
-import { CloudQuantity, CloudType } from "../../src/model/enum";
+import { CloudCommand, WindCommand } from "command/common";
+import { CloudQuantity, CloudType } from "model/enum";
 
 describe("CloudCommand", () => {
   const command = new CloudCommand();

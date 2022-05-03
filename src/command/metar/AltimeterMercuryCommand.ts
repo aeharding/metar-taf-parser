@@ -1,6 +1,6 @@
-import * as converter from "../../commons/converter";
-import { UnexpectedParseError } from "../../commons/errors";
-import { IMetar } from "../../model/model";
+import * as converter from "commons/converter";
+import { UnexpectedParseError } from "commons/errors";
+import { IMetar } from "model/model";
 import { ICommand } from "../metar";
 
 export class AltimeterMercuryCommand implements ICommand {

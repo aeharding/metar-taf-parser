@@ -1,6 +1,6 @@
-import en from "../../../src/locale/en";
-import { Remark, RemarkType } from "../../../src/command/remark";
-import { HourlyPrecipitationAmountCommand } from "../../../src/command/remark/HourlyPrecipitationAmountCommand";
+import en from "locale/en";
+import { Remark, RemarkType } from "command/remark";
+import { HourlyPrecipitationAmountCommand } from "command/remark/HourlyPrecipitationAmountCommand";
 
 describe("HourlyPrecipitationAmountCommand", () => {
   const command = new HourlyPrecipitationAmountCommand(en);

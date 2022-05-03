@@ -1,7 +1,25 @@
+import { exec } from "child_process";
 import { camelCase } from "lodash";
-import typescript from "rollup-plugin-typescript2";
+import typescript from "@rollup/plugin-typescript";
 import json from "rollup-plugin-json";
 import dts from "rollup-plugin-dts";
+
+const tscAlias = () => {
+  return {
+    name: "tsAlias",
+    buildStart: () => {
+      return new Promise((resolve, reject) => {
+        exec("tsc-alias", function callback(error, stdout, stderr) {
+          if (stderr || error) {
+            reject(stderr || error);
+          } else {
+            resolve(stdout);
+          }
+        });
+      });
+    },
+  };
+};
 
 const libraryName = "metar-taf-parser";
 
@@ -19,7 +37,7 @@ export default [
     },
     output: [
       {
-        dir: ".",
+        dir: "dist",
         name: camelCase(libraryName),
         format: "es",
       },
@@ -27,16 +45,11 @@ export default [
     watch: {
       include: "src/**",
     },
-    plugins: [
-      json(),
-
-      // Compile TypeScript files
-      typescript({ useTsconfigDeclarationDir: true }),
-    ],
+    plugins: [json(), typescript(), tscAlias()],
   },
   {
     input: "./dist/index.d.ts",
     output: [{ file: "metar-taf-parser.d.ts", format: "es" }],
-    plugins: [dts()],
+    plugins: [tscAlias(), dts()],
   },
 ];

@@ -1,4 +1,4 @@
-import { Remark, RemarkCommandSupplier } from "../command/remark";
+import { Remark, RemarkCommandSupplier } from "command/remark";
 import {
   IAbstractWeatherCode,
   IAbstractWeatherContainer,
@@ -13,25 +13,25 @@ import {
   IValidity,
   IWeatherCondition,
   IValidityDated,
-} from "../model/model";
-import { DistanceUnit, ValueIndicator } from "../model/enum";
-import * as converter from "../commons/converter";
-import { pySplit } from "../helpers/helpers";
-import { CommandSupplier } from "../command/common";
+} from "model/model";
+import { DistanceUnit, ValueIndicator } from "model/enum";
+import * as converter from "commons/converter";
+import { pySplit } from "helpers/helpers";
+import { CommandSupplier } from "command/common";
 import {
   Intensity,
   Phenomenon,
   Descriptive,
   TimeIndicator,
   WeatherChangeType,
-} from "../model/enum";
-import { CommandSupplier as MetarCommandSupplier } from "../command/metar";
-import { Locale } from "../commons/i18n";
+} from "model/enum";
+import { CommandSupplier as MetarCommandSupplier } from "command/metar";
+import { Locale } from "commons/i18n";
 import {
   InvalidWeatherStatementError,
   CommandExecutionError,
-} from "../commons/errors";
-import { determineReportIssuedDate, getReportDate } from "../helpers/date";
+} from "commons/errors";
+import { determineReportIssuedDate, getReportDate } from "helpers/date";
 
 /**
  * Parses the delivery time of a METAR/TAF
