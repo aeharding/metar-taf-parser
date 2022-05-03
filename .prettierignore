@@ -1,3 +1,5 @@
 dist/
 coverage/
 example/build/
+locale/
+metar-taf-parser.*
