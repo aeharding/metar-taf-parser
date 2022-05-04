@@ -20,7 +20,7 @@
     "axios": "^0.26.1",
     "date-fns": "^2.28.0",
     "lodash": "^4.17.21",
-    "metar-taf-parser": "^1.0.0",
+    "metar-taf-parser": "^4.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-json-view": "^1.21.3",
