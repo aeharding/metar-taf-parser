@@ -1019,6 +1019,31 @@ describe("TAFParser", () => {
     expect(actual).toStrictEqual(expected);
   });
 
+  test("should parse PROBXX TEMPO into respective trends", () => {
+    const taf = `TAF EDDS 281100Z 2812/2912 04008KT 9999 BKN035 BECMG 2818/2821 33005KT PROB30 TEMPO 2818/2824 4000 TSRA BKN025CB TEMPO 2918/2824 BKN025CB`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends).toHaveLength(3);
+
+    const becmg0 = parsed.trends[0];
+
+    expect(becmg0.probability).not.toBeDefined();
+    expect(becmg0.clouds).toHaveLength(0);
+
+    const tempo0 = parsed.trends[1];
+
+    expect(tempo0.probability).toEqual(30);
+    expect(tempo0.clouds).toHaveLength(1);
+
+    const tempo1 = parsed.trends[2];
+
+    expect(tempo1.probability).not.toBeDefined();
+    expect(tempo1.clouds).toHaveLength(1);
+  });
+
   // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
   // (https://www.aviationweather.gov/taf/decoder#Date)
   //
