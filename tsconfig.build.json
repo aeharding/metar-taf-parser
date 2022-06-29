@@ -5,7 +5,7 @@
     "lib": ["es2020"],
     "baseUrl": ".",
     "paths": {
-      "*": ["*", "src/*", "tests/*"]
+      "*": ["*", "src/*"]
     },
     "strict": true,
     "sourceMap": true,
@@ -13,7 +13,9 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "declarationDir": "dist/",
+    "outDir": "dist/lib",
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src", "tests"]
+  "include": ["src"]
 }

@@ -3,18 +3,23 @@ import { camelCase } from "lodash";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 
+const tsconfig = "tsconfig.build.json";
+
 const tscAlias = () => {
   return {
     name: "tsAlias",
     buildStart: () => {
       return new Promise((resolve, reject) => {
-        exec("tsc-alias", function callback(error, stdout, stderr) {
-          if (stderr || error) {
-            reject(stderr || error);
-          } else {
-            resolve(stdout);
+        exec(
+          `tsc-alias -p ${tsconfig}`,
+          function callback(error, stdout, stderr) {
+            if (stderr || error) {
+              reject(stderr || error);
+            } else {
+              resolve(stdout);
+            }
           }
-        });
+        );
       });
     },
   };
@@ -44,7 +49,7 @@ export default [
     watch: {
       include: "src/**",
     },
-    plugins: [typescript(), tscAlias()],
+    plugins: [typescript({ tsconfig }), tscAlias()],
   },
   {
     input: "./dist/index.d.ts",

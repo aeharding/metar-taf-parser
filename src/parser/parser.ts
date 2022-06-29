@@ -423,7 +423,7 @@ export class TAFParser extends AbstractParser {
     // TODO cleanup
     function joinProbIfNeeded(ls: string[]): string[] {
       for (let i = 0; i < ls.length; i++) {
-        if (/PROB\d{2}/.test(ls[i]) && /TEMPO/.test(ls[i + 1])) {
+        if (/^PROB\d{2}$/.test(ls[i]) && /^TEMPO/.test(ls[i + 1])) {
           ls.splice(i, 2, `${ls[i]} ${ls[i + 1]}`);
           i--;
         }
