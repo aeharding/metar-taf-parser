@@ -192,7 +192,6 @@ export abstract class AbstractParser {
       if (digitRegex.test(splitted[i])) {
         if (splitted[i + 1] && smRegex.test(splitted[i + 1])) {
           splitted.splice(i, 2, `${splitted[i]} ${splitted[i + 1]}`);
-          i--;
         }
       }
     }
@@ -425,7 +424,6 @@ export class TAFParser extends AbstractParser {
       for (let i = 0; i < ls.length; i++) {
         if (/^PROB\d{2}$/.test(ls[i]) && /^TEMPO/.test(ls[i + 1])) {
           ls.splice(i, 2, `${ls[i]} ${ls[i + 1]}`);
-          i--;
         }
       }
       return ls;
