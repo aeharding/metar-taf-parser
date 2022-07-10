@@ -401,6 +401,12 @@ describe("MetarParser", () => {
     expect(metar.remarks).toHaveLength(1);
   });
 
+  test("with nil", () => {
+    const metar = new MetarParser(en).parse("SVMC 211703Z AUTO NIL");
+
+    expect(metar.nil).toBe(true);
+  });
+
   test("with minimum visibility", () => {
     const metar = new MetarParser(en).parse(
       "SUMU 070520Z 34025KT 8000 2000SW VCSH SCT013CB BKN026 00/M05 Q1012 TEMPO 2000 SHSN="
@@ -1042,6 +1048,27 @@ describe("TAFParser", () => {
 
     expect(tempo1.probability).not.toBeDefined();
     expect(tempo1.clouds).toHaveLength(1);
+  });
+
+  test("should parse cancelled", () => {
+    const taf = "TAF VTBD 281000Z 2812/2912 CNL=";
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.canceled).toBe(true);
+  });
+
+  test("should parse corrected", () => {
+    const taf =
+      "TAF COR EDDS 201148Z 2012/2112 31010KT CAVOK BECMG 2018/2021 33004KT BECMG 2106/2109 07005KT";
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.corrected).toBe(true);
   });
 
   // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
