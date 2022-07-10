@@ -110,7 +110,34 @@ export interface ICloud {
   type?: CloudType;
 }
 
-export interface IAbstractWeatherContainer {
+export interface IFlags {
+  /**
+   * Amended TAF
+   */
+  amendment?: true;
+
+  /**
+   * Amended METAR
+   */
+  auto?: true;
+
+  /**
+   * Canceled TAF
+   */
+  canceled?: true;
+
+  /**
+   * Corrected METAR/TAF
+   */
+  corrected?: true;
+
+  /**
+   * No data
+   */
+  nil?: true;
+}
+
+export interface IAbstractWeatherContainer extends IFlags {
   wind?: IWind;
   visibility?: Visibility;
   verticalVisibility?: number;
@@ -152,7 +179,6 @@ export interface IMetar extends IAbstractWeatherCode {
   dewPoint?: number;
   altimeter?: number;
   nosig?: true;
-  auto?: true;
   runwaysInfo: IRunwayInfo[];
 
   /**
@@ -165,7 +191,6 @@ export interface ITAF extends IAbstractWeatherCode {
   validity: IValidity;
   maxTemperature?: ITemperatureDated;
   minTemperature?: ITemperatureDated;
-  amendment?: true;
   trends: TAFTrend[];
 }
 

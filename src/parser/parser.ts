@@ -13,6 +13,7 @@ import {
   IValidity,
   IWeatherCondition,
   IValidityDated,
+  IFlags,
 } from "model/model";
 import { DistanceUnit, ValueIndicator } from "model/enum";
 import * as converter from "commons/converter";
@@ -53,6 +54,29 @@ function parseDeliveryTime(
     hour,
     minute,
   };
+}
+
+function parseFlags(
+  abstractWeatherCode: IAbstractWeatherCode,
+  flag: string
+): boolean {
+  const flags = findFlags(flag);
+
+  if (flags) Object.assign(abstractWeatherCode, flags);
+
+  return !!flags;
+}
+
+enum FlagMap {
+  AMD = "amendment",
+  AUTO = "auto",
+  CNL = "canceled",
+  COR = "corrected",
+  NIL = "nil",
+}
+
+function findFlags(flag: string): IFlags | undefined {
+  if (flag in FlagMap) return { [FlagMap[flag as keyof typeof FlagMap]]: true };
 }
 
 /**
@@ -300,11 +324,12 @@ export class MetarParser extends AbstractParser {
     let index = 2;
 
     while (index < metarTab.length) {
-      if (!super.generalParse(metar, metarTab[index])) {
+      if (
+        !super.generalParse(metar, metarTab[index]) &&
+        !parseFlags(metar, metarTab[index])
+      ) {
         if (metarTab[index] === "NOSIG") {
           metar.nosig = true;
-        } else if (metarTab[index] === "AUTO") {
-          metar.auto = true;
         } else if (
           metarTab[index] === this.TEMPO ||
           metarTab[index] === this.BECMG
@@ -361,8 +386,9 @@ export class TAFParser extends AbstractParser {
     if (lines[0][0] === this.TAF) index = 1;
     if (lines[0][1] === this.TAF) index = 2;
 
-    if (lines[0][index] === "AMD") {
-      amendment = true;
+    const flags = findFlags(lines[0][index]);
+
+    if (flags) {
       index += 1;
     }
 
@@ -374,7 +400,7 @@ export class TAFParser extends AbstractParser {
 
     const taf: ITAF = {
       station,
-      amendment,
+      ...flags,
       ...time,
       validity,
       message: input,
@@ -394,7 +420,10 @@ export class TAFParser extends AbstractParser {
         taf.maxTemperature = parseTemperature(token);
       else if (token.startsWith(this.TN))
         taf.minTemperature = parseTemperature(token);
-      else this.generalParse(taf, token);
+      else {
+        parseFlags(taf, token);
+        this.generalParse(taf, token);
+      }
     }
 
     // Handle the other lines

@@ -209,7 +209,7 @@ export default {
         Hourly: "{0}/100 of an inch of precipitation fell in the last hour",
       },
       Beg: {
-        "0": "{0} {1} beginning at {2}:{3} ",
+        "0": "{0} {1} beginning at {2}:{3}",
         End: "{0} {1} beginning at {2}:{3} ending at {4}:{5}",
       },
       End: "{0} {1} ending at {2}:{3}",
