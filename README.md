@@ -39,9 +39,8 @@ const metar = parseMetar(rawMetarString);
 
 // -or-
 
-// Optionally pass a date (approximately when the report was issued, +/- a week)
-// to get the issued date on the report:
-const datedMetar = parseMetar(rawMetarString, { date: new Date() });
+// Optionally pass the date issued to add it to the report
+const datedMetar = parseMetar(rawMetarString, { issued });
 ```
 
 #### `parseTAF`
@@ -55,9 +54,9 @@ const taf = parseTAF(rawTAFString);
 
 // -or-
 
-// Optionally pass a date (approximately when the report was issued, +/- a week)
-// to get the report issued and trend validity dates (start/end) on the report:
-const datedTAF = parseTAF(rawTAFString, { date: new Date() });
+// Optionally pass the date issued to get the report issued and
+// trend validity dates (start/end) on the report:
+const datedTAF = parseTAF(rawTAFString, { issued });
 ```
 
 ### Higher level parsing: The Forecast abstraction
@@ -72,7 +71,7 @@ Returns a more normalized TAF report. Most notably: while the `parseTAF` functio
 import { parseTAFAsForecast } from "metar-taf-parser";
 
 // You must provide an issued date to use the Forecast abstraction
-const report = parseTAFAsForecast(rawTAFString, { date: tafIssuedDate });
+const report = parseTAFAsForecast(rawTAFString, { issued: tafIssuedDate });
 
 console.log(report.forecast);
 ```
@@ -98,7 +97,7 @@ import {
   getCompositeForecastForDate,
 } from "metar-taf-parser";
 
-const report = parseTAFAsForecast(rawTAFString, { date: tafIssuedDate });
+const report = parseTAFAsForecast(rawTAFString, { issued: tafIssuedDate });
 
 const forecastPerHour = eachHourOfInterval({
   start: report.start,

@@ -92,17 +92,17 @@ export default function Forecast() {
     if (!icaoId) return;
 
     (async () => {
-      let date: Date, rawTaf: string;
+      let issued: Date, rawTaf: string;
 
       try {
-        [date, rawTaf] = await noaa.getTAF(icaoId);
+        [issued, rawTaf] = await noaa.getTAF(icaoId);
       } catch (error) {
         if (error instanceof Error) setError(error);
 
         throw error;
       }
 
-      const forecast = parseTAFAsForecast(rawTaf, { date });
+      const forecast = parseTAFAsForecast(rawTaf, { issued });
 
       const forecastPerHour = eachHourOfInterval({
         start: forecast.start,

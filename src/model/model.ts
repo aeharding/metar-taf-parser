@@ -158,12 +158,12 @@ export interface IAbstractValidity {
  * Exclusive for the TS port (because python has `time()` and js does not)
  */
 export interface ITime {
-  hour: number;
-  minute: number;
+  hour?: number;
+  minute?: number;
 }
 
 export interface IAbstractWeatherCode extends IAbstractWeatherContainer, ITime {
-  day: number;
+  day?: number;
   airport?: IAirport;
   message: string;
   station: string;

@@ -28,11 +28,7 @@ import {
 } from "model/enum";
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
 import { Locale } from "commons/i18n";
-import {
-  InvalidWeatherStatementError,
-  CommandExecutionError,
-} from "commons/errors";
-import { determineReportIssuedDate, getReportDate } from "helpers/date";
+import { CommandExecutionError } from "commons/errors";
 
 /**
  * Parses the delivery time of a METAR/TAF
@@ -41,13 +37,12 @@ import { determineReportIssuedDate, getReportDate } from "helpers/date";
  */
 function parseDeliveryTime(
   timeString: string
-): Pick<IAbstractWeatherCode, "day" | "hour" | "minute"> {
+): Pick<IAbstractWeatherCode, "day" | "hour" | "minute"> | undefined {
   const day = +timeString.slice(0, 2);
   const hour = +timeString.slice(2, 4);
   const minute = +timeString.slice(4, 6);
 
-  if (isNaN(day) || isNaN(hour) || isNaN(minute))
-    throw new InvalidWeatherStatementError("Report time is invalid");
+  if (isNaN(day) || isNaN(hour) || isNaN(minute)) return;
 
   return {
     day,
@@ -121,10 +116,7 @@ export function parseTemperature(input: string): ITemperatureDated {
  * @param input the string containing the validity
  * @returns Validity object
  */
-export function parseValidity(
-  input: string,
-  date?: Date
-): IValidityDated | IValidity {
+export function parseValidity(input: string): IValidityDated | IValidity {
   const parts = pySplit(input, "/");
 
   return {
@@ -395,7 +387,7 @@ export class TAFParser extends AbstractParser {
     const station = lines[0][index];
     index += 1;
     const time = parseDeliveryTime(lines[0][index]);
-    index += 1;
+    if (time) index += 1;
     const validity = parseValidity(lines[0][index]);
 
     const taf: ITAF = {

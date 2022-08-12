@@ -8,7 +8,7 @@ import { parseTAF, WeatherChangeType } from "index";
 describe("getForecastFromTAF", () => {
   test("simple case", () => {
     const taf = parseTAF("TAF KMSN 142325Z 1500/1524", {
-      date: new Date("2022-04-14"),
+      issued: new Date("2022-04-14"),
     });
     const forecast = getForecastFromTAF(taf);
 
@@ -18,7 +18,7 @@ describe("getForecastFromTAF", () => {
 
   test("day passed is ahead", () => {
     const taf = parseTAF("TAF KMSN 142325Z 1500/1524", {
-      date: new Date("2022-04-17"),
+      issued: new Date("2022-04-17"),
     });
     const forecast = getForecastFromTAF(taf);
 
@@ -29,7 +29,7 @@ describe("getForecastFromTAF", () => {
 
   test("with validity rolling over to next month", () => {
     const taf = parseTAF("TAF KMSN 302325Z 0100/0124", {
-      date: new Date("2022-04-29"),
+      issued: new Date("2022-04-29"),
     });
     const forecast = getForecastFromTAF(taf);
 
@@ -46,7 +46,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     FM150100 25012G25KT P6SM VCSH SCT040 BKN070
     FM150300 26011G21KT P6SM SCT080
     `,
-      { date: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") }
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -84,7 +84,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     FM150100 25012G25KT P6SM VCSH SCT040 BKN070
     FM150300 26011G21KT P6SM SCT080
     `,
-      { date: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") }
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -106,7 +106,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
          FM160300 30006KT P6SM FEW230 
          FM161700 30011G18KT P6SM BKN050
     `,
-      { date: new Date("2022/04/15 21:46") }
+      { issued: new Date("2022/04/15 21:46") }
     );
     const forecast = getForecastFromTAF(taf);
 
@@ -123,7 +123,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         FM150100 25012G25KT P6SM VCSH SCT040 BKN070
         FM150300 26011G21KT P6SM SCT080
         `,
-      { date: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") }
     );
 
     const forecast = getForecastFromTAF(taf);
