@@ -16,7 +16,7 @@ describe("public API", () => {
     test("parses with date", () => {
       expect(
         parseMetar("LFPG 161430Z 24015G25KT 5000 1100w", {
-          date: new Date("2022-01-16"),
+          issued: new Date("2022-01-16"),
         }).issued
       ).toEqual(new Date("2022-01-16T14:30:00.000Z"));
     });
@@ -40,14 +40,14 @@ TAF
       test("sets issued", () => {
         expect(
           parseTAF(rawTAF, {
-            date: new Date("2022-01-16"),
+            issued: new Date("2022-01-16"),
           }).issued
         ).toEqual(new Date("2022-01-15T20:44:00.000Z"));
       });
 
       test("sets validity", () => {
         const tafDated = parseTAF(rawTAF, {
-          date: new Date("2022-01-16"),
+          issued: new Date("2022-01-16"),
         });
 
         expect(tafDated.validity.start).toEqual(
@@ -60,7 +60,7 @@ TAF
 
       test("sets trend validity", () => {
         const tafDated = parseTAF(rawTAF, {
-          date: new Date("2022-01-16"),
+          issued: new Date("2022-01-16"),
         });
 
         expect(tafDated.trends).toHaveLength(4);
@@ -91,6 +91,22 @@ TAF
         expect(tafDated.trends[3].validity.end).toBeUndefined();
       });
     });
+
+    describe("without delivery time, but with passed in issued date", () => {
+      const taf = parseTAF(
+        "TAF KNBC 1215/1315 27010KT 9999 SCT010 BKN080 QNH2992INS TEMPO 1218/1300 25010G20KT 4800 TSRA BR BKN010CB BECMG 1300/1302 30015KT 6000 SHRA BR BKN015 QNH2998INS FM130430 04012KT 9999 NSW SCT020 BKN050 QNH2991INS T30/1219Z T22/1309Z",
+        {
+          issued: new Date("2022-08-12T14:57:00Z"),
+        }
+      );
+
+      test("has issued date", () => {
+        expect(taf.issued).toEqual(new Date("2022-08-12T14:57:00Z"));
+        expect(taf.day).toBeUndefined();
+        expect(taf.hour).toBeUndefined();
+        expect(taf.minute).toBeUndefined();
+      });
+    });
   });
 
   describe("parseTAFAsForecast", () => {
@@ -105,7 +121,7 @@ TAF
 
     test("parses", () => {
       expect(
-        parseTAFAsForecast(rawTAF, { date: new Date("2022-01-01") }).forecast
+        parseTAFAsForecast(rawTAF, { issued: new Date("2022-01-01") }).forecast
       ).toHaveLength(5);
     });
   });

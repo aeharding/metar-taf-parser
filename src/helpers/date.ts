@@ -9,10 +9,13 @@
  */
 export function determineReportIssuedDate(
   date: Date,
-  day: number,
-  hour: number,
+  day?: number,
+  hour?: number,
   minute?: number
 ): Date {
+  // Some TAF reports do not include a delivery time
+  if (day == null || hour == null) return date;
+
   const months = [
     setDateComponents(addMonthsUTC(date, -1), day, hour, minute),
     setDateComponents(new Date(date), day, hour, minute),

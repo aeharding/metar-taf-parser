@@ -69,15 +69,12 @@ export interface IMetarTAFParserOptions {
 
 export interface IMetarTAFParserOptionsDated extends IMetarTAFParserOptions {
   /**
-   * This date should ideally be the date the report was issued. Otherwise, it
-   * can be be +/- one week of the actual report date and work properly.
-   *
-   * So if you know the report was recently issued, you can pass `new Date()`
+   * This date should be the date the report was issued.
    *
    * This date is needed to create actual timestamps since the report only has
-   * day of month, hour, and minute.
+   * day of month, hour, and minute (and sometimes not even that).
    */
-  date: Date;
+  issued: Date;
 }
 
 export function parseMetar(
@@ -129,15 +126,15 @@ function parse<T, TDated>(
   rawReport: string,
   options: IMetarTAFParserOptions | IMetarTAFParserOptionsDated | undefined,
   parser: Parser<T>,
-  datesHydrator: (report: T, date: Date) => TDated
+  datesHydrator: (report: T, issued: Date) => TDated
 ): T | TDated {
   const lang = options?.locale || en;
 
   try {
     const report = new parser(lang).parse(rawReport);
 
-    if (options && "date" in options) {
-      return datesHydrator(report, options.date);
+    if (options && "issued" in options) {
+      return datesHydrator(report, options.issued);
     }
 
     return report;
