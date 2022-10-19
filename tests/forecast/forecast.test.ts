@@ -91,9 +91,17 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
 
     expect(forecast.forecast).toHaveLength(4);
     expect(forecast.forecast[0].type).toBeUndefined();
+    expect(forecast.forecast[0].raw).toBe(
+      "TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070"
+    );
     expect(forecast.forecast[1].type).toBe(WeatherChangeType.TEMPO);
+    expect(forecast.forecast[1].raw).toBe("TEMPO 1500/1501 6SM -SHRASN BKN035");
     expect(forecast.forecast[2].type).toBe(WeatherChangeType.FM);
+    expect(forecast.forecast[2].raw).toBe(
+      "FM150100 25012G25KT P6SM VCSH SCT040 BKN070"
+    );
     expect(forecast.forecast[3].type).toBe(WeatherChangeType.FM);
+    expect(forecast.forecast[3].raw).toBe("FM150300 26011G21KT P6SM SCT080");
   });
 
   test("another TAF", () => {

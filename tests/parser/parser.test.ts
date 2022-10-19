@@ -525,6 +525,11 @@ describe("TAFParser", () => {
 
     expect(taf.weatherConditions).toHaveLength(0);
 
+    expect(taf.initialRaw).toBe(
+      "TAF LFPG 150500Z 1506/1612 17005KT 6000 SCT012 TX17/1512Z TN07/1605Z"
+    );
+    expect(taf.message).toBe(code);
+
     expect(taf.trends).toHaveLength(6);
 
     // First trend
@@ -546,6 +551,7 @@ describe("TAFParser", () => {
     expect(trend0.clouds).toHaveLength(1);
     expect(trend0.clouds[0].quantity).toBe(CloudQuantity.BKN);
     expect(trend0.clouds[0].type).toBeUndefined();
+    expect(trend0.raw).toBe("TEMPO 1506/1509 3000 BR BKN006");
 
     // Second trend
     const trend1 = taf.trends[1];
@@ -568,6 +574,7 @@ describe("TAFParser", () => {
     expect(trend1.clouds[0].quantity).toBe(CloudQuantity.BKN);
     expect(trend1.clouds[0].height).toBe(200);
     expect(trend1.probability).toBe(40);
+    expect(trend1.raw).toBe("PROB40 TEMPO 1506/1508 0400 BCFG BKN002");
 
     const trend2 = taf.trends[2];
     expect(trend2.type).toBe(WeatherChangeType.TEMPO);
@@ -590,6 +597,9 @@ describe("TAFParser", () => {
     expect(trend2.clouds[1].quantity).toBe(CloudQuantity.BKN);
     expect(trend2.clouds[1].type).toBeUndefined();
     expect(trend2.probability).toBe(40);
+    expect(trend2.raw).toBe(
+      "PROB40 TEMPO 1512/1516 4000 -SHRA FEW030TCU BKN040"
+    );
 
     const trend3 = taf.trends[3];
     expect(trend3.type).toBe(WeatherChangeType.BECMG);
@@ -597,6 +607,7 @@ describe("TAFParser", () => {
     expect(trend3.validity.startHour).toBe(20);
     expect(trend3.validity.endDay).toBe(15);
     expect(trend3.validity.endHour).toBe(22);
+    expect(trend3.raw).toBe("BECMG 1520/1522 CAVOK");
 
     // Fourth Tempo
     const trend4 = taf.trends[4];
@@ -617,6 +628,7 @@ describe("TAFParser", () => {
     expect(trend4.clouds[0].quantity).toBe(CloudQuantity.BKN);
     expect(trend4.clouds[0].type).toBeUndefined();
     expect(trend4.probability).toBeUndefined();
+    expect(trend4.raw).toBe("TEMPO 1603/1608 3000 BR BKN006");
 
     // Fifth Tempo
     const trend5 = taf.trends[5];
@@ -637,6 +649,7 @@ describe("TAFParser", () => {
     expect(trend5.clouds[0].quantity).toBe(CloudQuantity.BKN);
     expect(trend5.clouds[0].type).toBeUndefined();
     expect(trend5.probability).toBe(40);
+    expect(trend5.raw).toBe("PROB40 TEMPO 1604/1607 0400 BCFG BKN002");
   });
 
   test("without line breaks", () => {
@@ -989,8 +1002,12 @@ describe("TAFParser", () => {
     let actual = parser.parse(taf) as any;
     let expected = parser.parse(`TAF ${taf}`) as any;
 
+    expect(actual.initialRaw).not.toStrictEqual(expected.initialRaw);
+
     delete actual.message;
     delete expected.message;
+    delete actual.initialRaw;
+    delete expected.initialRaw;
 
     expect(actual).toStrictEqual(expected);
   });
@@ -1004,8 +1021,12 @@ describe("TAFParser", () => {
     let actual = parser.parse(taf) as any;
     let expected = parser.parse(`TAF ${taf}`) as any;
 
+    expect(actual.initialRaw).not.toStrictEqual(expected.initialRaw);
+
     delete actual.message;
     delete expected.message;
+    delete actual.initialRaw;
+    delete expected.initialRaw;
 
     expect(actual).toStrictEqual(expected);
   });
@@ -1019,8 +1040,12 @@ describe("TAFParser", () => {
     let actual = parser.parse(taf) as any;
     let expected = parser.parse(`somethingrandom ${taf}`) as any;
 
+    expect(actual.initialRaw).not.toStrictEqual(expected.initialRaw);
+
     delete actual.message;
     delete expected.message;
+    delete actual.initialRaw;
+    delete expected.initialRaw;
 
     expect(actual).toStrictEqual(expected);
   });
