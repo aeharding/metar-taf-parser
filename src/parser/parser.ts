@@ -332,6 +332,7 @@ export class MetarParser extends AbstractParser {
             clouds: [],
             times: [],
             remarks: [],
+            raw: input,
           };
 
           index = this.parseTrend(index, trend, metarTab);
@@ -370,7 +371,6 @@ export class TAFParser extends AbstractParser {
    * @throws ParseError if the message is invalid
    */
   parse(input: string): ITAF {
-    let amendment: true | undefined;
     const lines = this.extractLinesTokens(input);
 
     let index = 0;
@@ -400,6 +400,7 @@ export class TAFParser extends AbstractParser {
       remarks: [],
       clouds: [],
       weatherConditions: [],
+      initialRaw: lines[0].join(" "),
     };
 
     for (let i = index + 1; i < lines[0].length; i++) {
@@ -482,6 +483,7 @@ export class TAFParser extends AbstractParser {
         ...this.makeEmptyTAFTrend(),
         type: WeatherChangeType.FM,
         validity: parseFromValidity(lineTokens[0]),
+        raw: lineTokens.join(" "),
       };
     } else if (lineTokens[0].startsWith(this.PROB)) {
       const validity = this.findLineValidity(index, lineTokens);
@@ -491,6 +493,7 @@ export class TAFParser extends AbstractParser {
         ...this.makeEmptyTAFTrend(),
         type: WeatherChangeType.PROB,
         validity,
+        raw: lineTokens.join(" "),
       };
 
       if (lineTokens.length > 1 && lineTokens[1] === this.TEMPO) {
@@ -498,6 +501,7 @@ export class TAFParser extends AbstractParser {
           ...this.makeEmptyTAFTrend(),
           type: WeatherChangeType[lineTokens[1] as WeatherChangeType],
           validity,
+          raw: lineTokens.join(" "),
         };
         index = 2;
       }
@@ -511,6 +515,7 @@ export class TAFParser extends AbstractParser {
         ...this.makeEmptyTAFTrend(),
         type: WeatherChangeType[lineTokens[0] as WeatherChangeType],
         validity,
+        raw: lineTokens.join(" "),
       };
     }
 
@@ -553,7 +558,7 @@ export class TAFParser extends AbstractParser {
     }
   }
 
-  makeEmptyTAFTrend(): Omit<TAFTrend, "type" | "validity"> {
+  makeEmptyTAFTrend(): Omit<TAFTrend, "type" | "validity" | "raw"> {
     return {
       remarks: [],
       clouds: [],

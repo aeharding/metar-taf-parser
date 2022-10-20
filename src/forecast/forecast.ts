@@ -48,6 +48,7 @@ function makeInitialForecast(taf: ITAFDated): Forecast {
     remarks: taf.remarks,
     clouds: taf.clouds,
     weatherConditions: taf.weatherConditions,
+    raw: taf.initialRaw,
     validity: {
       // End day/hour are for end of the entire TAF
       startDay: taf.validity.startDay,

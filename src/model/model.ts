@@ -192,10 +192,16 @@ export interface ITAF extends IAbstractWeatherCode {
   maxTemperature?: ITemperatureDated;
   minTemperature?: ITemperatureDated;
   trends: TAFTrend[];
+
+  /**
+   * Just the first part of the TAF message without trends (FM, BECMG, etc)
+   */
+  initialRaw: string;
 }
 
 export interface IAbstractTrend extends IAbstractWeatherContainer {
   type: WeatherChangeType;
+  raw: string;
 }
 
 export interface IMetarTrendTime extends ITime {
