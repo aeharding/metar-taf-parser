@@ -58,6 +58,24 @@ TAF
         );
       });
 
+      test("should set maxTemperature, minTemperature with dates", () => {
+        const taf = parseTAF(
+          `
+    TAF AMD SBPJ 221450Z 2218/2318 TN25/2309Z TX34/2316Z
+        `,
+          { issued: new Date("2022-10-22") }
+        );
+
+        expect(taf.maxTemperature?.temperature).toBe(34);
+        expect(taf.maxTemperature?.date).toEqual(
+          new Date("2022-10-23T16:00:00.000Z")
+        );
+        expect(taf.minTemperature?.temperature).toBe(25);
+        expect(taf.minTemperature?.date).toEqual(
+          new Date("2022-10-23T09:00:00.000Z")
+        );
+      });
+
       test("sets trend validity", () => {
         const tafDated = parseTAF(rawTAF, {
           issued: new Date("2022-01-16"),
