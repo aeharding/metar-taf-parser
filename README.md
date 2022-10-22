@@ -65,20 +65,28 @@ TAF reports are a little funky... FM, BECMG, PROB, weird validity periods, etc. 
 
 ⚠️ **Important:** The `Forecast` abstraction makes some assumptions in order to make it easier to consume the TAF. If you want different behavior, you may want to use the lower level `parseTAF` function directly (see above). Below are some of the assumptions the `Forecast` API makes:
 
-1.  The `validity` object found from `parseTAF`'s `trend[]` is too low level. Instead, you will find `start` and `end` on the base `Forecast` object. The end of a `FM` and `BECMG` group is derived from the start of the next trend, or the end of the report validity.
+1.  The `validity` object found from `parseTAF`'s `trends[]` is too low level, so it is removed. Instead, you will find `start` and `end` on the base `Forecast` object. The end of a `FM` and `BECMG` group is derived from the start of the next `FM`/`BECMG` trend, or the end of the report validity if the last.
 
-    Additionally, there is an additional property, `by`, on `BECMG` trends for when conditions are expected to finish transitioning. You will need to type guard `type = BECMG` to access this property.
+    Additionally, there is a property, `by`, on `BECMG` trends for when conditions are expected to finish transitioning. You will need to type guard `type = BECMG` to access this property.
+
+    ```ts
+    const firstForecast = report.forecast[1];
+    if (firstForecast.type === WeatherChangeType.BECMG) {
+      // Can now access `by`
+      console.log(firstForecast.by);
+    }
+    ```
 
 2.  `BECMG` trends are hydrated with the context of previous trends. For example, if:
 
         TAF SBBR 221500Z 2218/2318 15008KT 9999 FEW045
           BECMG 2308/2310 09002KT
 
-    Then the `BECMG` group will also have visibility and clouds from previously found conditions, with updated winds
+    Then the `BECMG` group will also have visibility and clouds from previously found conditions, with updated winds.
 
 #### `parseTAFAsForecast`
 
-Returns a more normalized TAF report. Most notably: while the `parseTAF` function returns initial weather conditions on the base of the returned result (and further conditions on `trends[]`), the `parseTAFAsForecast` function returns the initial weather conditions as the first element of the `forecast[]` property, followed by subsequent trends. This makes it much easier to iterate though.
+Returns a more normalized TAF report than `parseTAF`. Most notably: while the `parseTAF` function returns initial weather conditions on the base of the returned result (and further conditions on `trends[]`), the `parseTAFAsForecast` function returns the initial weather conditions as the first element of the `forecast[]` property (with `type = undefined`), followed by subsequent trends. (For more, please see the above about the forecast abstraction.) This makes it much easier to render a UI similar to the [aviationweather.gov](https://www.aviationweather.gov/taf/data?ids=SBPJ&format=decoded&metars=off&layout=on) TAF decoder.
 
 ```ts
 import { parseTAFAsForecast } from "metar-taf-parser";

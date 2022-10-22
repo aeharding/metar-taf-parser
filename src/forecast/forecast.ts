@@ -89,77 +89,77 @@ function makeInitialForecast(taf: ITAFDated): ForecastWithoutDates {
   };
 }
 
+function hasImplicitEnd({ type }: ForecastWithoutDates): boolean {
+  return (
+    type === WeatherChangeType.FM ||
+    // BECMG are special - the "end" date in the validity isn't actually
+    // the end date, it's when the change that's "becoming" is expected to
+    // finish transition. The actual "end" date of the BECMG is determined by
+    // the next FM/BECMG/end of the report validity, just like a FM
+    type === WeatherChangeType.BECMG ||
+    // Special case for beginning of report conditions
+    type === undefined
+  );
+}
+
 function hydrateEndDates(
   trends: ForecastWithoutDates[],
   reportValidity: IValidityDated
 ): Forecast[] {
-  const fms = trends.filter(
-    ({ type }) =>
-      type === WeatherChangeType.FM ||
-      // BECMG are special - the "end" date in the validity isn't actually
-      // the end date, it's when the change that's "becoming" is expected to
-      // finish transition. The actual "end" date of the BECMG is determined by
-      // the next FM/BECMG/end of the report validity, just like a FM
-      type === WeatherChangeType.BECMG ||
-      // Special case for beginning of report conditions
-      type === undefined
-  );
-  const others: Forecast[] = trends
-    .filter(
-      ({ type }) =>
-        type &&
-        type !== WeatherChangeType.FM &&
-        type !== WeatherChangeType.BECMG
-    )
-    .map(
-      (other) =>
-        ({
-          ...other,
-          start: other.validity.start,
-
-          // Has a type and not a FM/BECMG/undefined, so always has an end
-          end: other.validity.end!,
-        } as Forecast)
-    );
+  function findNext(index: number): ForecastWithoutDates | undefined {
+    for (let i = index; i < trends.length; i++) {
+      if (hasImplicitEnd(trends[i])) return trends[i];
+    }
+  }
 
   const forecasts: Forecast[] = [];
 
-  for (let i = 0; i < fms.length; i++) {
-    const previousHydratedTrend = forecasts[i - 1];
-    const initialTrend = fms[i];
-    const nextTrend = fms[i + 1];
+  let previouslyHydratedTrend: Forecast | undefined;
 
-    if (nextTrend === undefined) {
-      forecasts.push(
-        hydrateWithPreviousContextIfNeeded(
-          {
-            ...initialTrend,
-            start: initialTrend.validity.start,
-            end: reportValidity.end,
-            ...byIfNeeded(initialTrend),
-          } as Forecast,
-          previousHydratedTrend
-        )
-      );
+  for (let i = 0; i < trends.length; i++) {
+    const currentTrend = trends[i];
+    const nextTrend = findNext(i + 1);
+
+    if (!hasImplicitEnd(currentTrend)) {
+      forecasts.push({
+        ...currentTrend,
+        start: currentTrend.validity.start,
+
+        // Has a type and not a FM/BECMG/undefined, so always has an end
+        end: currentTrend.validity.end!,
+      } as Forecast);
       continue;
     }
 
-    forecasts.push(
-      hydrateWithPreviousContextIfNeeded(
+    let forecast: Forecast;
+
+    if (nextTrend === undefined) {
+      forecast = hydrateWithPreviousContextIfNeeded(
         {
-          ...initialTrend,
-          start: initialTrend.validity.start,
-          end: new Date(nextTrend.validity.start),
-          ...byIfNeeded(initialTrend),
+          ...currentTrend,
+          start: currentTrend.validity.start,
+          end: reportValidity.end,
+          ...byIfNeeded(currentTrend),
         } as Forecast,
-        previousHydratedTrend
-      )
-    );
+        previouslyHydratedTrend
+      );
+    } else {
+      forecast = hydrateWithPreviousContextIfNeeded(
+        {
+          ...currentTrend,
+          start: currentTrend.validity.start,
+          end: new Date(nextTrend.validity.start),
+          ...byIfNeeded(currentTrend),
+        } as Forecast,
+        previouslyHydratedTrend
+      );
+    }
+
+    forecasts.push(forecast);
+    previouslyHydratedTrend = forecast;
   }
 
-  return [...forecasts, ...others].sort(
-    (a, b) => a.start.getTime() - b.start.getTime()
-  );
+  return forecasts;
 }
 
 /**
@@ -168,7 +168,7 @@ function hydrateEndDates(
  */
 function hydrateWithPreviousContextIfNeeded(
   forecast: Forecast,
-  context: Forecast
+  context: Forecast | undefined
 ): Forecast {
   if (forecast.type !== WeatherChangeType.BECMG || !context) return forecast;
 
