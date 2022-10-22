@@ -89,7 +89,7 @@ function makeInitialForecast(taf: ITAFDated): ForecastWithoutDates {
   };
 }
 
-function hasImplicitEnd({ type }: ForecastWithoutDates): boolean {
+function hasImplicitEnd({ type }: ForecastWithoutDates | Forecast): boolean {
   return (
     type === WeatherChangeType.FM ||
     // BECMG are special - the "end" date in the validity isn't actually
@@ -232,9 +232,7 @@ export function getCompositeForecastForDate(
 
   for (const forecast of forecastContainer.forecast) {
     if (
-      (forecast.type === WeatherChangeType.FM ||
-        forecast.type === WeatherChangeType.BECMG ||
-        forecast.type === undefined) &&
+      hasImplicitEnd(forecast) &&
       forecast.start.getTime() <= date.getTime()
     ) {
       // Is FM or initial forecast
@@ -242,9 +240,7 @@ export function getCompositeForecastForDate(
     }
 
     if (
-      forecast.type &&
-      forecast.type !== WeatherChangeType.FM &&
-      forecast.type !== WeatherChangeType.BECMG &&
+      !hasImplicitEnd(forecast) &&
       forecast.end &&
       forecast.end.getTime() - date.getTime() > 0 &&
       forecast.start.getTime() - date.getTime() <= 0
