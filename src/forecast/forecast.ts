@@ -117,7 +117,7 @@ function hydrateEndDates(
           ...other,
           start: other.validity.start,
 
-          // Has a type and not a FM/BECMG, so always has an end
+          // Has a type and not a FM/BECMG/undefined, so always has an end
           end: other.validity.end!,
         } as Forecast)
     );
@@ -171,6 +171,11 @@ function hydrateWithPreviousContextIfNeeded(
   context: Forecast
 ): Forecast {
   if (forecast.type !== WeatherChangeType.BECMG || !context) return forecast;
+
+  // Remarks should not be carried over
+  context = { ...context };
+  delete context.remark;
+  context.remarks = [];
 
   forecast = {
     ...context,
