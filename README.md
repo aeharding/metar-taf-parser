@@ -63,18 +63,18 @@ const datedTAF = parseTAF(rawTAFString, { issued });
 
 TAF reports are a little funky... FM, BECMG, PROB, weird validity periods, etc. You may find the higher level `Forecast` abstraction more helpful.
 
-> **Important:** The `Forecast` abstraction makes some assumptions in order to make it easier to consume the TAF. If you want different behavior, you may want to use the lower level `parseTAF` function directly (see above). Below are some of the assumptions the `Forecast` API makes:
->
-> 1.  The `validity` object found from `parseTAF`'s `trend[]` is too low level. Instead, you will find `start` and `end` on the base `Forecast` object. The end of a `FM` and `BECMG` group is derived from the start of the next trend, or the end of the report validity.
->
->     Additionally, there is an additional property, `by`, on `BECMG` trends for when conditions are expected to finish transitioning. You will need to type guard `type = BECMG` to access this property.
->
-> 2.  `BECMG` trends are hydrated with the context of previous trends. For example, if:
->
->         TAF SBBR 221500Z 2218/2318 15008KT 9999 FEW045
->           BECMG 2308/2310 09002KT
->
->     Then the `BECMG` group will also have visibility and clouds from previously found conditions, with updated winds
+⚠️ **Important:** The `Forecast` abstraction makes some assumptions in order to make it easier to consume the TAF. If you want different behavior, you may want to use the lower level `parseTAF` function directly (see above). Below are some of the assumptions the `Forecast` API makes:
+
+1.  The `validity` object found from `parseTAF`'s `trend[]` is too low level. Instead, you will find `start` and `end` on the base `Forecast` object. The end of a `FM` and `BECMG` group is derived from the start of the next trend, or the end of the report validity.
+
+    Additionally, there is an additional property, `by`, on `BECMG` trends for when conditions are expected to finish transitioning. You will need to type guard `type = BECMG` to access this property.
+
+2.  `BECMG` trends are hydrated with the context of previous trends. For example, if:
+
+        TAF SBBR 221500Z 2218/2318 15008KT 9999 FEW045
+          BECMG 2308/2310 09002KT
+
+    Then the `BECMG` group will also have visibility and clouds from previously found conditions, with updated winds
 
 #### `parseTAFAsForecast`
 
