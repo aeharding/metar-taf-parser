@@ -9,7 +9,7 @@ import {
   isWeatherConditionValid,
   ITAF,
   TAFTrend,
-  ITemperatureDated,
+  ITemperature,
   IValidity,
   IWeatherCondition,
   IValidityDated,
@@ -101,7 +101,7 @@ function parseRemark(
  * @param input the string containing the temperature
  * @returns TemperatureDated object
  */
-export function parseTemperature(input: string): ITemperatureDated {
+export function parseTemperature(input: string): ITemperature {
   const parts = pySplit(input, "/");
 
   return {
