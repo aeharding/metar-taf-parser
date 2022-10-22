@@ -5,6 +5,7 @@ import {
   ITAF,
   IBaseTAFTrend,
   IValidity,
+  ITemperatureDated,
 } from "model/model";
 import { determineReportIssuedDate, getReportDate } from "helpers/date";
 
@@ -38,6 +39,9 @@ export interface ITAFDated extends ITAF {
     end: Date;
   };
 
+  minTemperature?: ITemperatureDated;
+  maxTemperature?: ITemperatureDated;
+
   trends: TAFTrendDated[];
 }
 
@@ -65,6 +69,26 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
         report.validity.endHour
       ),
     },
+    minTemperature: report.minTemperature
+      ? {
+          ...report.minTemperature,
+          date: getReportDate(
+            issued,
+            report.minTemperature.day,
+            report.minTemperature.hour
+          ),
+        }
+      : undefined,
+    maxTemperature: report.maxTemperature
+      ? {
+          ...report.maxTemperature,
+          date: getReportDate(
+            issued,
+            report.maxTemperature.day,
+            report.maxTemperature.hour
+          ),
+        }
+      : undefined,
     trends: report.trends.map(
       (trend) =>
         ({

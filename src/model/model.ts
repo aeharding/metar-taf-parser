@@ -34,7 +34,12 @@ export interface IAirport {
 export interface IWind {
   speed: number;
   direction: string;
+
+  /**
+   * If undefined, direction is variable
+   */
   degrees?: number;
+
   gust?: number;
   minVariation?: number;
   maxVariation?: number;
@@ -80,10 +85,14 @@ export function isWeatherConditionValid(weather: IWeatherCondition): boolean {
   );
 }
 
-export interface ITemperatureDated {
+export interface ITemperature {
   temperature: number;
   day: number;
   hour: number;
+}
+
+export interface ITemperatureDated extends ITemperature {
+  date: Date;
 }
 
 export interface IRunwayInfo {
@@ -189,8 +198,8 @@ export interface IMetar extends IAbstractWeatherCode {
 
 export interface ITAF extends IAbstractWeatherCode {
   validity: IValidity;
-  maxTemperature?: ITemperatureDated;
-  minTemperature?: ITemperatureDated;
+  maxTemperature?: ITemperature;
+  minTemperature?: ITemperature;
   trends: TAFTrend[];
 
   /**
