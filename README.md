@@ -45,7 +45,7 @@ const datedMetar = parseMetar(rawMetarString, { issued });
 
 #### `parseTAF`
 
-👉 **Note:** One of the common use cases for TAF reports is to get relevant forecast data for a given date. Check out [the `Forecast` abstraction](#higher-level-parsing-the-forecast-abstraction) below which may provide TAF data in a more normalized format, depending on your use case.
+> 👉 **Note:** One of the common use cases for TAF reports is to get relevant forecast data for a given `Date`, or display the various forecast groups to the user. Check out [the `Forecast` abstraction](#higher-level-parsing-the-forecast-abstraction) below which may provide TAF data in a more normalized and easier to use format, depending on your use case.
 
 ```ts
 import { parseTAF } from "metar-taf-parser";
@@ -61,7 +61,20 @@ const datedTAF = parseTAF(rawTAFString, { issued });
 
 ### Higher level parsing: The Forecast abstraction
 
-TAF reports are a little funky... FM, BECMG, PROB, etc. You may find the `Forecast` abstraction more helpful.
+TAF reports are a little funky... FM, BECMG, PROB, weird validity periods, etc. You may find the higher level `Forecast` abstraction more helpful.
+
+> **Important:** The `Forecast` abstraction makes some assumptions in order to make it easier to consume the TAF. If you want different behavior, you may want to use the lower level `parseTAF` function directly (see above). Below are some of the assumptions the `Forecast` API makes:
+>
+> 1.  The `validity` object found from `parseTAF`'s `trend[]` is too low level. Instead, you will find `start` and `end` on the base `Forecast` object. The end of a `FM` and `BECMG` group is derived from the start of the next trend, or the end of the report validity.
+>
+>     Additionally, there is an additional property, `by`, on `BECMG` trends for when conditions are expected to finish transitioning. You will need to type guard `type = BECMG` to access this property.
+>
+> 2.  `BECMG` trends are hydrated with the context of previous trends. For example, if:
+>
+>         TAF SBBR 221500Z 2218/2318 15008KT 9999 FEW045
+>           BECMG 2308/2310 09002KT
+>
+>     Then the `BECMG` group will also have visibility and clouds from previously found conditions, with updated winds
 
 #### `parseTAFAsForecast`
 
@@ -80,11 +93,11 @@ console.log(report.forecast);
 
 > ⚠️ **Warning:** Experimental API
 
-Provides all relevant weather conditions for a given timestamp. It returns a `ICompositeForecast` with a `base` and `additional` component. The `base` component is the base weather condition period (the FM part of the report) - and there will always be one.
+Provides all relevant weather conditions for a given timestamp. It returns a `ICompositeForecast` with a `base` and `additional` component. The `base` component is the base weather condition period (type = `FM`, `BECMG`, or `undefined`) - and there will always be one.
 
-The `additional` property is an array of weather condition periods valid for the given timestamp (any `BECMG`, `PROB`, `TEMPO`, etc.)
+The `additional` property is an array of weather condition periods valid for the given timestamp (any `PROB` and/or `TEMPO`)
 
-You will still need to write some logic to use this API to determine what data to use - for example, if `additional[0].visibility` exists, use it over `base.visibility`.
+You will still need to write some logic to use this API to determine what data to use - for example, if `additional[0].visibility` exists, you may want to use it over `base.visibility`.
 
 #### Example
 
