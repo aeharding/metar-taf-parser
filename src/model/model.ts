@@ -10,6 +10,7 @@ import {
   RunwayInfoTrend,
   RunwayInfoUnit,
   Intensity,
+  SpeedUnit,
 } from "model/enum";
 import { Remark } from "command/remark";
 
@@ -43,7 +44,7 @@ export interface IWind {
   gust?: number;
   minVariation?: number;
   maxVariation?: number;
-  unit: string;
+  unit: SpeedUnit;
 }
 
 export interface IWindShear extends IWind {

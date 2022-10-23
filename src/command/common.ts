@@ -5,8 +5,9 @@ import {
   IWindShear,
 } from "model/model";
 import * as converter from "commons/converter";
-import { CloudQuantity, CloudType } from "model/enum";
+import { CloudQuantity, CloudType, SpeedUnit } from "model/enum";
 import { UnexpectedParseError } from "commons/errors";
+import { as } from "helpers/helpers";
 
 interface ICommand {
   canParse(str: string): boolean;
@@ -25,14 +26,14 @@ function makeWind(
   direction: string,
   speed: string,
   gust: string,
-  unit: string
+  unit: SpeedUnit
 ): IWind {
   return {
     speed: +speed,
     direction: converter.degreesToCardinal(direction),
     degrees: direction !== "VRB" ? +direction : undefined,
     gust: gust ? +gust : undefined,
-    unit: unit || "KT",
+    unit,
   };
 }
 
@@ -107,7 +108,12 @@ export class WindCommand implements ICommand {
 
     if (!matches) throw new UnexpectedParseError("Wind should be defined");
 
-    return makeWind(matches[1], matches[2], matches[3], matches[4]);
+    return makeWind(
+      matches[1],
+      matches[2],
+      matches[3],
+      as(matches[4] || "KT", SpeedUnit)
+    );
   }
 
   execute(container: IAbstractWeatherContainer, windString: string): boolean {
@@ -155,7 +161,12 @@ export class WindShearCommand implements ICommand {
       throw new UnexpectedParseError("Wind shear should be defined");
 
     return {
-      ...makeWind(matches[2], matches[3], matches[4], matches[5]),
+      ...makeWind(
+        matches[2],
+        matches[3],
+        matches[4],
+        as(matches[5], SpeedUnit)
+      ),
       height: 100 * +matches[1],
     };
   }
