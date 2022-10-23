@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/metar-taf-parser/static/js/main.52a7acdb.js",
+    "main.js": "/metar-taf-parser/static/js/main.7e5dc23a.js",
     "static/js/787.759e47f1.chunk.js": "/metar-taf-parser/static/js/787.759e47f1.chunk.js",
     "index.html": "/metar-taf-parser/index.html",
-    "main.52a7acdb.js.map": "/metar-taf-parser/static/js/main.52a7acdb.js.map",
+    "main.7e5dc23a.js.map": "/metar-taf-parser/static/js/main.7e5dc23a.js.map",
     "787.759e47f1.chunk.js.map": "/metar-taf-parser/static/js/787.759e47f1.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.52a7acdb.js"
+    "static/js/main.7e5dc23a.js"
   ]
 }
