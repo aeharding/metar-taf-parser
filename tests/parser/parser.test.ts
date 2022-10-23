@@ -1098,6 +1098,22 @@ describe("TAFParser", () => {
     expect(parsed.corrected).toBe(true);
   });
 
+  test("should parse NSW as weather condition", () => {
+    const taf = `TAF FYWB 222200Z 2300/2400 36007KT 0700 FG OVC009
+    BECMG 2307/2309 9999 NSW BKN012`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends).toHaveLength(1);
+    expect(parsed.trends[0].type).toBe(WeatherChangeType.BECMG);
+    expect(parsed.trends[0].weatherConditions).toHaveLength(1);
+    expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.NO_SIGNIFICANT_WEATHER
+    );
+  });
+
   // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
   // (https://www.aviationweather.gov/taf/decoder#Date)
   //

@@ -212,13 +212,6 @@ export interface ITAF extends IAbstractWeatherCode {
 export interface IAbstractTrend extends IAbstractWeatherContainer {
   type: WeatherChangeType;
   raw: string;
-
-  /**
-   * No Significant Weather
-   *
-   * Flag indicates that previous weather conditions have stopped
-   */
-  nsw?: true;
 }
 
 export interface IMetarTrendTime extends ITime {

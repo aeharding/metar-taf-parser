@@ -136,6 +136,7 @@ export default {
     TS: "thunderstorm",
     UP: "unknown precipitation",
     VA: "volcanic ash",
+    NSW: 'no significant weather'
   },
   Remark: {
     ALQDS: "all quadrants",
