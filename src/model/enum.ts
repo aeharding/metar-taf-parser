@@ -136,6 +136,7 @@ export enum Phenomenon {
   DUSTSTORM = "DS",
   SANDSTORM = "SS",
   FUNNEL_CLOUD = "FC",
+  NO_SIGNIFICANT_WEATHER = "NSW",
 }
 
 export enum TimeIndicator {

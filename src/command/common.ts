@@ -66,6 +66,8 @@ export class CloudCommand implements ICommand {
   }
 
   canParse(cloudString: string): boolean {
+    if (cloudString === "NSW") return false;
+
     return this.#cloudRegex.test(cloudString);
   }
 }
