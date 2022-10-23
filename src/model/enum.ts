@@ -271,6 +271,12 @@ export enum DistanceUnit {
   StatuteMiles = "SM",
 }
 
+export enum SpeedUnit {
+  Knot = "KT",
+  MetersPerSecond = "MPS",
+  KilometersPerHour = "KM/H",
+}
+
 /**
  * Used to indicate the actual value is greater than or less than the value written
  *
