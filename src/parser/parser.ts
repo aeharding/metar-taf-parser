@@ -409,15 +409,20 @@ export class TAFParser extends AbstractParser {
       if (token == this.RMK) {
         parseRemark(taf, lines[0], i, this.locale);
         break;
-      } else if (token.startsWith(this.TX))
-        taf.maxTemperature = parseTemperature(token);
-      else if (token.startsWith(this.TN))
-        taf.minTemperature = parseTemperature(token);
-      else {
+      } else {
         parseFlags(taf, token);
         this.generalParse(taf, token);
       }
     }
+
+    const minMaxTemperatureLines = [
+      lines[0].slice(index + 1), // EU countries have min/max in first line
+    ];
+
+    // US military bases have min/max in last line
+    if (lines.length > 1) minMaxTemperatureLines.push(lines[lines.length - 1]);
+
+    this.parseMaxMinTemperatures(taf, minMaxTemperatureLines);
 
     // Handle the other lines
     for (let i = 1; i < lines.length; i++) {
@@ -425,6 +430,18 @@ export class TAFParser extends AbstractParser {
     }
 
     return taf;
+  }
+
+  parseMaxMinTemperatures(taf: ITAF, lines: string[][]) {
+    for (const line of lines) {
+      for (const token of line) {
+        if (token == this.RMK) break;
+        else if (token.startsWith(this.TX))
+          taf.maxTemperature = parseTemperature(token);
+        else if (token.startsWith(this.TN))
+          taf.minTemperature = parseTemperature(token);
+      }
+    }
   }
 
   /**
@@ -451,20 +468,6 @@ export class TAFParser extends AbstractParser {
       return ls;
     }
     const linesToken = lines.map(this.tokenize);
-
-    if (linesToken.length > 1) {
-      const lastLine = linesToken[lines.length - 1];
-      const temperatures = lastLine.filter(
-        (l) => l.startsWith(this.TX) || l.startsWith(this.TN)
-      );
-
-      if (temperatures.length) {
-        linesToken[0] = linesToken[0].concat(temperatures);
-        linesToken[lines.length - 1] = lastLine.filter(
-          (l) => !l.startsWith(this.TX) && !l.startsWith(this.TN)
-        );
-      }
-    }
 
     return linesToken;
   }

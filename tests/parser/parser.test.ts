@@ -490,7 +490,7 @@ describe("parseTemperature", () => {
 describe("TAFParser", () => {
   test("with invalid line breaks", () => {
     const code =
-      "TAF LFPG 150500Z 1506/1612 17005KT 6000 SCT012 \n" +
+      "TAF TXFL 150500Z 1506/1612 17005KT 6000 SCT012 \n" +
       "TEMPO 1506/1509 3000 BR BKN006 PROB40 \n" +
       "TEMPO 1506/1508 0400 BCFG BKN002 PROB40 \n" +
       "TEMPO 1512/1516 4000 -SHRA FEW030TCU BKN040 \n" +
@@ -499,7 +499,7 @@ describe("TAFParser", () => {
 
     const taf = new TAFParser(en).parse(code);
 
-    expect(taf.station).toBe("LFPG");
+    expect(taf.station).toBe("TXFL");
     expect(taf.day).toBe(15);
     expect(taf.hour).toBe(5);
     expect(taf.minute).toBe(0);
@@ -526,7 +526,7 @@ describe("TAFParser", () => {
     expect(taf.weatherConditions).toHaveLength(0);
 
     expect(taf.initialRaw).toBe(
-      "TAF LFPG 150500Z 1506/1612 17005KT 6000 SCT012 TX17/1512Z TN07/1605Z"
+      "TAF TXFL 150500Z 1506/1612 17005KT 6000 SCT012"
     );
     expect(taf.message).toBe(code);
 
@@ -649,7 +649,9 @@ describe("TAFParser", () => {
     expect(trend5.clouds[0].quantity).toBe(CloudQuantity.BKN);
     expect(trend5.clouds[0].type).toBeUndefined();
     expect(trend5.probability).toBe(40);
-    expect(trend5.raw).toBe("PROB40 TEMPO 1604/1607 0400 BCFG BKN002");
+    expect(trend5.raw).toBe(
+      "PROB40 TEMPO 1604/1607 0400 BCFG BKN002 TX17/1512Z TN07/1605Z"
+    );
   });
 
   test("without line breaks", () => {
