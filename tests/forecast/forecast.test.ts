@@ -196,6 +196,45 @@ TAF SBPJ 221450Z 2218/2318 21006KT 8000 SCT030 FEW040TCU TN25/2309Z TX34/2316Z
     );
   });
 
+  test("NSW flag should stop carrying over weatherConditions", () => {
+    const taf = parseTAF(
+      `TAF FYWB 222200Z 2300/2400 36007KT 0700 FG OVC009
+         BECMG 2307/2309 9999 NSW BKN012`,
+      { issued: new Date("2022-10-22") }
+    );
+
+    const report = getForecastFromTAF(taf);
+
+    expect(report.forecast).toHaveLength(2);
+
+    expect(report.forecast[0].weatherConditions).toHaveLength(1);
+
+    expect(report.forecast[1].type).toBe(WeatherChangeType.BECMG);
+    expect(report.forecast[1].nsw).toBe(true);
+    expect(report.forecast[1].weatherConditions).toHaveLength(0);
+  });
+
+  test("NSW flag should not propagate", () => {
+    const taf = parseTAF(
+      `TAF FYWB 222200Z 2300/2400 36007KT 0700 FG OVC009
+         BECMG 2307/2309 9999 NSW BKN012
+         BECMG 2310/2311 9999 BKN012`,
+      { issued: new Date("2022-10-22") }
+    );
+
+    const report = getForecastFromTAF(taf);
+
+    expect(report.forecast).toHaveLength(3);
+
+    expect(report.forecast[0].weatherConditions).toHaveLength(1);
+
+    expect(report.forecast[1].nsw).toBe(true);
+    expect(report.forecast[1].weatherConditions).toHaveLength(0);
+
+    expect(report.forecast[2].nsw).toBeFalsy();
+    expect(report.forecast[2].weatherConditions).toHaveLength(0);
+  });
+
   test("should have right trend types", () => {
     const taf = parseTAF(
       `

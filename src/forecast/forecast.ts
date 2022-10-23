@@ -176,6 +176,7 @@ function hydrateWithPreviousContextIfNeeded(
   context = { ...context };
   delete context.remark;
   context.remarks = [];
+  delete context.nsw;
 
   forecast = {
     ...context,
@@ -183,7 +184,10 @@ function hydrateWithPreviousContextIfNeeded(
   };
 
   if (!forecast.clouds.length) forecast.clouds = context.clouds;
-  if (!forecast.weatherConditions.length)
+
+  // If NSW = true, previous weather conditions have stopped and should
+  // not be carried over
+  if (!forecast.weatherConditions.length && !forecast.nsw)
     forecast.weatherConditions = context.weatherConditions;
 
   return forecast;

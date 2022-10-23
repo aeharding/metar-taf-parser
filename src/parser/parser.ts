@@ -361,6 +361,7 @@ export class TAFParser extends AbstractParser {
   PROB = "PROB";
   TX = "TX";
   TN = "TN";
+  NSW = "NSW";
 
   #validityPattern = /^\d{4}\/\d{4}$/;
 
@@ -554,7 +555,7 @@ export class TAFParser extends AbstractParser {
       if (line[i] === this.RMK) {
         parseRemark(trend, line, i, this.locale);
         break;
-      }
+      } else if (line[i] === this.NSW) trend.nsw = true;
       // already parsed
       else if (this.#validityPattern.test(line[i])) continue;
       else super.generalParse(trend, line[i]);
