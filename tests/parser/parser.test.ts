@@ -188,6 +188,7 @@ describe("MetarParser", () => {
       unit: DistanceUnit.Meters,
     });
     expect(trend.weatherConditions).toHaveLength(1);
+    expect(trend.raw).toBe("TEMPO 26015G25KT 3000 TSRA SCT025CB BKN050");
 
     const wc = trend.weatherConditions[0];
 
@@ -215,8 +216,10 @@ describe("MetarParser", () => {
     expect(metar.trends[0].weatherConditions[0].phenomenons[0]).toBe(
       Phenomenon.RAIN
     );
+    expect(metar.trends[0].raw).toBe("TEMPO SHRA");
     expect(metar.trends[1].type).toBe(WeatherChangeType.BECMG);
     expect(metar.trends[1].clouds).toHaveLength(1);
+    expect(metar.trends[1].raw).toBe("BECMG SKC");
   });
 
   test("tempo fm", () => {
@@ -227,6 +230,7 @@ describe("MetarParser", () => {
     expect(metar.trends).toHaveLength(1);
     expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
     expect(metar.trends[0].weatherConditions).toHaveLength(1);
+    expect(metar.trends[0].raw).toBe("TEMPO FM1830 SHRA");
 
     const trend = metar.trends[0];
 
@@ -262,6 +266,7 @@ describe("MetarParser", () => {
       value: 9999,
       unit: DistanceUnit.Meters,
     });
+    expect(trend.raw).toBe("TEMPO FM1700 TL1830 SHRA");
   });
 
   test("minVisibility", () => {
