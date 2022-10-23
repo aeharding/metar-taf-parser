@@ -327,16 +327,20 @@ export class MetarParser extends AbstractParser {
           metarTab[index] === this.TEMPO ||
           metarTab[index] === this.BECMG
         ) {
+          const startIndex = index;
+
           const trend: IMetarTrend = {
             type: WeatherChangeType[metarTab[index] as WeatherChangeType],
             weatherConditions: [],
             clouds: [],
             times: [],
             remarks: [],
-            raw: input,
+            raw: "",
           };
 
           index = this.parseTrend(index, trend, metarTab);
+          trend.raw = metarTab.slice(startIndex, index + 1).join(" ");
+
           metar.trends.push(trend);
         } else if (metarTab[index] === this.RMK) {
           parseRemark(metar, metarTab, index, this.locale);
