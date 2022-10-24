@@ -17,6 +17,7 @@ import {
   WeatherChangeType,
   DistanceUnit,
   ValueIndicator,
+  SpeedUnit,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
 import { Direction } from "model/enum";
@@ -58,9 +59,9 @@ describe("RemarkParser", () => {
     test(`parses "${code}"`, () => {
       const weatherCondition = new StubParser(en).parseWeatherCondition(code);
 
-      expect(weatherCondition.intensity).toBe(Intensity.LIGHT);
-      expect(weatherCondition.phenomenons).toHaveLength(1);
-      expect(weatherCondition.phenomenons[0]).toBe(Phenomenon.DRIZZLE);
+      expect(weatherCondition?.intensity).toBe(Intensity.LIGHT);
+      expect(weatherCondition?.phenomenons).toHaveLength(1);
+      expect(weatherCondition?.phenomenons[0]).toBe(Phenomenon.DRIZZLE);
     });
   })();
 
@@ -70,9 +71,9 @@ describe("RemarkParser", () => {
     test(`parses "${code}"`, () => {
       const weatherCondition = new StubParser(en).parseWeatherCondition(code);
 
-      expect(weatherCondition.intensity).toBeUndefined();
-      expect(weatherCondition.descriptive).toBe(Descriptive.SHOWERS);
-      expect(weatherCondition.phenomenons).toEqual([
+      expect(weatherCondition?.intensity).toBeUndefined();
+      expect(weatherCondition?.descriptive).toBe(Descriptive.SHOWERS);
+      expect(weatherCondition?.phenomenons).toEqual([
         Phenomenon.RAIN,
         Phenomenon.HAIL,
       ]);
@@ -1116,6 +1117,24 @@ describe("TAFParser", () => {
     expect(parsed.trends[0].weatherConditions).toHaveLength(1);
     expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
       Phenomenon.NO_SIGNIFICANT_WEATHER
+    );
+  });
+
+  test("should not parse bogus weather conditions", () => {
+    const taf = `TAF AMD KVOK 232200Z 2322/2423 15015G20KT 9999 BKN035 BKN050 510008 QNH2966INS
+    BECMG 2411/2412 17012KT 9000 -SHRA FEW006 BKN014 OVC021 510065 QNH2965INS TX24/2322Z TN16/2413Z LAST NO AMDS AFT 2322 NEXT 2409`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends).toHaveLength(1);
+    expect(parsed.trends[0].weatherConditions).toHaveLength(1);
+    expect(parsed.trends[0].weatherConditions[0].intensity).toBe(
+      Intensity.LIGHT
+    );
+    expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.RAIN
     );
   });
 
