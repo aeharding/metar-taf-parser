@@ -99,7 +99,7 @@ export class MainVisibilityCommand implements ICommand {
 }
 
 export class WindCommand implements ICommand {
-  #regex = /^(VRB|\d{3})(\d{2})G?(\d{2})?(KT|MPS|KM\/H)?/;
+  #regex = /^(VRB|[0-3]\d{2})(\d{2})G?(\d{2})?(KT|MPS|KM\/H)?/;
 
   canParse(windString: string): boolean {
     return this.#regex.test(windString);
