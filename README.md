@@ -101,11 +101,13 @@ console.log(report.forecast);
 
 > ⚠️ **Warning:** Experimental API
 
-Provides all relevant weather conditions for a given timestamp. It returns a `ICompositeForecast` with a `base` and `additional` component. The `base` component is the base weather condition period (type = `FM`, `BECMG`, or `undefined`) - and there will always be one.
+Provides all relevant weather conditions for a given timestamp. It returns an `ICompositeForecast` with a `prevailing` and `temporary` component. The `prevailing` component is the prevailing weather condition period (type = `FM`, `BECMG`, or `undefined`) - and there will always be one.
 
-The `additional` property is an array of weather condition periods valid for the given timestamp (any `PROB`, `TEMPO` and/or `INTER`).
+The `temporary` property is an array of weather condition periods valid for the given timestamp (any `PROB`, `TEMPO` and/or `INTER`) - conditions that are ephemeral and/or lower probability.
 
-You will still need to write some logic to use this API to determine what data to use - for example, if `additional[0].visibility` exists, you may want to use it over `base.visibility`.
+You will still need to write some logic to determine what data to use - for example, if `temporary[0].visibility` exists, you may want to use it over `prevailing.visibility`, or otherwise present it to the user.
+
+This function throws a `TimestampOutOfBoundsError` if the provided date is outside of the report validity period.
 
 #### Example
 
