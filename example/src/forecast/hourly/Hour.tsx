@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import { format } from "date-fns";
 import { CloudQuantity, ICloud, IWind, Visibility } from "metar-taf-parser";
-import { IHour } from "./Forecast";
+import { IHour } from "./HourlyForecast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faInfinity } from "@fortawesome/free-solid-svg-icons";
-import Code from "./Code";
-import Conditions from "./Conditions";
+import Code from "../Code";
+import Conditions from "../Conditions";
 
 export const Column = styled.div`
   width: 100px;
@@ -46,13 +46,13 @@ interface HourProps {
 
 export default function Hour({ hour }: HourProps) {
   const windDirection =
-    hour.additional[0]?.wind?.degrees != null
-      ? hour.additional[0]?.wind?.degrees
-      : hour.base.wind?.degrees;
+    hour.temporary[0]?.wind?.degrees != null
+      ? hour.temporary[0]?.wind?.degrees
+      : hour.prevailing.wind?.degrees;
 
   const ceiling = determineCeilingFromClouds([
-    ...hour.additional.flatMap(({ clouds }) => clouds),
-    ...hour.base.clouds,
+    ...hour.temporary.flatMap(({ clouds }) => clouds),
+    ...hour.prevailing.clouds,
   ]);
 
   return (
@@ -60,7 +60,9 @@ export default function Hour({ hour }: HourProps) {
       <Cell>{format(hour.hour, "p")}</Cell>
       <Cell>
         <Code
-          visibility={hour.additional[0]?.visibility || hour.base.visibility}
+          visibility={
+            hour.temporary[0]?.visibility || hour.prevailing.visibility
+          }
           ceiling={ceiling}
         />
       </Cell>
@@ -76,7 +78,7 @@ export default function Hour({ hour }: HourProps) {
       </Cell>
       <Cell>
         {formatVisibility(
-          hour.additional[0]?.visibility || hour.base.visibility
+          hour.temporary[0]?.visibility || hour.prevailing.visibility
         )}
       </Cell>
       <Cell>
@@ -87,8 +89,12 @@ export default function Hour({ hour }: HourProps) {
           </>
         )}
       </Cell>
-      <Cell>{formatWindSpeed(hour.additional[0]?.wind || hour.base.wind)}</Cell>
-      <Cell>{formatWindGust(hour.additional[0]?.wind || hour.base.wind)}</Cell>
+      <Cell>
+        {formatWindSpeed(hour.temporary[0]?.wind || hour.prevailing.wind)}
+      </Cell>
+      <Cell>
+        {formatWindGust(hour.temporary[0]?.wind || hour.prevailing.wind)}
+      </Cell>
     </Column>
   );
 }

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { isEqual, uniqWith } from "lodash";
 import { IWeatherCondition } from "metar-taf-parser";
-import { IHour } from "./Forecast";
+import { IHour } from "./hourly/HourlyForecast";
 
 const Nothing = styled.div`
   opacity: 0.5;
@@ -14,7 +14,7 @@ interface ConditionsProp {
 
 export default function Conditions({ hour }: ConditionsProp) {
   const allConditions = uniqWith(
-    [hour.base, ...hour.additional]
+    [hour.prevailing, ...hour.temporary]
       .reverse()
       .flatMap((forecast) => forecast.weatherConditions),
     isEqual

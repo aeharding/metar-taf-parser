@@ -1,9 +1,16 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import reactTextareaAutosize from "react-textarea-autosize";
-import { parseMetar, IMetar, Locale, parseTAF, ITAF } from "metar-taf-parser";
+import {
+  parseMetar,
+  Locale,
+  parseTAF,
+  IMetarTAFParserOptions,
+  parseTAFAsForecast,
+  IMetarTAFParserOptionsDated,
+} from "metar-taf-parser";
 import ReactJson from "react-json-view";
-import Error from "./Error";
+import ErrorComponent from "./Error";
 import { useNavigate } from "react-router";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import en from "metar-taf-parser/locale/en";
@@ -13,6 +20,8 @@ import it from "metar-taf-parser/locale/it";
 import pl from "metar-taf-parser/locale/pl";
 import zh from "metar-taf-parser/locale/zh-CN";
 import { css } from "@emotion/react";
+import format from "date-fns/format";
+import { omitByDeep } from "./helpers/omitByDeep";
 
 // Types are broke
 const Json = ReactJson as any;
@@ -30,6 +39,12 @@ const InputContainer = styled.div`
   grid-gap: 1rem;
 `;
 
+const OptionsBar = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
 const common = css`
   font-size: inherit;
   height: 40px;
@@ -45,7 +60,6 @@ const Button = styled.button`
   ${common}
 
   white-space: nowrap;
-  margin-right: 0.5rem;
   cursor: pointer;
 `;
 
@@ -60,6 +74,16 @@ const Select = styled.select`
 
   option {
     color: black;
+  }
+`;
+
+const Input = styled.input`
+  ${common}
+
+  font-family: inherit;
+
+  ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
   }
 `;
 
@@ -99,12 +123,13 @@ const METAR_EXAMPLE =
   "KTTN 051853Z 04011KT 1 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017=";
 
 const TAF_EXAMPLE = `
-TAF KSEA 101723Z 1018/1124 27006KT P6SM VCSH BKN013 OVC080
-  FM102200 23007KT P6SM VCSH OVC040
-  FM110400 04005KT P6SM -SHRA OVC030
-  FM111200 02010KT P6SM -SHRA OVC025
-  FM112000 01007KT P6SM BKN035
-`.trim();
+TAF FALE 252200Z 2600/2706 22008KT 9999 BKN020 TX22/2612Z TN19/2603Z
+  PROB30
+  TEMPO 2606/2618 5000 -RA BKN010
+  BECMG 2610/2612 12010KT
+  FM262200 VRB03KT CAVOK
+  BECMG 2704/2706 03010KT
+  `.trim();
 
 const langs = [
   { name: "en", locale: en, label: "🇬🇧 English" },
@@ -129,23 +154,60 @@ export function ParseTAF() {
   return <Parse entityName="TAF" parse={parseTAF} example={TAF_EXAMPLE} />;
 }
 
-interface ParseProps {
-  entityName: string;
-  parse: typeof parseMetar | typeof parseTAF;
-  example: string;
+export function ParseTAFAsForecast() {
+  return (
+    <Parse
+      entityName="TAF"
+      parse={(message, { issued }) => {
+        if (!issued)
+          throw new Error("parseTAFAsForecast requires an issued date");
+
+        return parseTAFAsForecast(message, { issued });
+      }}
+      example={TAF_EXAMPLE}
+      initialDate={new Date("2022-10-25")}
+    ></Parse>
+  );
 }
 
-function Parse({ entityName, parse, example: EXAMPLE }: ParseProps) {
+interface ParseProps<T extends () => unknown> {
+  entityName: string;
+  parse: (
+    message: string,
+    options: Partial<Pick<IMetarTAFParserOptionsDated, "issued">> &
+      IMetarTAFParserOptions
+  ) => ReturnType<T>;
+  example: string;
+  initialDate?: Date;
+}
+
+function Parse<T extends () => unknown>({
+  entityName,
+  parse,
+  example: EXAMPLE,
+  initialDate,
+}: ParseProps<T>) {
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const [input, setInput] = useState(search.get("input") || "");
-  const [result, setResult] = useState<IMetar | ITAF | undefined>();
+  const [result, setResult] = useState<any>();
   const [error, setError] = useState<Error | undefined>();
   const [lang, setLang] = useState("en");
 
+  const formatString = "yyyy-M-dd";
+  const [issued, setIssued] = useState(
+    initialDate ? format(initialDate, formatString) : undefined
+  );
+
   useEffect(() => {
     try {
-      if (input) setResult(parse?.(input, { locale: findLocale(lang) }));
+      if (input)
+        setResult(
+          parse?.(input, {
+            locale: findLocale(lang),
+            issued: issued ? new Date(issued) : undefined,
+          })
+        );
       else setResult(undefined);
 
       setError(undefined);
@@ -154,11 +216,17 @@ function Parse({ entityName, parse, example: EXAMPLE }: ParseProps) {
       setResult(undefined);
       console.error(e);
     }
-  }, [input, navigate, lang, parse]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [input, navigate, lang, parse, issued]);
 
   useEffect(() => {
     setInput(search.get("input") || "");
   }, [search]);
+
+  useEffect(() => {
+    (window as any).result = result;
+  }, [result]);
 
   function inputChange(input: string) {
     setInput(input);
@@ -172,7 +240,7 @@ function Parse({ entityName, parse, example: EXAMPLE }: ParseProps) {
     <>
       <Container>
         <InputContainer>
-          <div>
+          <OptionsBar>
             <Button onClick={() => inputChange(EXAMPLE)}>
               Autofill example
             </Button>
@@ -184,7 +252,14 @@ function Parse({ entityName, parse, example: EXAMPLE }: ParseProps) {
                 </option>
               ))}
             </Select>
-          </div>
+
+            <Input
+              type="date"
+              value={issued}
+              onChange={(e) => setIssued(e.target.value)}
+              title="Issued date (approximate), used to determine year & month of TAF/METAR"
+            />
+          </OptionsBar>
           <Textarea
             onChange={(e) => {
               inputChange(e.target.value);
@@ -195,12 +270,12 @@ function Parse({ entityName, parse, example: EXAMPLE }: ParseProps) {
           />
         </InputContainer>
 
-        {error && <Error error={error} />}
+        {error && <ErrorComponent error={error} />}
 
         <JsonContainer>
           <Json
             // Hide undefined values from displaying
-            src={result ? JSON.parse(JSON.stringify(result)) : result}
+            src={omitByDeep(result, (v) => v === undefined)}
             theme="harmonic"
             enableClipboard={false}
           />

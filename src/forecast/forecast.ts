@@ -49,8 +49,24 @@ export interface IForecastContainer extends IFlags {
 }
 
 export function getForecastFromTAF(taf: ITAFDated): IForecastContainer {
+  const {
+    trends,
+    wind,
+    visibility,
+    verticalVisibility,
+    windShear,
+    cavok,
+    remark,
+    remarks,
+    clouds,
+    weatherConditions,
+    initialRaw,
+    validity,
+    ...tafWithoutBaseProperties
+  } = taf;
+
   return {
-    ...taf,
+    ...tafWithoutBaseProperties,
     start: getReportDate(
       taf.issued,
       taf.validity.startDay,
@@ -121,8 +137,11 @@ function hydrateEndDates(
     const nextTrend = findNext(i + 1);
 
     if (!hasImplicitEnd(currentTrend)) {
+      const { validity, ...trend } = currentTrend;
+
       forecasts.push({
-        ...currentTrend,
+        ...trend,
+
         start: currentTrend.validity.start,
 
         // Has a type and not a FM/BECMG/undefined, so always has an end
@@ -132,11 +151,13 @@ function hydrateEndDates(
     }
 
     let forecast: Forecast;
+    const { validity, ...trendWithoutValidity } = currentTrend;
 
     if (nextTrend === undefined) {
       forecast = hydrateWithPreviousContextIfNeeded(
         {
-          ...currentTrend,
+          ...trendWithoutValidity,
+
           start: currentTrend.validity.start,
           end: reportValidity.end,
           ...byIfNeeded(currentTrend),
@@ -146,7 +167,8 @@ function hydrateEndDates(
     } else {
       forecast = hydrateWithPreviousContextIfNeeded(
         {
-          ...currentTrend,
+          ...trendWithoutValidity,
+
           start: currentTrend.validity.start,
           end: new Date(nextTrend.validity.start),
           ...byIfNeeded(currentTrend),
@@ -177,12 +199,17 @@ function hydrateWithPreviousContextIfNeeded(
   delete context.remark;
   context.remarks = [];
 
+  // vertical visibility should not be carried over, if clouds exist
+  if (forecast.clouds.length) delete context.verticalVisibility;
+
   forecast = {
     ...context,
     ...forecast,
   };
 
-  if (!forecast.clouds.length) forecast.clouds = context.clouds;
+  if (!forecast.clouds.length) {
+    forecast.clouds = context.clouds;
+  }
 
   if (!forecast.weatherConditions.length)
     forecast.weatherConditions = context.weatherConditions;
@@ -192,18 +219,18 @@ function hydrateWithPreviousContextIfNeeded(
 
 export interface ICompositeForecast {
   /**
-   * The base forecast (type is `FM` or initial group)
+   * Prevailing conditions: type is `FM`, `BECMG` or initial conditions (`undefined` type)
    */
-  base: Forecast;
+  prevailing: Forecast;
 
   /**
-   * Any forecast here should pre-empt the base forecast. These forecasts may
+   * Any forecast here should pre-empt the prevailing forecast. These forecasts may
    * have probabilities of occuring, be temporary, or otherwise notable
    * precipitation events
    *
    * `type` is (`TEMPO`, `INTER` or `PROB`)
    */
-  additional: Forecast[];
+  temporary: Forecast[];
 }
 
 export class TimestampOutOfBoundsError extends ParseError {
@@ -228,8 +255,8 @@ export function getCompositeForecastForDate(
       "Provided timestamp is outside the report validity period"
     );
 
-  let base: Forecast | undefined;
-  let additional: Forecast[] = [];
+  let prevailing: Forecast | undefined;
+  let temporary: Forecast[] = [];
 
   for (const forecast of forecastContainer.forecast) {
     if (
@@ -237,7 +264,7 @@ export function getCompositeForecastForDate(
       forecast.start.getTime() <= date.getTime()
     ) {
       // Is FM, BECMG or initial forecast
-      base = forecast;
+      prevailing = forecast;
     }
 
     if (
@@ -246,14 +273,15 @@ export function getCompositeForecastForDate(
       forecast.end.getTime() - date.getTime() > 0 &&
       forecast.start.getTime() - date.getTime() <= 0
     ) {
-      // Is TEMPO, INTER, or PROB
-      additional.push(forecast);
+      // Is TEMPO, INTER, PROB etc
+      temporary.push(forecast);
     }
   }
 
-  if (!base) throw new UnexpectedParseError("Unable to find trend for date");
+  if (!prevailing)
+    throw new UnexpectedParseError("Unable to find trend for date");
 
-  return { base, additional };
+  return { prevailing, temporary };
 }
 
 function byIfNeeded(forecast: ForecastWithoutDates): { by?: Date } {

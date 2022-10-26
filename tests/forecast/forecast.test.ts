@@ -262,8 +262,8 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         forecast
       );
 
-      expect(composite.base).toBeDefined();
-      expect(composite.additional).toHaveLength(1);
+      expect(composite.prevailing).toBeDefined();
+      expect(composite.temporary).toHaveLength(1);
     });
 
     test("finds FM @ start, without the TEMPO (exclusive end validity)", () => {
@@ -272,8 +272,8 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         forecast
       );
 
-      expect(composite.base).toBeDefined();
-      expect(composite.additional).toHaveLength(0);
+      expect(composite.prevailing).toBeDefined();
+      expect(composite.temporary).toHaveLength(0);
     });
 
     test("throws out of bounds", () => {

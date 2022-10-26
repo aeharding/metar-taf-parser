@@ -50,7 +50,11 @@ export default function Tabs() {
       <Rest />
       <Tab to={{ pathname: "/taf", search: "" }}>parseTAF</Tab>
       <Rest />
-      <Tab to={{ pathname: "/forecast", search: "" }}>Forecast demo</Tab>
+      <Tab to={{ pathname: "/parseTAFAsForecast", search: "" }}>
+        parseTAFAsForecast
+      </Tab>
+      <Rest />
+      <Tab to={{ pathname: "/forecast", search: "" }}>Forecast Demo</Tab>
       <Rest />
     </TabContainer>
   );
