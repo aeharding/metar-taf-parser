@@ -976,6 +976,56 @@ describe("TAFParser", () => {
     expect(taf.trends[2].remarks).toHaveLength(1);
   });
 
+  test("parses INTER trend", () => {
+    const taf = new TAFParser(en).parse(`
+      TAF TAF
+        AMD YWLM 270723Z 2707/2806 19020G30KT 9999 -SHRA SCT015 BKN020
+        BECMG 2708/2710 19014KT 9999 -SHRA SCT010 BKN015
+        BECMG 2800/2802 18015G25KT 9999 -SHRA SCT015 BKN020
+        TEMPO 2707/2712 3000 SHRA SCT005 BKN010 INTER 2712/2802 4000 SHRA SCT005 BKN010`);
+
+    expect(taf.trends).toHaveLength(4);
+    expect(taf.trends[3].type).toBe(WeatherChangeType.INTER);
+    expect(taf.trends[3].validity.startDay).toBe(27);
+    expect(taf.trends[3].validity.startHour).toBe(12);
+    expect(taf.trends[3].validity.endDay).toBe(28);
+    expect(taf.trends[3].validity.endHour).toBe(2);
+    expect(taf.trends[3].visibility?.value).toBe(4000);
+    expect(taf.trends[3].visibility?.unit).toBe(DistanceUnit.Meters);
+    expect(taf.trends[3].weatherConditions).toHaveLength(1);
+    expect(taf.trends[3].weatherConditions[0].descriptive).toBe(
+      Descriptive.SHOWERS
+    );
+    expect(taf.trends[3].weatherConditions[0].phenomenons).toHaveLength(1);
+    expect(taf.trends[3].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.RAIN
+    );
+    expect(taf.trends[3].clouds).toHaveLength(2);
+    expect(taf.trends[3].clouds[0].quantity).toBe(CloudQuantity.SCT);
+    expect(taf.trends[3].clouds[0].height).toBe(500);
+    expect(taf.trends[3].clouds[1].quantity).toBe(CloudQuantity.BKN);
+    expect(taf.trends[3].clouds[1].height).toBe(1000);
+  });
+
+  test("parses INTER with probability", () => {
+    const taf = new TAFParser(en).parse(`
+  TAF YWLM 270209Z 2703/2800 30014KT 9999 -SHRA NSC
+    FM270400 28007KT 9999 -SHRA SCT040
+    FM270700 03010KT 9999 -SHRA SCT040
+    FM271200 30008KT CAVOK
+    FM272100 29014KT CAVOK
+    INTER 2703/2709 30018G30KT 5000 SHRA SCT015 BKN040 FEW040TCU
+    PROB30
+    INTER 2704/2709 VRB25G45KT 2000 TSRAGR BKN010 SCT040CB`);
+
+    expect(taf.trends).toHaveLength(6);
+    expect(taf.trends[4].type).toBe(WeatherChangeType.INTER);
+    expect(taf.trends[4].probability).toBeUndefined();
+
+    expect(taf.trends[5].type).toBe(WeatherChangeType.INTER);
+    expect(taf.trends[5].probability).toBe(30);
+  });
+
   test("stops parsing weather conditions after base remark", () => {
     // Fixes #3
     const taf = new TAFParser(en)

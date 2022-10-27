@@ -292,4 +292,28 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
       ).toThrowError(TimestampOutOfBoundsError);
     });
   });
+  describe("getCompositeForecastForDate", () => {
+    const taf = parseTAF(
+      `
+    TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
+        INTER 1500/1501 6SM -SHRASN BKN035
+        FM150100 25012G25KT P6SM VCSH SCT040 BKN070
+        FM150300 26011G21KT P6SM SCT080
+        `,
+      { issued: new Date("2022-04-29") }
+    );
+
+    const forecast = getForecastFromTAF(taf);
+
+    test("finds INTER", () => {
+      const composite = getCompositeForecastForDate(
+        new Date("2022-04-15T00:00:00.000Z"),
+        forecast
+      );
+
+      expect(composite.base).toBeDefined();
+      expect(composite.additional).toHaveLength(1);
+      expect(composite.additional[0].type).toBe(WeatherChangeType.INTER);
+    });
+  });
 });

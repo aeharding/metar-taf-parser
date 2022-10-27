@@ -103,7 +103,7 @@ console.log(report.forecast);
 
 Provides all relevant weather conditions for a given timestamp. It returns a `ICompositeForecast` with a `base` and `additional` component. The `base` component is the base weather condition period (type = `FM`, `BECMG`, or `undefined`) - and there will always be one.
 
-The `additional` property is an array of weather condition periods valid for the given timestamp (any `PROB` and/or `TEMPO`)
+The `additional` property is an array of weather condition periods valid for the given timestamp (any `PROB`, `TEMPO` and/or `INTER`).
 
 You will still need to write some logic to use this API to determine what data to use - for example, if `additional[0].visibility` exists, you may want to use it over `base.visibility`.
 
