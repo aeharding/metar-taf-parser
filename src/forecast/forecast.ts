@@ -201,7 +201,7 @@ export interface ICompositeForecast {
    * have probabilities of occuring, be temporary, or otherwise notable
    * precipitation events
    *
-   * `type` is (`BECMG`, `TEMPO` or `PROB`)
+   * `type` is (`TEMPO`, `INTER` or `PROB`)
    */
   additional: Forecast[];
 }
@@ -236,7 +236,7 @@ export function getCompositeForecastForDate(
       hasImplicitEnd(forecast) &&
       forecast.start.getTime() <= date.getTime()
     ) {
-      // Is FM or initial forecast
+      // Is FM, BECMG or initial forecast
       base = forecast;
     }
 
@@ -246,7 +246,7 @@ export function getCompositeForecastForDate(
       forecast.end.getTime() - date.getTime() > 0 &&
       forecast.start.getTime() - date.getTime() <= 0
     ) {
-      // Is TEMPO, BECMG etc
+      // Is TEMPO, INTER, or PROB
       additional.push(forecast);
     }
   }

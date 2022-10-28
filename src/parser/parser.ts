@@ -147,6 +147,7 @@ function parseFromValidity(input: string): IFMValidity {
 export abstract class AbstractParser {
   FM = "FM";
   TEMPO = "TEMPO";
+  INTER = "INTER";
   BECMG = "BECMG";
   RMK = "RMK";
 
@@ -271,6 +272,7 @@ export class MetarParser extends AbstractParser {
     while (
       i < trendParts.length &&
       trendParts[i] !== this.TEMPO &&
+      trendParts[i] !== this.INTER &&
       trendParts[i] !== this.BECMG
     ) {
       if (
@@ -325,6 +327,7 @@ export class MetarParser extends AbstractParser {
           metar.nosig = true;
         } else if (
           metarTab[index] === this.TEMPO ||
+          metarTab[index] === this.INTER ||
           metarTab[index] === this.BECMG
         ) {
           const startIndex = index;
@@ -459,14 +462,17 @@ export class TAFParser extends AbstractParser {
     const cleanLine = singleLine.replace(/\s{2,}/g, " ");
     const lines = joinProbIfNeeded(
       cleanLine
-        .replace(/\s(?=PROB\d{2}\sTEMPO|TEMPO|BECMG|FM|PROB)/g, "\n")
+        .replace(
+          /\s(?=PROB\d{2}\s(?=TEMPO|INTER)|TEMPO|INTER|BECMG|FM|PROB)/g,
+          "\n"
+        )
         .split(/\n/)
     );
 
     // TODO cleanup
     function joinProbIfNeeded(ls: string[]): string[] {
       for (let i = 0; i < ls.length; i++) {
-        if (/^PROB\d{2}$/.test(ls[i]) && /^TEMPO/.test(ls[i + 1])) {
+        if (/^PROB\d{2}$/.test(ls[i]) && /^TEMPO|INTER/.test(ls[i + 1])) {
           ls.splice(i, 2, `${ls[i]} ${ls[i + 1]}`);
         }
       }
@@ -504,7 +510,10 @@ export class TAFParser extends AbstractParser {
         raw: lineTokens.join(" "),
       };
 
-      if (lineTokens.length > 1 && lineTokens[1] === this.TEMPO) {
+      if (
+        lineTokens.length > 1 &&
+        (lineTokens[1] === this.TEMPO || lineTokens[1] === this.INTER)
+      ) {
         trend = {
           ...this.makeEmptyTAFTrend(),
           type: WeatherChangeType[lineTokens[1] as WeatherChangeType],
