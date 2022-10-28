@@ -311,9 +311,9 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         forecast
       );
 
-      expect(composite.base).toBeDefined();
-      expect(composite.additional).toHaveLength(1);
-      expect(composite.additional[0].type).toBe(WeatherChangeType.INTER);
+      expect(composite.prevailing).toBeDefined();
+      expect(composite.temporary).toHaveLength(1);
+      expect(composite.temporary[0].type).toBe(WeatherChangeType.INTER);
     });
   });
 });
