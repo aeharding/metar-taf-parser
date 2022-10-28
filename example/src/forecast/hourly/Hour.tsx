@@ -1,12 +1,13 @@
 import styled from "@emotion/styled";
 import { format } from "date-fns";
-import { IWind, Visibility } from "metar-taf-parser";
+import { IWind, ValueIndicator, Visibility } from "metar-taf-parser";
 import { IHour } from "./HourlyForecast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faInfinity } from "@fortawesome/free-solid-svg-icons";
+import { faInfinity } from "@fortawesome/free-solid-svg-icons";
 import Code from "../Code";
 import Conditions from "../Conditions";
 import { determineCeilingFromClouds } from "../../helpers/metarTaf";
+import WindIndicator from "../period/WindIndicator";
 
 export const Column = styled.div`
   width: 100px;
@@ -24,21 +25,16 @@ export const Cell = styled.div`
   align-items: center;
   justify-content: center;
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid #005693;
 
-  &:first-child {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  &:first-of-type {
+    border-top: 1px solid #005693;
   }
 `;
 
 const InfinityIcon = styled(FontAwesomeIcon)`
   font-size: 0.8em;
   opacity: 0.5;
-`;
-const WindIcon = styled(FontAwesomeIcon)<{ degrees: number }>`
-  transform: rotate(${({ degrees }) => degrees}deg);
-
-  margin-bottom: 0.5rem;
 `;
 
 interface HourProps {
@@ -51,10 +47,12 @@ export default function Hour({ hour }: HourProps) {
       ? hour.temporary[0]?.wind?.degrees
       : hour.prevailing.wind?.degrees;
 
-  const ceiling = determineCeilingFromClouds([
+  const clouds = [
     ...hour.temporary.flatMap(({ clouds }) => clouds),
     ...hour.prevailing.clouds,
-  ])?.height;
+  ];
+
+  const ceiling = determineCeilingFromClouds(clouds)?.height;
 
   return (
     <Column>
@@ -64,7 +62,11 @@ export default function Hour({ hour }: HourProps) {
           visibility={
             hour.temporary[0]?.visibility || hour.prevailing.visibility
           }
-          ceiling={ceiling}
+          clouds={clouds}
+          verticalVisibility={
+            hour.temporary[0]?.verticalVisibility ??
+            hour.prevailing.verticalVisibility
+          }
         />
       </Cell>
       <Cell>
@@ -72,7 +74,7 @@ export default function Hour({ hour }: HourProps) {
       </Cell>
       <Cell>
         {ceiling != null ? (
-          <>{ceiling} ft</>
+          <>{ceiling.toLocaleString()}ft</>
         ) : (
           <InfinityIcon icon={faInfinity} />
         )}
@@ -85,7 +87,7 @@ export default function Hour({ hour }: HourProps) {
       <Cell>
         {windDirection != null && (
           <>
-            <WindIcon degrees={windDirection} icon={faArrowDown} />
+            <WindIndicator direction={windDirection} />
             {windDirection}°
           </>
         )}
@@ -103,7 +105,22 @@ export default function Hour({ hour }: HourProps) {
 function formatVisibility(visibility: Visibility | undefined): string {
   if (!visibility) return "";
 
-  return `${visibility.value} mi`;
+  return [
+    formatIndicator(visibility.indicator),
+    visibility.value,
+    visibility.unit,
+  ].join(" ");
+}
+
+function formatIndicator(
+  indicator: ValueIndicator | undefined
+): string | undefined {
+  switch (indicator) {
+    case ValueIndicator.GreaterThan:
+      return ">";
+    case ValueIndicator.LessThan:
+      return "<";
+  }
 }
 
 function formatWindSpeed(wind: IWind | undefined): string {

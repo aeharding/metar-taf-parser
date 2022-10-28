@@ -308,6 +308,6 @@ export function getFlightCategoryCssColor(category: FlightCategory): string {
     case FlightCategory.MVFR:
       return `rgb(0, 150, 255)`;
     case FlightCategory.VFR:
-      return `rgb(0, 255, 0)`;
+      return `rgb(0, 150, 0)`;
   }
 }

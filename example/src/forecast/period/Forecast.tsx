@@ -11,16 +11,14 @@ import React from "react";
 import { notEmpty } from "../../helpers/array";
 import {
   determineCeilingFromClouds,
-  FlightCategory,
   formatDescriptive,
   formatIntensity,
   formatPhenomenon,
   formatVisibility,
   formatWind,
-  getFlightCategory,
-  getFlightCategoryCssColor,
 } from "../../helpers/metarTaf";
 import { capitalizeFirstLetter } from "../../helpers/string";
+import Code from "../Code";
 import Cloud from "./Cloud";
 import WindIndicator from "./WindIndicator";
 
@@ -31,7 +29,8 @@ const Container = styled.div<{ type: WeatherChangeType | undefined }>`
   gap: 0.5rem;
   overflow: hidden;
   background: #0095ff10;
-  border-left: 3px solid;
+  border: 1px solid;
+  border-radius: 1rem;
 
   ${({ type }) => {
     switch (type) {
@@ -40,12 +39,12 @@ const Container = styled.div<{ type: WeatherChangeType | undefined }>`
       case WeatherChangeType.BECMG:
       default:
         return css`
-          border-left-color: #0095ff;
+          border-color: #005693;
         `;
       case WeatherChangeType.PROB:
       case WeatherChangeType.TEMPO:
         return css`
-          border-left-color: #0095ff5d;
+          border-color: transparent;
         `;
     }
   }}
@@ -62,19 +61,11 @@ const Text = styled.p`
   margin: 0;
 `;
 
-const Category = styled.div<{ category: FlightCategory }>`
-  display: inline-block;
-  padding: 2px 8px;
-
-  color: white;
-  border-radius: 1rem;
-
-  background: ${({ category }) => getFlightCategoryCssColor(category)};
-`;
-
 const Table = styled.table`
   width: 100%;
   table-layout: fixed;
+
+  margin: auto 0;
 
   td {
     vertical-align: top;
@@ -89,10 +80,11 @@ const Table = styled.table`
 `;
 
 const Raw = styled.div`
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
 
   background: rgba(0, 0, 0, 0.5);
   font-family: monospace;
+  border-radius: 0.5rem;
 `;
 
 interface ForecastProps {
@@ -101,11 +93,6 @@ interface ForecastProps {
 
 export default function Forecast({ data }: ForecastProps) {
   const ceiling = determineCeilingFromClouds(data.clouds);
-  const category = getFlightCategory(
-    data.visibility,
-    data.clouds,
-    data.verticalVisibility
-  );
   const periodRemark = getPeriodRemark(data);
 
   function formatType(type: WeatherChangeType | undefined): string {
@@ -119,6 +106,8 @@ export default function Forecast({ data }: ForecastProps) {
         return `${data.probability}% Chance`;
       case WeatherChangeType.TEMPO:
         return "Temporarily";
+      case WeatherChangeType.INTER:
+        return "Intermittently";
     }
   }
 
@@ -134,9 +123,14 @@ export default function Forecast({ data }: ForecastProps) {
           {data.end ? <>to {formatWithTomorrowIfNeeded(data.end, "p")}</> : ""}
         </Text>
 
-        {data.visibility &&
-        (data.clouds.length || data.verticalVisibility != null) ? (
-          <Category category={category}>{category}</Category>
+        {(data.visibility &&
+          (data.clouds.length || data.verticalVisibility != null)) ||
+        data.cavok ? (
+          <Code
+            visibility={data.visibility}
+            clouds={data.clouds}
+            verticalVisibility={data.verticalVisibility}
+          />
         ) : (
           ""
         )}
@@ -158,7 +152,7 @@ export default function Forecast({ data }: ForecastProps) {
                   <>
                     {data.wind.degrees != null ? (
                       <>
-                        {data.wind.degrees}{" "}
+                        {data.wind.degrees}°{" "}
                         <WindIndicator direction={data.wind.degrees} />
                       </>
                     ) : (

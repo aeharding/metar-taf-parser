@@ -29,8 +29,8 @@ const StickyColumn = styled(Column)`
     rgba(14, 38, 60, 1),
     rgba(14, 38, 60, 0.8)
   );
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid #005693;
+  border-left: 1px solid #005693;
 
   > div {
     align-items: flex-start;

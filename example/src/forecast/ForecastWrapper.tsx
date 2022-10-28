@@ -3,7 +3,8 @@ import { Outlet, Route, Routes } from "react-router";
 import FindForecast from "./FindForecast";
 import ForecastResult from "./ForecastResult";
 
-const Pre = styled.pre`
+const Pre = styled.span`
+  font-family: monospace;
   display: inline;
   background: rgba(0, 0, 0, 0.5);
   padding: 3px 5px;

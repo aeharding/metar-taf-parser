@@ -2,7 +2,16 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
-const AIRPORTS_LIST = ["ATL", "DFW", "DEN", "ORD", "LAX", "CLT", "LAS"];
+const AIRPORTS_LIST = [
+  "KPDX",
+  "EHAM",
+  "KMSN",
+  "SAWH",
+  "DNMM",
+  "VOMM",
+  "PGUM",
+  "YBBN",
+];
 
 export default function FindForecast() {
   const navigate = useNavigate();
@@ -15,7 +24,7 @@ export default function FindForecast() {
     }
 
     let code = search.toUpperCase();
-    if (!code.startsWith("K")) code = `K${code}`;
+    if (code.length === 3) code = `K${code}`;
 
     navigate(`/forecast/${code}`);
   }
@@ -25,7 +34,7 @@ export default function FindForecast() {
       <ul>
         {AIRPORTS_LIST.map((code) => (
           <li key={code}>
-            <Link to={`/forecast/K${code}`}>K{code}</Link>
+            <Link to={`/forecast/${code}`}>{code}</Link>
           </li>
         ))}
       </ul>
@@ -36,7 +45,7 @@ export default function FindForecast() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           autoFocus
-          placeholder="US ICAO airport code"
+          placeholder="ICAO airport code"
         />
 
         <button type="submit">Go</button>

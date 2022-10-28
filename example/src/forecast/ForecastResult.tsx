@@ -110,10 +110,6 @@ export default function ForecastResult() {
         TAF issued: {format(forecast.issued, "Pp")} ({issuedRelative})
       </p>
 
-      <HourlyForecast forecast={forecast} />
-
-      <PeriodForecast forecast={forecast} />
-
       <div>
         <RawReport>{forecast.message}</RawReport>
       </div>
@@ -123,6 +119,10 @@ export default function ForecastResult() {
           View parseTAF output
         </Button>
       </div>
+
+      <HourlyForecast forecast={forecast} />
+
+      <PeriodForecast forecast={forecast} />
     </>
   );
 }
