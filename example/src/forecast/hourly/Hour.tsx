@@ -1,11 +1,12 @@
 import styled from "@emotion/styled";
 import { format } from "date-fns";
-import { CloudQuantity, ICloud, IWind, Visibility } from "metar-taf-parser";
+import { IWind, Visibility } from "metar-taf-parser";
 import { IHour } from "./HourlyForecast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faInfinity } from "@fortawesome/free-solid-svg-icons";
 import Code from "../Code";
 import Conditions from "../Conditions";
+import { determineCeilingFromClouds } from "../../helpers/metarTaf";
 
 export const Column = styled.div`
   width: 100px;
@@ -53,7 +54,7 @@ export default function Hour({ hour }: HourProps) {
   const ceiling = determineCeilingFromClouds([
     ...hour.temporary.flatMap(({ clouds }) => clouds),
     ...hour.prevailing.clouds,
-  ]);
+  ])?.height;
 
   return (
     <Column>
@@ -115,20 +116,4 @@ function formatWindGust(wind: IWind | undefined): string {
   if (!wind?.gust) return "";
 
   return `${wind.gust} ${wind.unit.toLowerCase()}`;
-}
-
-function determineCeilingFromClouds(clouds: ICloud[]): number | undefined {
-  let ceiling: number | undefined;
-
-  clouds.forEach((cloud) => {
-    if (
-      cloud.height != null &&
-      (cloud.quantity === CloudQuantity.OVC ||
-        cloud.quantity === CloudQuantity.BKN)
-    ) {
-      if (!ceiling || ceiling > cloud.height) ceiling = cloud.height;
-    }
-  });
-
-  return ceiling;
 }
