@@ -1169,6 +1169,21 @@ describe("TAFParser", () => {
     );
   });
 
+  test("should parse with 'TAF AMD TAF AMD'", () => {
+    const taf = `TAF 
+    AMD TAF 
+    AMD CYRB 290006Z 2900/2924 06008KT P6SM SKC 
+    TEMPO 2900/2909 4SM IC PROB30 2900/2909 2SM IC BR BKN003 
+   FM290900 02015KT P6SM FEW010 
+    RMK NXT FCST BY 290600Z`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends).toHaveLength(3);
+  });
+
   // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
   // (https://www.aviationweather.gov/taf/decoder#Date)
   //

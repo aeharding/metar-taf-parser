@@ -8,6 +8,8 @@ import Code from "../Code";
 import Conditions from "../Conditions";
 import { determineCeilingFromClouds } from "../../helpers/metarTaf";
 import WindIndicator from "../period/WindIndicator";
+import { notEmpty } from "../../helpers/array";
+import { sortBy } from "lodash";
 
 export const Column = styled.div`
   width: 100px;
@@ -54,14 +56,20 @@ export default function Hour({ hour }: HourProps) {
 
   const ceiling = determineCeilingFromClouds(clouds)?.height;
 
+  const minVisibility = sortBy(
+    [
+      hour.prevailing.visibility,
+      ...hour.temporary.flatMap(({ visibility }) => visibility),
+    ].filter(notEmpty),
+    "value"
+  )[0];
+
   return (
     <Column>
       <Cell>{format(hour.hour, "p")}</Cell>
       <Cell>
         <Code
-          visibility={
-            hour.temporary[0]?.visibility || hour.prevailing.visibility
-          }
+          visibility={minVisibility}
           clouds={clouds}
           verticalVisibility={
             hour.temporary[0]?.verticalVisibility ??
@@ -79,11 +87,7 @@ export default function Hour({ hour }: HourProps) {
           <InfinityIcon icon={faInfinity} />
         )}
       </Cell>
-      <Cell>
-        {formatVisibility(
-          hour.temporary[0]?.visibility || hour.prevailing.visibility
-        )}
-      </Cell>
+      <Cell>{formatVisibility(minVisibility)}</Cell>
       <Cell>
         {windDirection != null && (
           <>
