@@ -1138,6 +1138,25 @@ describe("TAFParser", () => {
     );
   });
 
+  test("should parse weather conditions with slash", () => {
+    const taf = `VOMM 281700Z 2818/2924 05005KT 4000 -RA/BR SCT020 BKN100 TEMPO 2818/2824 3000 TSRA/RA SCT018 FEW025TCU/CB BKN080 BECMG 2905/2906 05015KT 6000 BECMG 2915/2916 05005KT 4000 -DZ/BR`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends).toHaveLength(3);
+    expect(parsed.trends[2].weatherConditions).toHaveLength(1);
+    expect(parsed.trends[2].weatherConditions[0].intensity).toBe(
+      Intensity.LIGHT
+    );
+    expect(parsed.trends[2].weatherConditions[0].phenomenons).toEqual([
+      "DZ",
+      "BR",
+    ]);
+    expect(parsed.trends[2].weatherConditions[0].descriptive).toBeUndefined();
+  });
+
   // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
   // (https://www.aviationweather.gov/taf/decoder#Date)
   //

@@ -193,9 +193,12 @@ export abstract class AbstractParser {
       // Thunderstorm as descriptive should not be added as a phenomenon
       if ((descriptive as string) === key) continue;
 
-      if (input.startsWith(key)) {
+      // Phenomenons can be separated with a slash
+      const conditionRegex = new RegExp(`^\/?${key}`);
+      const inputMatch = input.match(conditionRegex)?.[0];
+      if (inputMatch) {
         weatherCondition.phenomenons.push(key as Phenomenon);
-        input = input.slice(key.length);
+        input = input.slice(inputMatch.length);
 
         // Restart the search for an additional phenomenon
         i = -1;
