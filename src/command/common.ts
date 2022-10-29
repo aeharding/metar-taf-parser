@@ -38,7 +38,7 @@ function makeWind(
 }
 
 export class CloudCommand implements ICommand {
-  #cloudRegex = /^([A-Z]{3})(\d{3})?([A-Z]{2,3})?$/;
+  #cloudRegex = /^([A-Z]{3})(\d{3})?([A-Z]{2,3}|\/{3})?$/;
 
   parse(cloudString: string): ICloud | undefined {
     const m = cloudString.match(this.#cloudRegex);
