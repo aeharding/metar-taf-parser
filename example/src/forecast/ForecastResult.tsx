@@ -92,8 +92,8 @@ export default function ForecastResult() {
       <div>
         {backButton}
         <Failed>
-          Error loading TAF report. Is {icaoId} a valid US airport that produces
-          a TAF report? (Otherwise the service may be down.)
+          Error loading TAF report. Is {icaoId} a valid airport that produces a
+          TAF report? (Otherwise the service may be down.)
         </Failed>
       </div>
     );
