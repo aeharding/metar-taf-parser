@@ -18,7 +18,7 @@ export default function FindForecast() {
   const [search, setSearch] = useState("");
 
   function onSubmit(e: FormEvent) {
-    if (!search || !/^[a-zA-Z]{3,4}$/.test(search)) {
+    if (!search || !/^[a-zA-Z1-9]{3,4}$/.test(search)) {
       e.preventDefault();
       return;
     }
