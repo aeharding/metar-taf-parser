@@ -63,7 +63,7 @@ describe("CloudCommand", () => {
   })();
 
   (() => {
-    // With multiple cloud types, ignores last cloud type
+    // With multiple cloud types
     // (Very uncommon to have two types - seen at VOTR)
     const code = "FEW025TCU/CB";
 
@@ -79,6 +79,7 @@ describe("CloudCommand", () => {
         expect(cloud?.quantity).toBe(CloudQuantity.FEW);
         expect(cloud?.height).toBe(2500);
         expect(cloud?.type).toBe(CloudType.TCU);
+        expect(cloud?.secondaryType).toBe(CloudType.CB);
       });
     });
   })();
