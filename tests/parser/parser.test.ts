@@ -80,6 +80,45 @@ describe("RemarkParser", () => {
     });
   })();
 
+  (() => {
+    const code = "-DZ/BR";
+
+    test(`parses "${code}"`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition?.intensity).toBe(Intensity.LIGHT);
+      expect(weatherCondition?.descriptive).toBeUndefined();
+      expect(weatherCondition?.phenomenons).toEqual([
+        Phenomenon.DRIZZLE,
+        Phenomenon.MIST,
+      ]);
+    });
+  })();
+
+  (() => {
+    // This malformed code was seen on airport VOMD
+    const code = "BR/";
+
+    test(`parses "${code}"`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition?.intensity).toBeUndefined();
+      expect(weatherCondition?.descriptive).toBeUndefined();
+      expect(weatherCondition?.phenomenons).toEqual([Phenomenon.MIST]);
+    });
+  })();
+
+  (() => {
+    // Invalid code shouldn't parse
+    const code = "BRd";
+
+    test(`does not parse "${code}"`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition).toBeUndefined();
+    });
+  })();
+
   test("tokenize", () => {
     const code =
       "METAR KTTN 051853Z 04011KT 1 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017=";

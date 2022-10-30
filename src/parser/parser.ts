@@ -207,7 +207,7 @@ export abstract class AbstractParser {
     }
 
     // If anything is left unparsed, it's not a valid weather condition
-    if (input.length) return;
+    if (input.replace(/\//g, "").length) return;
 
     return weatherCondition;
   }
