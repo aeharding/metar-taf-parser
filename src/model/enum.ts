@@ -219,6 +219,13 @@ export enum WeatherChangeType {
   TEMPO = "TEMPO",
 
   /**
+   * For periods up to 30 minutes (`INTER` or intermittent).
+   *
+   * Otherwise, similar to `TEMPO`
+   */
+  INTER = "INTER",
+
+  /**
    * Probability Forecast
    *
    * ie. `PROB40 0006`

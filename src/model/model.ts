@@ -235,7 +235,7 @@ export interface IBaseTAFTrend extends IAbstractTrend {
    *
    * - FM trends also have `startMinutes`. They **DO NOT** have an explicit end
    *   validity (it is implied by the following FM).
-   * - All others (PROB, TEMPO, BECMG) have `endDay` and `endHour`.
+   * - All others (PROB, TEMPO, BECMG, INTER) have `endDay` and `endHour`.
    *
    * All properties are allowed to be accessed (as optionals), but if you want
    * type guarantees, you can check the trend type. For example:
@@ -248,6 +248,7 @@ export interface IBaseTAFTrend extends IAbstractTrend {
    *   case WeatherChangeType.PROB:
    *   case WeatherChangeType.BECMG:
    *   case WeatherChangeType.TEMPO:
+   *   case WeatherChangeType.INTER:
    *     // trend.validity now has endHour, endDay defined
    * }
    * ```

@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import { Outlet, Route, Routes } from "react-router";
 import FindForecast from "./FindForecast";
-import Forecast from "./Forecast";
+import ForecastResult from "./ForecastResult";
 
-const Pre = styled.pre`
+const Pre = styled.span`
+  font-family: monospace;
   display: inline;
   background: rgba(0, 0, 0, 0.5);
   padding: 3px 5px;
@@ -16,14 +17,15 @@ export default function ForecastWrapper() {
       <p>
         The Forecast API (<Pre>parseTAFAsForecast</Pre> &amp;{" "}
         <Pre>getCompositeForecastForDate</Pre>) is an abstraction on{" "}
-        <Pre>parseTAF</Pre> that allows you to more easily query weather
-        conditions for a given javascript <Pre>Date</Pre>. Enter a ICAO airport
-        code below to see an example of what this API makes possible.
+        <Pre>parseTAF</Pre> that allows you to more easily show display TAF
+        information and query conditions for a given javascript <Pre>Date</Pre>.
+        Enter a ICAO airport code below to see an example of what this API makes
+        possible.
       </p>
 
       <Routes>
         <Route path="" element={<FindForecast />} />
-        <Route path=":icaoId" element={<Forecast />} />
+        <Route path=":icaoId" element={<ForecastResult />} />
       </Routes>
 
       <Outlet />
