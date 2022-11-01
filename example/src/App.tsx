@@ -3,10 +3,12 @@ import styled from "@emotion/styled";
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, Navigate } from "react-router";
-import { ParseMetar, ParseTAF } from "./Parse";
+import { ParseMetar, ParseTAF, ParseTAFAsForecast } from "./Parse";
 import pjson from "metar-taf-parser/package.json";
 import Tabs from "./Tabs";
 import ForecastWrapper from "./forecast/ForecastWrapper";
+
+import "./addToWindow";
 
 const globalStyles = css`
   html {
@@ -95,6 +97,7 @@ function App() {
       <Routes>
         <Route path="/metar" element={<ParseMetar />} />
         <Route path="/taf" element={<ParseTAF />} />
+        <Route path="/parseTAFAsForecast" element={<ParseTAFAsForecast />} />
         <Route path="/forecast/*" element={<ForecastWrapper />} />
         <Route path="*" element={<Navigate to="/metar" replace />} />
       </Routes>

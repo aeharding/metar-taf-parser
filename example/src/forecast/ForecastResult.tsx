@@ -1,19 +1,16 @@
+import styled from "@emotion/styled/macro";
+import { format } from "date-fns";
+import HourlyForecast from "./hourly/HourlyForecast";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import {
-  getCompositeForecastForDate,
-  ICompositeForecast,
-  IForecastContainer,
-  parseTAFAsForecast,
-} from "metar-taf-parser";
+import { IForecastContainer, parseTAFAsForecast } from "metar-taf-parser";
 import * as noaa from "../services/noaa";
-import { eachHourOfInterval, format, formatDistanceToNow } from "date-fns";
-import Hour, { Cell, Column } from "./Hour";
-import styled from "@emotion/styled";
+import { formatDistanceToNow } from "date-fns";
 import useInterval from "../helpers/useInterval";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import PeriodForecast from "./period/PeriodForecast";
 
 export const Button = styled(Link)`
   display: inline-block;
@@ -29,36 +26,6 @@ export const Failed = styled.div`
   padding: 1rem;
 `;
 
-const HoursTable = styled.div`
-  display: flex;
-  overflow-x: auto;
-  text-align: center;
-
-  scroll-snap-type: x mandatory;
-`;
-
-const StickyColumn = styled(Column)`
-  position: sticky;
-  left: 0;
-  z-index: 1;
-
-  font-weight: 500;
-  text-align: left;
-  backdrop-filter: blur(3px);
-  background: linear-gradient(
-    to right,
-    rgba(14, 38, 60, 1),
-    rgba(14, 38, 60, 0.8)
-  );
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-
-  > div {
-    align-items: flex-start;
-    padding-left: 1rem;
-  }
-`;
-
 const RawReport = styled.div`
   display: inline-flex;
   padding: 1rem;
@@ -69,14 +36,9 @@ const RawReport = styled.div`
   background: rgba(0, 0, 0, 0.2);
 `;
 
-export interface IHour extends ICompositeForecast {
-  hour: Date;
-}
-
-export default function Forecast() {
+export default function ForecastResult() {
   const { icaoId } = useParams<"icaoId">();
   const [forecast, setForecast] = useState<IForecastContainer | undefined>();
-  const [hours, setHours] = useState<IHour[] | undefined>();
   const [issuedRelative, setIssuedRelative] = useState("");
   const [error, setError] = useState<Error | undefined>();
 
@@ -104,18 +66,7 @@ export default function Forecast() {
 
       const forecast = parseTAFAsForecast(rawTaf, { issued });
 
-      const forecastPerHour = eachHourOfInterval({
-        start: forecast.start,
-        end: forecast.end,
-      })
-        .slice(0, -1)
-        .map((hour) => ({
-          hour,
-          ...getCompositeForecastForDate(hour, forecast),
-        }));
-
       setForecast(forecast);
-      setHours(forecastPerHour);
     })();
   }, [icaoId]);
 
@@ -141,12 +92,13 @@ export default function Forecast() {
       <div>
         {backButton}
         <Failed>
-          Error loading TAF report. Is {icaoId} a valid US airport that produces
-          a TAF report? (Otherwise the service may be down.)
+          Error loading TAF report. Is {icaoId} a valid airport that produces a
+          TAF report? (Otherwise the service may be down.)
         </Failed>
       </div>
     );
-  if (!hours || !forecast) return <>Loading...</>;
+
+  if (!forecast) return <>Loading...</>;
 
   return (
     <>
@@ -158,22 +110,6 @@ export default function Forecast() {
         TAF issued: {format(forecast.issued, "Pp")} ({issuedRelative})
       </p>
 
-      <HoursTable>
-        <StickyColumn>
-          <Cell>Hour</Cell>
-          <Cell>Code</Cell>
-          <Cell>Weather</Cell>
-          <Cell>Ceiling</Cell>
-          <Cell>Visibility</Cell>
-          <Cell>Wind</Cell>
-          <Cell>Speed</Cell>
-          <Cell>Gust</Cell>
-        </StickyColumn>
-        {hours.map((hour, index) => (
-          <Hour hour={hour} key={index} />
-        ))}
-      </HoursTable>
-
       <div>
         <RawReport>{forecast.message}</RawReport>
       </div>
@@ -183,6 +119,10 @@ export default function Forecast() {
           View parseTAF output
         </Button>
       </div>
+
+      <HourlyForecast forecast={forecast} />
+
+      <PeriodForecast forecast={forecast} />
     </>
   );
 }

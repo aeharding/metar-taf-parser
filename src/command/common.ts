@@ -91,7 +91,6 @@ export class MainVisibilityCommand implements ICommand {
 
     if (!container.visibility) container.visibility = distance;
 
-    container.visibility = { ...container.visibility, ...distance };
     if (matches[2] === "NDV") container.visibility.ndv = true;
 
     return true;
