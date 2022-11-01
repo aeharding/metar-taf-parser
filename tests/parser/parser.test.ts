@@ -17,6 +17,7 @@ import {
   WeatherChangeType,
   DistanceUnit,
   ValueIndicator,
+  SpeedUnit,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
 import { Direction } from "model/enum";
@@ -1167,6 +1168,19 @@ describe("TAFParser", () => {
     expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
       Phenomenon.NO_SIGNIFICANT_WEATHER
     );
+  });
+
+  test("should properly parse wind with turbulence group", () => {
+    const taf = `TAF KLSV 222300Z 2223/2405 21020G35KT 8000 BLDU BKN160 530009 QNH2941INS`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.wind?.speed).toBe(20);
+    expect(parsed.wind?.degrees).toBe(210);
+    expect(parsed.wind?.gust).toBe(35);
+    expect(parsed.wind?.unit).toBe(SpeedUnit.Knot);
   });
 
   test("should parse with 'TAF AMD TAF AMD'", () => {
