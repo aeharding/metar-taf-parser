@@ -45,12 +45,12 @@ interface HourProps {
 
 export default function Hour({ hour }: HourProps) {
   const windDirection =
-    hour.temporary[0]?.wind?.degrees != null
-      ? hour.temporary[0]?.wind?.degrees
+    hour.supplemental[0]?.wind?.degrees != null
+      ? hour.supplemental[0]?.wind?.degrees
       : hour.prevailing.wind?.degrees;
 
   const clouds = [
-    ...hour.temporary.flatMap(({ clouds }) => clouds),
+    ...hour.supplemental.flatMap(({ clouds }) => clouds),
     ...hour.prevailing.clouds,
   ];
 
@@ -59,7 +59,7 @@ export default function Hour({ hour }: HourProps) {
   const minVisibility = sortBy(
     [
       hour.prevailing.visibility,
-      ...hour.temporary.flatMap(({ visibility }) => visibility),
+      ...hour.supplemental.flatMap(({ visibility }) => visibility),
     ].filter(notEmpty),
     "value"
   )[0];
@@ -72,7 +72,7 @@ export default function Hour({ hour }: HourProps) {
           visibility={minVisibility}
           clouds={clouds}
           verticalVisibility={
-            hour.temporary[0]?.verticalVisibility ??
+            hour.supplemental[0]?.verticalVisibility ??
             hour.prevailing.verticalVisibility
           }
         />
@@ -97,10 +97,10 @@ export default function Hour({ hour }: HourProps) {
         )}
       </Cell>
       <Cell>
-        {formatWindSpeed(hour.temporary[0]?.wind || hour.prevailing.wind)}
+        {formatWindSpeed(hour.supplemental[0]?.wind || hour.prevailing.wind)}
       </Cell>
       <Cell>
-        {formatWindGust(hour.temporary[0]?.wind || hour.prevailing.wind)}
+        {formatWindGust(hour.supplemental[0]?.wind || hour.prevailing.wind)}
       </Cell>
     </Column>
   );

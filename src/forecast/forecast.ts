@@ -224,13 +224,12 @@ export interface ICompositeForecast {
   prevailing: Forecast;
 
   /**
-   * Any forecast here should pre-empt the prevailing forecast. These forecasts may
-   * have probabilities of occuring, be temporary, or otherwise notable
-   * precipitation events
+   * supplemental forecasts may have probabilities of occuring, be temporary,
+   * or otherwise notable change of conditions. They enhance the prevailing forecast.
    *
    * `type` is (`TEMPO`, `INTER` or `PROB`)
    */
-  temporary: Forecast[];
+  supplemental: Forecast[];
 }
 
 export class TimestampOutOfBoundsError extends ParseError {
@@ -256,7 +255,7 @@ export function getCompositeForecastForDate(
     );
 
   let prevailing: Forecast | undefined;
-  let temporary: Forecast[] = [];
+  let supplemental: Forecast[] = [];
 
   for (const forecast of forecastContainer.forecast) {
     if (
@@ -274,14 +273,14 @@ export function getCompositeForecastForDate(
       forecast.start.getTime() - date.getTime() <= 0
     ) {
       // Is TEMPO, INTER, PROB etc
-      temporary.push(forecast);
+      supplemental.push(forecast);
     }
   }
 
   if (!prevailing)
     throw new UnexpectedParseError("Unable to find trend for date");
 
-  return { prevailing, temporary };
+  return { prevailing, supplemental };
 }
 
 function byIfNeeded(forecast: ForecastWithoutDates): { by?: Date } {

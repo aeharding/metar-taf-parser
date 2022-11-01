@@ -14,7 +14,7 @@ interface ConditionsProp {
 
 export default function Conditions({ hour }: ConditionsProp) {
   const allConditions = uniqWith(
-    [hour.prevailing, ...hour.temporary]
+    [hour.prevailing, ...hour.supplemental]
       .reverse()
       .flatMap((forecast) => forecast.weatherConditions),
     isEqual
