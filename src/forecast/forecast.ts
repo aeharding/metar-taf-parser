@@ -192,6 +192,8 @@ function hydrateWithPreviousContextIfNeeded(
   forecast: Forecast,
   context: Forecast | undefined
 ): Forecast {
+  // BECMG is the only forecast type that inherits old conditions
+  // Anything else starts anew
   if (forecast.type !== WeatherChangeType.BECMG || !context) return forecast;
 
   // Remarks should not be carried over
@@ -201,6 +203,15 @@ function hydrateWithPreviousContextIfNeeded(
 
   // vertical visibility should not be carried over, if clouds exist
   if (forecast.clouds.length) delete context.verticalVisibility;
+
+  // CAVOK should not propagate if anything other than wind changes
+  if (
+    forecast.clouds.length ||
+    forecast.verticalVisibility ||
+    forecast.weatherConditions.length ||
+    forecast.visibility
+  )
+    delete context.cavok;
 
   forecast = {
     ...context,
