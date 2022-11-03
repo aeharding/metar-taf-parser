@@ -1,7 +1,7 @@
 import { UnexpectedParseError } from "commons/errors";
 import { ITafGroups } from "model/model";
-import { as } from "src/helpers/helpers";
-import { TurbulenceIntensity } from "src/index";
+import { as } from "helpers/helpers";
+import { TurbulenceIntensity } from "model/enum";
 import { ICommand } from "../taf";
 
 export class TurbulenceCommand implements ICommand {
@@ -19,9 +19,9 @@ export class TurbulenceCommand implements ICommand {
     if (!container.turbulence) container.turbulence = [];
 
     container.turbulence.push({
-      intensity: as(matches[2], TurbulenceIntensity),
-      baseHeight: +matches[3] * 100,
-      depth: +matches[4] * 1000,
+      intensity: as(matches[1], TurbulenceIntensity),
+      baseHeight: +matches[2] * 100,
+      depth: +matches[3] * 1000,
     });
   }
 }

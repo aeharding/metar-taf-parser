@@ -27,6 +27,7 @@ import {
   WeatherChangeType,
 } from "model/enum";
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
+import { CommandSupplier as TafCommandSupplier } from "command/taf";
 import { Locale } from "commons/i18n";
 import { CommandExecutionError } from "commons/errors";
 
@@ -370,6 +371,8 @@ export class TAFParser extends AbstractParser {
   TX = "TX";
   TN = "TN";
 
+  #commandSupplier = new TafCommandSupplier();
+
   #validityPattern = /^\d{4}\/\d{4}$/;
 
   /**
@@ -427,12 +430,16 @@ export class TAFParser extends AbstractParser {
     for (let i = index + 1; i < lines[0].length; i++) {
       const token = lines[0][i];
 
+      const tafCommand = this.#commandSupplier.get(token);
+
       if (token == this.RMK) {
         parseRemark(taf, lines[0], i, this.locale);
         break;
+      } else if (tafCommand) {
+        tafCommand.execute(taf, token);
       } else {
-        parseFlags(taf, token);
         this.generalParse(taf, token);
+        parseFlags(taf, token);
       }
     }
 
@@ -578,13 +585,17 @@ export class TAFParser extends AbstractParser {
    */
   parseTrend(index: number, line: string[], trend: TAFTrend) {
     for (let i = index; i < line.length; i++) {
+      const tafCommand = this.#commandSupplier.get(line[i]);
+
       if (line[i] === this.RMK) {
         parseRemark(trend, line, i, this.locale);
         break;
       }
       // already parsed
       else if (this.#validityPattern.test(line[i])) continue;
-      else super.generalParse(trend, line[i]);
+      else if (tafCommand) {
+        tafCommand.execute(trend, line[i]);
+      } else super.generalParse(trend, line[i]);
     }
   }
 

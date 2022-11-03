@@ -1,7 +1,7 @@
 import { UnexpectedParseError } from "commons/errors";
 import { ITafGroups } from "model/model";
-import { as } from "src/helpers/helpers";
-import { IcingIntensity } from "src/index";
+import { as } from "helpers/helpers";
+import { IcingIntensity } from "model/enum";
 import { ICommand } from "../taf";
 
 export class IcingCommand implements ICommand {
@@ -19,9 +19,9 @@ export class IcingCommand implements ICommand {
     if (!container.icing) container.icing = [];
 
     container.icing.push({
-      intensity: as(matches[2], IcingIntensity),
-      baseHeight: +matches[3] * 100,
-      depth: +matches[4] * 1000,
+      intensity: as(matches[1], IcingIntensity),
+      baseHeight: +matches[2] * 100,
+      depth: +matches[3] * 1000,
     });
   }
 }
