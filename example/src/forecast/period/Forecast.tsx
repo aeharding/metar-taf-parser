@@ -12,8 +12,10 @@ import { notEmpty } from "../../helpers/array";
 import {
   determineCeilingFromClouds,
   formatDescriptive,
+  formatIcingIntensity,
   formatIntensity,
   formatPhenomenon,
+  formatTurbulenceIntensity,
   formatVisibility,
   formatWind,
 } from "../../helpers/metarTaf";
@@ -255,6 +257,47 @@ export default function Forecast({ data }: ForecastProps) {
                 {data.remarks.map((remark) => (
                   <>
                     {remark.description || remark.raw}
+                    <br />
+                  </>
+                ))}
+              </td>
+            </tr>
+          ) : undefined}
+
+          {data.turbulence ? (
+            <tr>
+              <td>Turbulence</td>
+              <td>
+                {data.turbulence.map((turbulence) => (
+                  <>
+                    {formatTurbulenceIntensity(turbulence.intensity)} from{" "}
+                    {turbulence.baseHeight
+                      ? turbulence.baseHeight.toLocaleString()
+                      : "surface"}{" "}
+                    to{" "}
+                    {(
+                      turbulence.baseHeight + turbulence.depth
+                    ).toLocaleString()}{" "}
+                    ft AGL.
+                    <br />
+                  </>
+                ))}
+              </td>
+            </tr>
+          ) : undefined}
+
+          {data.icing ? (
+            <tr>
+              <td>Icing</td>
+              <td>
+                {data.icing.map((icing) => (
+                  <>
+                    {formatIcingIntensity(icing.intensity)} from{" "}
+                    {icing.baseHeight
+                      ? icing.baseHeight.toLocaleString()
+                      : "surface"}{" "}
+                    to {(icing.baseHeight + icing.depth).toLocaleString()} ft
+                    AGL.
                     <br />
                   </>
                 ))}

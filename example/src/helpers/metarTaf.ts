@@ -9,6 +9,8 @@ import {
   ValueIndicator,
   Visibility,
   ICloud,
+  TurbulenceIntensity,
+  IcingIntensity,
 } from "metar-taf-parser";
 
 export enum FlightCategory {
@@ -309,5 +311,59 @@ export function getFlightCategoryCssColor(category: FlightCategory): string {
       return `rgb(0, 150, 255)`;
     case FlightCategory.VFR:
       return `rgb(0, 150, 0)`;
+  }
+}
+
+export function formatTurbulenceIntensity(
+  turbulenceIntensity: TurbulenceIntensity
+): string {
+  switch (turbulenceIntensity) {
+    case TurbulenceIntensity.None:
+      return "None";
+    case TurbulenceIntensity.Light:
+      return "Light turbulence";
+    case TurbulenceIntensity.ModerateClearAirOccasional:
+      return "Moderate turbulence in clear air, occasional";
+    case TurbulenceIntensity.ModerateClearAirFrequent:
+      return "Moderate turbulence in clear air, frequent";
+    case TurbulenceIntensity.ModerateCloudOccasional:
+      return "Moderate turbulence in cloud, occasional";
+    case TurbulenceIntensity.ModerateCloudFrequent:
+      return "Moderate turbulence in cloud, frequent";
+    case TurbulenceIntensity.SevereClearAirOccasional:
+      return "Severe turbulence in clear air, occasional";
+    case TurbulenceIntensity.SevereClearAirFrequent:
+      return "Severe turbulence in clear air, frequent";
+    case TurbulenceIntensity.SevereCloudOccasional:
+      return "Severe turbulence in cloud, occasional";
+    case TurbulenceIntensity.SevereCloudFrequent:
+      return "Severe turbulence in cloud, frequent";
+    case TurbulenceIntensity.Extreme:
+      return "Extreme turbulence";
+  }
+}
+
+export function formatIcingIntensity(icingIntensity: IcingIntensity): string {
+  switch (icingIntensity) {
+    case IcingIntensity.None:
+      return "Trace, or no icing";
+    case IcingIntensity.Light:
+      return "Light mixed icing";
+    case IcingIntensity.LightRimeIcingCloud:
+      return "Light rime icing in cloud";
+    case IcingIntensity.LightClearIcingPrecipitation:
+      return "Light clear icing in precipitation";
+    case IcingIntensity.ModerateMixedIcing:
+      return "Moderate mixed icing";
+    case IcingIntensity.ModerateRimeIcingCloud:
+      return "Moderate rime icing in cloud";
+    case IcingIntensity.ModerateClearIcingPrecipitation:
+      return "Moderate clear icing in precipitation";
+    case IcingIntensity.SevereMixedIcing:
+      return "Severe mixed icing";
+    case IcingIntensity.SevereRimeIcingCloud:
+      return "Severe rime icing in cloud";
+    case IcingIntensity.SevereClearIcingPrecipitation:
+      return "Severe clear icing in precipitation";
   }
 }

@@ -95,6 +95,8 @@ function makeInitialForecast(taf: ITAFDated): ForecastWithoutDates {
     clouds: taf.clouds,
     weatherConditions: taf.weatherConditions,
     raw: taf.initialRaw,
+    turbulence: taf.turbulence,
+    icing: taf.icing,
     validity: {
       // End day/hour are for end of the entire TAF
       startDay: taf.validity.startDay,
