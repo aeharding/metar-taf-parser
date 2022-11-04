@@ -114,6 +114,38 @@ describe("CloudCommand", () => {
       });
     });
   })();
+
+  (() => {
+    // With invalid quantity
+    const code = "BBB025";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        const cloud = command.parse(code);
+
+        expect(cloud).toBeUndefined();
+      });
+    });
+  })();
+
+  (() => {
+    // With invalid type
+    const code = "FEW025AAA";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        expect(() => command.parse(code)).toThrow();
+      });
+    });
+  })();
 });
 
 describe("WindCommand", () => {

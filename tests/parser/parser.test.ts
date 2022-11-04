@@ -470,6 +470,22 @@ describe("MetarParser", () => {
 
     expect(taf.clouds).toHaveLength(2);
   });
+
+  test("does not parse invalid cloud quantities", () => {
+    const taf = new MetarParser(en).parse(
+      "EKVG 291550Z AUTO 13009KT 9999 BKN037AAA"
+    );
+
+    expect(taf.clouds).toHaveLength(0);
+  });
+
+  test("does not parse invalid cloud types", () => {
+    const taf = new MetarParser(en).parse(
+      "EKVG 291550Z AUTO 13009KT 9999 AAA037"
+    );
+
+    expect(taf.clouds).toHaveLength(0);
+  });
 });
 
 describe("parseValidity", () => {
@@ -956,7 +972,7 @@ describe("TAFParser", () => {
   });
 
   test("thunderstorms", () => {
-    const taf = new TAFParser(en).parse(`TAF 
+    const taf = new TAFParser(en).parse(`TAF
     AMD KGWO 161553Z 1616/1712 21005KT 4SM -TSRA BR SCT010 OVC070CB `);
 
     expect(taf.weatherConditions[0].descriptive).toBe(Descriptive.THUNDERSTORM);
@@ -1192,11 +1208,11 @@ describe("TAFParser", () => {
   });
 
   test("should parse with 'TAF AMD TAF AMD'", () => {
-    const taf = `TAF 
-    AMD TAF 
-    AMD CYRB 290006Z 2900/2924 06008KT P6SM SKC 
-    TEMPO 2900/2909 4SM IC PROB30 2900/2909 2SM IC BR BKN003 
-   FM290900 02015KT P6SM FEW010 
+    const taf = `TAF
+    AMD TAF
+    AMD CYRB 290006Z 2900/2924 06008KT P6SM SKC
+    TEMPO 2900/2909 4SM IC PROB30 2900/2909 2SM IC BR BKN003
+   FM290900 02015KT P6SM FEW010
     RMK NXT FCST BY 290600Z`;
 
     const parser = new TAFParser(en);

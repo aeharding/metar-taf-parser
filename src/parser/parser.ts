@@ -240,7 +240,12 @@ export abstract class AbstractParser {
     const command = this.#commonSupplier.get(input);
 
     if (command) {
-      return command.execute(abstractWeatherContainer, input);
+      try {
+        return command.execute(abstractWeatherContainer, input);
+      } catch (error) {
+        if (error instanceof CommandExecutionError) return false;
+        throw error;
+      }
     }
 
     const weatherCondition = this.parseWeatherCondition(input);
