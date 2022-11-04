@@ -63,6 +63,26 @@ describe("CloudCommand", () => {
   })();
 
   (() => {
+    // Unknown type
+    const code = "SCT026///";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        const cloud = command.parse(code);
+
+        expect(cloud).toBeDefined();
+        expect(cloud?.quantity).toBe(CloudQuantity.SCT);
+        expect(cloud?.height).toBe(2600);
+        expect(cloud?.type).toBeUndefined();
+      });
+    });
+  })();
+
+  (() => {
     // With multiple cloud types
     // (Very uncommon to have two types - seen at VOTR)
     const code = "FEW025TCU/CB";

@@ -462,6 +462,14 @@ describe("MetarParser", () => {
       unit: DistanceUnit.StatuteMiles,
     });
   });
+
+  test("parses unknown cloud types", () => {
+    const taf = new MetarParser(en).parse(
+      "EKVG 291550Z AUTO 13009KT 9999 BKN037/// BKN048/// 07/06 Q1009 RMK FEW011/// FEW035/// WIND SKEID 13020KT"
+    );
+
+    expect(taf.clouds).toHaveLength(2);
+  });
 });
 
 describe("parseValidity", () => {
