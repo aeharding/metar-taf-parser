@@ -125,9 +125,7 @@ describe("CloudCommand", () => {
       });
 
       test("parse", () => {
-        const cloud = command.parse(code);
-
-        expect(cloud).toBeUndefined();
+        expect(() => command.parse(code)).toThrow();
       });
     });
   })();

@@ -46,12 +46,7 @@ export class CloudCommand implements ICommand {
 
     if (!m) return;
 
-    try {
-      var quantity = as(m[1], CloudQuantity);
-    } catch (error) {
-      if (error instanceof CommandExecutionError) return undefined;
-      throw error;
-    }
+    const quantity = as(m[1], CloudQuantity);
     const height = 100 * +m[2] || undefined;
     const type = m[3] ? as(m[3], CloudType) : undefined;
     const secondaryType = m[4] ? as(m[4], CloudType) : undefined;
