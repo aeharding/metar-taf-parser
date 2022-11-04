@@ -83,6 +83,17 @@ describe("CloudCommand", () => {
   })();
 
   (() => {
+    // Unknown type with secondary should not be valid
+    const code = "SCT026////CU";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(false);
+      });
+    });
+  })();
+
+  (() => {
     // With multiple cloud types
     // (Very uncommon to have two types - seen at VOTR)
     const code = "FEW025TCU/CB";
@@ -100,6 +111,36 @@ describe("CloudCommand", () => {
         expect(cloud?.height).toBe(2500);
         expect(cloud?.type).toBe(CloudType.TCU);
         expect(cloud?.secondaryType).toBe(CloudType.CB);
+      });
+    });
+  })();
+
+  (() => {
+    // With invalid quantity
+    const code = "BBB025";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        expect(() => command.parse(code)).toThrow();
+      });
+    });
+  })();
+
+  (() => {
+    // With invalid type
+    const code = "FEW025AAA";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        expect(() => command.parse(code)).toThrow();
       });
     });
   })();
