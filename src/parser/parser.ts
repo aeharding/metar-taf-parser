@@ -373,6 +373,28 @@ export class TAFParser extends AbstractParser {
   #validityPattern = /^\d{4}\/\d{4}$/;
 
   /**
+   * TAF messages can be formatted poorly
+   *
+   * Attempt to handle those situations gracefully
+   */
+  parseMessageStart(input: string[]): [number, IFlags | undefined] {
+    let index = 0;
+
+    if (input[index] === this.TAF) index += 1;
+    if (input[index + 1] === this.TAF) index += 2;
+
+    const flags1 = findFlags(input[index]);
+    if (flags1) index += 1;
+
+    if (input[index] === this.TAF) index += 1;
+
+    const flags2 = findFlags(input[index]);
+    if (flags2) index += 1;
+
+    return [index, { ...flags1, ...flags2 }];
+  }
+
+  /**
    * the message to parse
    * @param input
    * @returns a TAF object
@@ -381,16 +403,7 @@ export class TAFParser extends AbstractParser {
   parse(input: string): ITAF {
     const lines = this.extractLinesTokens(input);
 
-    let index = 0;
-
-    if (lines[0][0] === this.TAF) index = 1;
-    if (lines[0][1] === this.TAF) index = 2;
-
-    const flags = findFlags(lines[0][index]);
-
-    if (flags) {
-      index += 1;
-    }
+    let [index, flags] = this.parseMessageStart(lines[0]);
 
     const station = lines[0][index];
     index += 1;

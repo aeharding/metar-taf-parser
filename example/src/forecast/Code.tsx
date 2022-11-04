@@ -1,49 +1,37 @@
 import styled from "@emotion/styled";
-import { Visibility } from "metar-taf-parser";
+import { ICloud, Visibility } from "metar-taf-parser";
+import {
+  FlightCategory,
+  getFlightCategory,
+  getFlightCategoryCssColor,
+} from "../helpers/metarTaf";
 
-enum FlightCategory {
-  VFR = "VFR",
-  MVFR = "MVFR",
-  IFR = "IFR",
-  LIFR = "LIFR",
-}
+const Category = styled.div<{ category: FlightCategory }>`
+  display: inline-block;
+  padding: 2px 8px;
 
-const FlightCategoryEl = styled.div<{ flightCategory: FlightCategory }>`
-  padding: 2px 5px;
-  border-radius: 5px;
+  color: white;
+  border-radius: 1rem;
+  font-weight: 500;
 
-  background-color: ${({ flightCategory }) => {
-    switch (flightCategory) {
-      case FlightCategory.VFR:
-        return "#00ac00";
-      case FlightCategory.MVFR:
-        return "#026bdb";
-      case FlightCategory.IFR:
-        return "red";
-      case FlightCategory.LIFR:
-        return "purple";
-    }
-  }};
+  background: ${({ category }) => getFlightCategoryCssColor(category)};
 
   &:after {
-    content: "${({ flightCategory }) => FlightCategory[flightCategory]}";
+    content: "${({ category }) => FlightCategory[category]}";
   }
 `;
-
 interface CodeProps {
   visibility: Visibility | undefined;
-  ceiling: number | undefined;
+  clouds: ICloud[];
+  verticalVisibility: number | undefined;
 }
 
-export default function Code({ visibility, ceiling }: CodeProps) {
-  const distance = visibility?.value != null ? visibility?.value : Infinity;
-  const height = ceiling != null ? ceiling : Infinity;
+export default function Code({
+  visibility,
+  clouds,
+  verticalVisibility,
+}: CodeProps) {
+  const code = getFlightCategory(visibility, clouds, verticalVisibility);
 
-  let flightCategory = FlightCategory.VFR;
-
-  if (height <= 3000 || distance <= 5) flightCategory = FlightCategory.MVFR;
-  if (height <= 1000 || distance <= 3) flightCategory = FlightCategory.IFR;
-  if (height <= 500 || distance <= 1) flightCategory = FlightCategory.LIFR;
-
-  return <FlightCategoryEl flightCategory={flightCategory} />;
+  return <Category category={code} />;
 }

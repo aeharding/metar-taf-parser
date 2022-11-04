@@ -133,7 +133,7 @@ function parse<T, TDated>(
   try {
     const report = new parser(lang).parse(rawReport);
 
-    if (options && "issued" in options) {
+    if (options && "issued" in options && options.issued) {
       return datesHydrator(report, options.issued);
     }
 

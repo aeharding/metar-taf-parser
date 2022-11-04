@@ -14,24 +14,6 @@ import {
 } from "model/enum";
 import { Remark } from "command/remark";
 
-export interface ICountry {
-  name: string;
-}
-
-export interface IAirport {
-  name: string;
-  city: string;
-  country: string;
-  iata: string;
-  icao: string;
-  latitude: string;
-  longitude: string;
-  altitude: string;
-  timezone: string;
-  dst: boolean;
-  tzDatabase: unknown;
-}
-
 export interface IWind {
   speed: number;
   direction: string;
@@ -118,6 +100,13 @@ export interface ICloud {
   height?: number;
   quantity: CloudQuantity;
   type?: CloudType;
+
+  /**
+   * Very uncommon. For example "FEW025TCU/CB" seen at airport VOTR.
+   *
+   * This property can be ignored in almost all cases.
+   */
+  secondaryType?: CloudType;
 }
 
 export interface IFlags {
@@ -174,7 +163,6 @@ export interface ITime {
 
 export interface IAbstractWeatherCode extends IAbstractWeatherContainer, ITime {
   day?: number;
-  airport?: IAirport;
   message: string;
   station: string;
   trends: IAbstractTrend[];
