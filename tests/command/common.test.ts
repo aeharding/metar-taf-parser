@@ -61,6 +61,28 @@ describe("CloudCommand", () => {
       });
     });
   })();
+
+  (() => {
+    // With multiple cloud types
+    // (Very uncommon to have two types - seen at VOTR)
+    const code = "FEW025TCU/CB";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        const cloud = command.parse(code);
+
+        expect(cloud).toBeDefined();
+        expect(cloud?.quantity).toBe(CloudQuantity.FEW);
+        expect(cloud?.height).toBe(2500);
+        expect(cloud?.type).toBe(CloudType.TCU);
+        expect(cloud?.secondaryType).toBe(CloudType.CB);
+      });
+    });
+  })();
 });
 
 describe("WindCommand", () => {

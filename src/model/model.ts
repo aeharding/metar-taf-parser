@@ -100,6 +100,13 @@ export interface ICloud {
   height?: number;
   quantity: CloudQuantity;
   type?: CloudType;
+
+  /**
+   * Very uncommon. For example "FEW025TCU/CB" seen at airport VOTR.
+   *
+   * This property can be ignored in almost all cases.
+   */
+  secondaryType?: CloudType;
 }
 
 export interface IFlags {
