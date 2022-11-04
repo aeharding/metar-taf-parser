@@ -83,6 +83,17 @@ describe("CloudCommand", () => {
   })();
 
   (() => {
+    // Unknown type with secondary should not be valid
+    const code = "SCT026////CU";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(false);
+      });
+    });
+  })();
+
+  (() => {
     // With multiple cloud types
     // (Very uncommon to have two types - seen at VOTR)
     const code = "FEW025TCU/CB";

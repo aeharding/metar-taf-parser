@@ -6,7 +6,7 @@ import {
 } from "model/model";
 import * as converter from "commons/converter";
 import { CloudQuantity, CloudType, SpeedUnit } from "model/enum";
-import { UnexpectedParseError } from "commons/errors";
+import { CommandExecutionError, UnexpectedParseError } from "commons/errors";
 import { as } from "helpers/helpers";
 
 interface ICommand {
@@ -39,19 +39,22 @@ function makeWind(
 
 export class CloudCommand implements ICommand {
   #cloudRegex =
-    /^([A-Z]{3})(\d{3})?(?:([A-Z]{2,3}|\/{3})(?:\/([A-Z]{2,3}))?)?$/;
+    /^([A-Z]{3})(\d{3})?(?:\/{3}|(?:([A-Z]{2,3})(?:\/([A-Z]{2,3}))?))?$/;
 
   parse(cloudString: string): ICloud | undefined {
     const m = cloudString.match(this.#cloudRegex);
 
     if (!m) return;
 
-    const quantity = CloudQuantity[m[1] as CloudQuantity];
+    try {
+      var quantity = as(m[1], CloudQuantity);
+    } catch (error) {
+      if (error instanceof CommandExecutionError) return undefined;
+      throw error;
+    }
     const height = 100 * +m[2] || undefined;
-    const type = CloudType[m[3] as CloudType];
-    const secondaryType = CloudType[m[4] as CloudType];
-
-    if (!quantity) return;
+    const type = m[3] ? as(m[3], CloudType) : undefined;
+    const secondaryType = m[4] ? as(m[4], CloudType) : undefined;
 
     return { quantity, height, type, secondaryType };
   }
