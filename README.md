@@ -175,6 +175,10 @@ function findSeaLevelPressure(remarks: Remark[]): number | undefined {
 }
 ```
 
+## Determining flight category, ceiling, etc
+
+Because certain abstractions such as flight category and flight ceiling can vary by country, this logic is left up to you to implement. However, if you're looking for somewhere to start, check out the example site (based on United States flight rules) in [example/src/helpers/metarTaf.ts](https://github.com/aeharding/metar-taf-parser/blob/main/example/src/helpers/metarTaf.ts). Feel free to copy - it's MIT licensed.
+
 ## Development
 
 ### Example site
