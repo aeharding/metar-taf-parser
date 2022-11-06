@@ -20,6 +20,11 @@ export default function Conditions({ hour }: ConditionsProp) {
     isEqual
   );
 
+  const nothing = <Nothing>No current phenomenon</Nothing>;
+
+  if (allConditions.length === 1 && allConditions[0].phenomenons[0] === "NSW")
+    return nothing;
+
   return allConditions.length > 0 ? (
     <>
       {allConditions.map((condition, index) => (
@@ -27,7 +32,7 @@ export default function Conditions({ hour }: ConditionsProp) {
       ))}
     </>
   ) : (
-    <Nothing>No current phenomenon</Nothing>
+    nothing
   );
 }
 
