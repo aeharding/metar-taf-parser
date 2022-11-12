@@ -7,11 +7,11 @@
  * @param minute Minute (from the report)
  * @returns
  */
-export function determineReportIssuedDate(
+export function determineReportDate(
   date: Date,
   day?: number,
   hour?: number,
-  minute?: number
+  minute = 0
 ): Date {
   // Some TAF reports do not include a delivery time
   if (day == null || hour == null) return date;
@@ -28,25 +28,6 @@ export function determineReportIssuedDate(
       difference: Math.abs(d.getTime() - date.getTime()),
     }))
     .sort((a, b) => a.difference - b.difference)[0].date;
-}
-
-export function getReportDate(
-  issued: Date,
-  day: number,
-  hour: number,
-  minute = 0
-): Date {
-  let date = new Date(issued);
-
-  if (day < date.getUTCDate()) {
-    date = addMonthsUTC(date, 1);
-  }
-
-  date.setUTCDate(day);
-  date.setUTCHours(hour);
-  if (minute != null) date.setUTCMinutes(minute);
-
-  return date;
 }
 
 function setDateComponents(

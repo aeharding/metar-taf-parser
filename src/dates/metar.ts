@@ -1,5 +1,5 @@
 import { IMetar } from "model/model";
-import { determineReportIssuedDate } from "helpers/date";
+import { determineReportDate } from "helpers/date";
 
 export interface IMetarDated extends IMetar {
   issued: Date;
@@ -8,11 +8,6 @@ export interface IMetarDated extends IMetar {
 export function metarDatesHydrator(report: IMetar, date: Date): IMetarDated {
   return {
     ...report,
-    issued: determineReportIssuedDate(
-      date,
-      report.day,
-      report.hour,
-      report.minute
-    ),
+    issued: determineReportDate(date, report.day, report.hour, report.minute),
   };
 }
