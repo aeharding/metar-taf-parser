@@ -52,7 +52,7 @@ describe("RemarkParser", () => {
 
 class StubParser extends AbstractParser {}
 
-describe("RemarkParser", () => {
+describe("parseWeatherCondition", () => {
   (() => {
     const code = "-DZ";
 
@@ -62,6 +62,18 @@ describe("RemarkParser", () => {
       expect(weatherCondition?.intensity).toBe(Intensity.LIGHT);
       expect(weatherCondition?.phenomenons).toHaveLength(1);
       expect(weatherCondition?.phenomenons[0]).toBe(Phenomenon.DRIZZLE);
+    });
+  })();
+
+  (() => {
+    const code = "-SNRA";
+
+    test(`parses "${code}" in order`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition?.phenomenons).toHaveLength(2);
+      expect(weatherCondition?.phenomenons[0]).toBe(Phenomenon.SNOW);
+      expect(weatherCondition?.phenomenons[1]).toBe(Phenomenon.RAIN);
     });
   })();
 
@@ -987,7 +999,7 @@ describe("TAFParser", () => {
   });
 
   test("thunderstorms", () => {
-    const taf = new TAFParser(en).parse(`TAF 
+    const taf = new TAFParser(en).parse(`TAF
     AMD KGWO 161553Z 1616/1712 21005KT 4SM -TSRA BR SCT010 OVC070CB `);
 
     expect(taf.weatherConditions[0].descriptive).toBe(Descriptive.THUNDERSTORM);
