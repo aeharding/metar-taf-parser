@@ -83,6 +83,26 @@ describe("CloudCommand", () => {
   })();
 
   (() => {
+    // Unknown height and unknown type
+    const code = "SCT//////";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        const cloud = command.parse(code);
+
+        expect(cloud).toBeDefined();
+        expect(cloud?.quantity).toBe(CloudQuantity.SCT);
+        expect(cloud?.height).toBeUndefined();
+        expect(cloud?.type).toBeUndefined();
+      });
+    });
+  })();
+
+  (() => {
     // Unknown type with secondary should not be valid
     const code = "SCT026////CU";
 
