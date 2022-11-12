@@ -1,4 +1,4 @@
-import { getReportDate } from "helpers/date";
+import { determineReportDate } from "helpers/date";
 import { TAFTrendDated } from "dates/taf";
 import { ITAFDated } from "dates/taf";
 import { ParseError, UnexpectedParseError } from "commons/errors";
@@ -67,12 +67,16 @@ export function getForecastFromTAF(taf: ITAFDated): IForecastContainer {
 
   return {
     ...tafWithoutBaseProperties,
-    start: getReportDate(
+    start: determineReportDate(
       taf.issued,
       taf.validity.startDay,
       taf.validity.startHour
     ),
-    end: getReportDate(taf.issued, taf.validity.endDay, taf.validity.endHour),
+    end: determineReportDate(
+      taf.issued,
+      taf.validity.endDay,
+      taf.validity.endHour
+    ),
     forecast: hydrateEndDates(
       [makeInitialForecast(taf), ...taf.trends],
       taf.validity

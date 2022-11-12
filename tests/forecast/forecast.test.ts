@@ -404,4 +404,25 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
       expect(composite.supplemental[0].type).toBe(WeatherChangeType.INTER);
     });
   });
+  describe("with validity start day before issued", () => {
+    const taf = parseTAF(
+      `
+      TAF TAF DNMM 121100Z 1112/1318 22010KT 8000 BKN013 PROB30
+      TEMPO 1213/1218 SCT013 FEW020CB
+      BECMG 1218/1220 VRB02KT SCT011
+      TEMPO 1305/1308 5000 BR HZ
+      BECMG 1308/1310 23010KT BKN013
+      TEMPO 1312/1317 SCT013 FEW020CB
+        `,
+      { issued: new Date("2022/11/12 12:51") }
+    );
+
+    const forecast = getForecastFromTAF(taf);
+
+    test("has proper start and end", () => {
+      expect(forecast.issued).toEqual(new Date("2022-11-12T11:00:00.000Z"));
+      expect(forecast.start).toEqual(new Date("2022-11-11T12:00:00.000Z"));
+      expect(forecast.end).toEqual(new Date("2022-11-13T18:00:00.000Z"));
+    });
+  });
 });

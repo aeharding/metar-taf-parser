@@ -7,7 +7,7 @@ import {
   IValidity,
   ITemperatureDated,
 } from "model/model";
-import { determineReportIssuedDate, getReportDate } from "helpers/date";
+import { determineReportDate } from "helpers/date";
 
 export type TAFTrendDated = IAbstractTrend &
   IBaseTAFTrend & {
@@ -46,7 +46,7 @@ export interface ITAFDated extends ITAF {
 }
 
 export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
-  const issued = determineReportIssuedDate(
+  const issued = determineReportDate(
     date,
     report.day,
     report.hour,
@@ -58,12 +58,12 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
     issued,
     validity: {
       ...report.validity,
-      start: getReportDate(
+      start: determineReportDate(
         issued,
         report.validity.startDay,
         report.validity.startHour
       ),
-      end: getReportDate(
+      end: determineReportDate(
         issued,
         report.validity.endDay,
         report.validity.endHour
@@ -72,7 +72,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
     minTemperature: report.minTemperature
       ? {
           ...report.minTemperature,
-          date: getReportDate(
+          date: determineReportDate(
             issued,
             report.minTemperature.day,
             report.minTemperature.hour
@@ -82,7 +82,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
     maxTemperature: report.maxTemperature
       ? {
           ...report.maxTemperature,
-          date: getReportDate(
+          date: determineReportDate(
             issued,
             report.maxTemperature.day,
             report.maxTemperature.hour
@@ -98,7 +98,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
               case WeatherChangeType.FM:
                 return {
                   ...trend.validity,
-                  start: getReportDate(
+                  start: determineReportDate(
                     issued,
                     trend.validity.startDay,
                     trend.validity.startHour,
@@ -108,12 +108,12 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
               default:
                 return {
                   ...trend.validity,
-                  start: getReportDate(
+                  start: determineReportDate(
                     issued,
                     trend.validity.startDay,
                     trend.validity.startHour
                   ),
-                  end: getReportDate(
+                  end: determineReportDate(
                     issued,
                     trend.validity.endDay,
                     trend.validity.endHour
