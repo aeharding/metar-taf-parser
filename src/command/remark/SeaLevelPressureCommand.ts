@@ -5,6 +5,10 @@ import { Command } from "./Command";
 
 export interface ISeaLevelPressureRemark extends IBaseRemark {
   type: RemarkType.SeaLevelPressure;
+
+  /**
+   * Sea level pressure, in hPa/millibars
+   */
   pressure: number;
 }
 

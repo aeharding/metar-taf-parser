@@ -27,6 +27,7 @@ import {
   WeatherChangeType,
 } from "model/enum";
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
+import { CommandSupplier as TafCommandSupplier } from "command/taf";
 import { Locale } from "commons/i18n";
 import { CommandExecutionError } from "commons/errors";
 
@@ -147,6 +148,7 @@ function parseFromValidity(input: string): IFMValidity {
 export abstract class AbstractParser {
   FM = "FM";
   TEMPO = "TEMPO";
+  INTER = "INTER";
   BECMG = "BECMG";
   RMK = "RMK";
 
@@ -264,7 +266,12 @@ export abstract class AbstractParser {
     const command = this.#commonSupplier.get(input);
 
     if (command) {
-      return command.execute(abstractWeatherContainer, input);
+      try {
+        return command.execute(abstractWeatherContainer, input);
+      } catch (error) {
+        if (error instanceof CommandExecutionError) return false;
+        throw error;
+      }
     }
 
     const weatherCondition = this.parseWeatherCondition(input);
@@ -296,6 +303,7 @@ export class MetarParser extends AbstractParser {
     while (
       i < trendParts.length &&
       trendParts[i] !== this.TEMPO &&
+      trendParts[i] !== this.INTER &&
       trendParts[i] !== this.BECMG
     ) {
       if (
@@ -350,6 +358,7 @@ export class MetarParser extends AbstractParser {
           metar.nosig = true;
         } else if (
           metarTab[index] === this.TEMPO ||
+          metarTab[index] === this.INTER ||
           metarTab[index] === this.BECMG
         ) {
           const startIndex = index;
@@ -392,7 +401,31 @@ export class TAFParser extends AbstractParser {
   TX = "TX";
   TN = "TN";
 
+  #commandSupplier = new TafCommandSupplier();
+
   #validityPattern = /^\d{4}\/\d{4}$/;
+
+  /**
+   * TAF messages can be formatted poorly
+   *
+   * Attempt to handle those situations gracefully
+   */
+  parseMessageStart(input: string[]): [number, IFlags | undefined] {
+    let index = 0;
+
+    if (input[index] === this.TAF) index += 1;
+    if (input[index + 1] === this.TAF) index += 2;
+
+    const flags1 = findFlags(input[index]);
+    if (flags1) index += 1;
+
+    if (input[index] === this.TAF) index += 1;
+
+    const flags2 = findFlags(input[index]);
+    if (flags2) index += 1;
+
+    return [index, { ...flags1, ...flags2 }];
+  }
 
   /**
    * the message to parse
@@ -403,16 +436,7 @@ export class TAFParser extends AbstractParser {
   parse(input: string): ITAF {
     const lines = this.extractLinesTokens(input);
 
-    let index = 0;
-
-    if (lines[0][0] === this.TAF) index = 1;
-    if (lines[0][1] === this.TAF) index = 2;
-
-    const flags = findFlags(lines[0][index]);
-
-    if (flags) {
-      index += 1;
-    }
+    let [index, flags] = this.parseMessageStart(lines[0]);
 
     const station = lines[0][index];
     index += 1;
@@ -436,12 +460,16 @@ export class TAFParser extends AbstractParser {
     for (let i = index + 1; i < lines[0].length; i++) {
       const token = lines[0][i];
 
+      const tafCommand = this.#commandSupplier.get(token);
+
       if (token == this.RMK) {
         parseRemark(taf, lines[0], i, this.locale);
         break;
+      } else if (tafCommand) {
+        tafCommand.execute(taf, token);
       } else {
-        parseFlags(taf, token);
         this.generalParse(taf, token);
+        parseFlags(taf, token);
       }
     }
 
@@ -484,14 +512,17 @@ export class TAFParser extends AbstractParser {
     const cleanLine = singleLine.replace(/\s{2,}/g, " ");
     const lines = joinProbIfNeeded(
       cleanLine
-        .replace(/\s(?=PROB\d{2}\sTEMPO|TEMPO|BECMG|FM|PROB)/g, "\n")
+        .replace(
+          /\s(?=PROB\d{2}\s(?=TEMPO|INTER)|TEMPO|INTER|BECMG|FM|PROB)/g,
+          "\n"
+        )
         .split(/\n/)
     );
 
     // TODO cleanup
     function joinProbIfNeeded(ls: string[]): string[] {
       for (let i = 0; i < ls.length; i++) {
-        if (/^PROB\d{2}$/.test(ls[i]) && /^TEMPO/.test(ls[i + 1])) {
+        if (/^PROB\d{2}$/.test(ls[i]) && /^TEMPO|INTER/.test(ls[i + 1])) {
           ls.splice(i, 2, `${ls[i]} ${ls[i + 1]}`);
         }
       }
@@ -529,7 +560,10 @@ export class TAFParser extends AbstractParser {
         raw: lineTokens.join(" "),
       };
 
-      if (lineTokens.length > 1 && lineTokens[1] === this.TEMPO) {
+      if (
+        lineTokens.length > 1 &&
+        (lineTokens[1] === this.TEMPO || lineTokens[1] === this.INTER)
+      ) {
         trend = {
           ...this.makeEmptyTAFTrend(),
           type: WeatherChangeType[lineTokens[1] as WeatherChangeType],
@@ -581,13 +615,17 @@ export class TAFParser extends AbstractParser {
    */
   parseTrend(index: number, line: string[], trend: TAFTrend) {
     for (let i = index; i < line.length; i++) {
+      const tafCommand = this.#commandSupplier.get(line[i]);
+
       if (line[i] === this.RMK) {
         parseRemark(trend, line, i, this.locale);
         break;
       }
       // already parsed
       else if (this.#validityPattern.test(line[i])) continue;
-      else super.generalParse(trend, line[i]);
+      else if (tafCommand) {
+        tafCommand.execute(trend, line[i]);
+      } else super.generalParse(trend, line[i]);
     }
   }
 

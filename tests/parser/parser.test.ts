@@ -18,6 +18,8 @@ import {
   DistanceUnit,
   ValueIndicator,
   SpeedUnit,
+  TurbulenceIntensity,
+  IcingIntensity,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
 import { Direction } from "model/enum";
@@ -512,6 +514,30 @@ describe("MetarParser", () => {
       value: 1.5,
       unit: DistanceUnit.StatuteMiles,
     });
+  });
+
+  test("parses unknown cloud types", () => {
+    const taf = new MetarParser(en).parse(
+      "EKVG 291550Z AUTO 13009KT 9999 BKN037/// BKN048/// 07/06 Q1009 RMK FEW011/// FEW035/// WIND SKEID 13020KT"
+    );
+
+    expect(taf.clouds).toHaveLength(2);
+  });
+
+  test("does not parse invalid cloud quantities", () => {
+    const taf = new MetarParser(en).parse(
+      "EKVG 291550Z AUTO 13009KT 9999 BKN037AAA"
+    );
+
+    expect(taf.clouds).toHaveLength(0);
+  });
+
+  test("does not parse invalid cloud types", () => {
+    const taf = new MetarParser(en).parse(
+      "EKVG 291550Z AUTO 13009KT 9999 AAA037"
+    );
+
+    expect(taf.clouds).toHaveLength(0);
   });
 });
 
@@ -1028,6 +1054,56 @@ describe("TAFParser", () => {
     expect(taf.trends[2].remarks).toHaveLength(1);
   });
 
+  test("parses INTER trend", () => {
+    const taf = new TAFParser(en).parse(`
+      TAF TAF
+        AMD YWLM 270723Z 2707/2806 19020G30KT 9999 -SHRA SCT015 BKN020
+        BECMG 2708/2710 19014KT 9999 -SHRA SCT010 BKN015
+        BECMG 2800/2802 18015G25KT 9999 -SHRA SCT015 BKN020
+        TEMPO 2707/2712 3000 SHRA SCT005 BKN010 INTER 2712/2802 4000 SHRA SCT005 BKN010`);
+
+    expect(taf.trends).toHaveLength(4);
+    expect(taf.trends[3].type).toBe(WeatherChangeType.INTER);
+    expect(taf.trends[3].validity.startDay).toBe(27);
+    expect(taf.trends[3].validity.startHour).toBe(12);
+    expect(taf.trends[3].validity.endDay).toBe(28);
+    expect(taf.trends[3].validity.endHour).toBe(2);
+    expect(taf.trends[3].visibility?.value).toBe(4000);
+    expect(taf.trends[3].visibility?.unit).toBe(DistanceUnit.Meters);
+    expect(taf.trends[3].weatherConditions).toHaveLength(1);
+    expect(taf.trends[3].weatherConditions[0].descriptive).toBe(
+      Descriptive.SHOWERS
+    );
+    expect(taf.trends[3].weatherConditions[0].phenomenons).toHaveLength(1);
+    expect(taf.trends[3].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.RAIN
+    );
+    expect(taf.trends[3].clouds).toHaveLength(2);
+    expect(taf.trends[3].clouds[0].quantity).toBe(CloudQuantity.SCT);
+    expect(taf.trends[3].clouds[0].height).toBe(500);
+    expect(taf.trends[3].clouds[1].quantity).toBe(CloudQuantity.BKN);
+    expect(taf.trends[3].clouds[1].height).toBe(1000);
+  });
+
+  test("parses INTER with probability", () => {
+    const taf = new TAFParser(en).parse(`
+  TAF YWLM 270209Z 2703/2800 30014KT 9999 -SHRA NSC
+    FM270400 28007KT 9999 -SHRA SCT040
+    FM270700 03010KT 9999 -SHRA SCT040
+    FM271200 30008KT CAVOK
+    FM272100 29014KT CAVOK
+    INTER 2703/2709 30018G30KT 5000 SHRA SCT015 BKN040 FEW040TCU
+    PROB30
+    INTER 2704/2709 VRB25G45KT 2000 TSRAGR BKN010 SCT040CB`);
+
+    expect(taf.trends).toHaveLength(6);
+    expect(taf.trends[4].type).toBe(WeatherChangeType.INTER);
+    expect(taf.trends[4].probability).toBeUndefined();
+
+    expect(taf.trends[5].type).toBe(WeatherChangeType.INTER);
+    expect(taf.trends[5].probability).toBe(30);
+  });
+
   test("stops parsing weather conditions after base remark", () => {
     // Fixes #3
     const taf = new TAFParser(en)
@@ -1196,7 +1272,6 @@ describe("TAFParser", () => {
 
     let parsed = parser.parse(taf);
 
-    expect(parsed.trends).toHaveLength(3);
     expect(parsed.trends[2].weatherConditions).toHaveLength(1);
     expect(parsed.trends[2].weatherConditions[0].intensity).toBe(
       Intensity.LIGHT
@@ -1208,6 +1283,21 @@ describe("TAFParser", () => {
     expect(parsed.trends[2].weatherConditions[0].descriptive).toBeUndefined();
   });
 
+  test("should parse with 'TAF AMD TAF AMD'", () => {
+    const taf = `TAF
+    AMD TAF
+    AMD CYRB 290006Z 2900/2924 06008KT P6SM SKC
+    TEMPO 2900/2909 4SM IC PROB30 2900/2909 2SM IC BR BKN003
+   FM290900 02015KT P6SM FEW010
+    RMK NXT FCST BY 290600Z`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends).toHaveLength(3);
+  });
+
   // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
   // (https://www.aviationweather.gov/taf/decoder#Date)
   //
@@ -1216,6 +1306,162 @@ describe("TAFParser", () => {
   //     `TAF KNYG 2021/2121 15007KT 9999 SKC QNH3038INS BECMG 2112/2114 19009G25KT 9999 BKN150 QNH3033INS T08/2111Z T21/2119Z`
   //   );
   // });
+
+  describe("turbulence group", () => {
+    test("in existence should still properly parse wind", () => {
+      const taf = `TAF KLSV 222300Z 2223/2405 21020G35KT 8000 BLDU BKN160 530009 QNH2941INS`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.wind?.speed).toBe(20);
+      expect(parsed.wind?.degrees).toBe(210);
+      expect(parsed.wind?.gust).toBe(35);
+      expect(parsed.wind?.unit).toBe(SpeedUnit.Knot);
+    });
+
+    test("should properly parse in base of TAF", () => {
+      const taf = `TAF KLSV 222300Z 2223/2405 21020G35KT 8000 BLDU BKN160 530009 QNH2941INS`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.turbulence).toHaveLength(1);
+      expect(parsed.turbulence?.[0].intensity).toBe(
+        TurbulenceIntensity.ModerateClearAirFrequent
+      );
+      expect(parsed.turbulence?.[0].baseHeight).toBe(0);
+      expect(parsed.turbulence?.[0].depth).toBe(9000);
+    });
+
+    test("should properly parse multiple in base of TAF", () => {
+      const taf = `TAF KLSV 222300Z 2223/2405 21020G35KT 8000 BLDU BKN160 530009 5X0304 QNH2941INS`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.turbulence).toHaveLength(2);
+
+      expect(parsed.turbulence?.[0].intensity).toBe(
+        TurbulenceIntensity.ModerateClearAirFrequent
+      );
+      expect(parsed.turbulence?.[0].baseHeight).toBe(0);
+      expect(parsed.turbulence?.[0].depth).toBe(9000);
+
+      expect(parsed.turbulence?.[1].intensity).toBe(
+        TurbulenceIntensity.Extreme
+      );
+      expect(parsed.turbulence?.[1].baseHeight).toBe(3000);
+      expect(parsed.turbulence?.[1].depth).toBe(4000);
+    });
+
+    test("should properly parse multiple in trend of TAF", () => {
+      const taf = `TAF
+    AMD CYRB 290006Z 2900/2924 06008KT P6SM SKC
+    TEMPO 2900/2909 4SM IC
+    PROB30 2900/2909 2SM IC BR BKN003 530009 5X0304`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.trends).toHaveLength(2);
+
+      expect(parsed.trends[1].turbulence).toHaveLength(2);
+
+      expect(parsed.trends[1].turbulence?.[0].intensity).toBe(
+        TurbulenceIntensity.ModerateClearAirFrequent
+      );
+      expect(parsed.trends[1].turbulence?.[0].baseHeight).toBe(0);
+      expect(parsed.trends[1].turbulence?.[0].depth).toBe(9000);
+
+      expect(parsed.trends[1].turbulence?.[1].intensity).toBe(
+        TurbulenceIntensity.Extreme
+      );
+      expect(parsed.trends[1].turbulence?.[1].baseHeight).toBe(3000);
+      expect(parsed.trends[1].turbulence?.[1].depth).toBe(4000);
+    });
+  });
+
+  describe("icing", () => {
+    test("in existence should still properly parse wind", () => {
+      const taf = `TAF KLSV 222300Z 2223/2405 21020G35KT 8000 BLDU BKN160 620304 QNH2941INS`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.wind?.speed).toBe(20);
+      expect(parsed.wind?.degrees).toBe(210);
+      expect(parsed.wind?.gust).toBe(35);
+      expect(parsed.wind?.unit).toBe(SpeedUnit.Knot);
+    });
+
+    test("should properly parse in base of TAF", () => {
+      const taf = `TAF KLSV 222300Z 2223/2405 21020G35KT 8000 BLDU BKN160 620304 QNH2941INS`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.icing).toHaveLength(1);
+      expect(parsed.icing?.[0].intensity).toBe(
+        IcingIntensity.LightRimeIcingCloud
+      );
+      expect(parsed.icing?.[0].baseHeight).toBe(3000);
+      expect(parsed.icing?.[0].depth).toBe(4000);
+    });
+
+    test("should properly parse multiple in base of TAF", () => {
+      const taf = `TAF KLSV 222300Z 2223/2405 21020G35KT 8000 BLDU BKN160 620304 670009 QNH2941INS`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.icing).toHaveLength(2);
+
+      expect(parsed.icing?.[0].intensity).toBe(
+        IcingIntensity.LightRimeIcingCloud
+      );
+      expect(parsed.icing?.[0].baseHeight).toBe(3000);
+      expect(parsed.icing?.[0].depth).toBe(4000);
+
+      expect(parsed.icing?.[1].intensity).toBe(IcingIntensity.SevereMixedIcing);
+      expect(parsed.icing?.[1].baseHeight).toBe(0);
+      expect(parsed.icing?.[1].depth).toBe(9000);
+    });
+
+    test("should properly parse multiple in trend of TAF", () => {
+      const taf = `TAF
+    AMD CYRB 290006Z 2900/2924 06008KT P6SM SKC
+    TEMPO 2900/2909 4SM IC
+    PROB30 2900/2909 2SM IC BR BKN003 620304 670009`;
+
+      const parser = new TAFParser(en);
+
+      let parsed = parser.parse(taf);
+
+      expect(parsed.trends).toHaveLength(2);
+
+      expect(parsed.trends[1].icing).toHaveLength(2);
+
+      expect(parsed.trends[1].icing?.[0].intensity).toBe(
+        IcingIntensity.LightRimeIcingCloud
+      );
+      expect(parsed.trends[1].icing?.[0].baseHeight).toBe(3000);
+      expect(parsed.trends[1].icing?.[0].depth).toBe(4000);
+
+      expect(parsed.trends[1].icing?.[1].intensity).toBe(
+        IcingIntensity.SevereMixedIcing
+      );
+      expect(parsed.trends[1].icing?.[1].baseHeight).toBe(0);
+      expect(parsed.trends[1].icing?.[1].depth).toBe(9000);
+    });
+  });
 });
 
 describe("RemarkParser", () => {

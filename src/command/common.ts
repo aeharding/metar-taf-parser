@@ -6,7 +6,7 @@ import {
 } from "model/model";
 import * as converter from "commons/converter";
 import { CloudQuantity, CloudType, SpeedUnit } from "model/enum";
-import { UnexpectedParseError } from "commons/errors";
+import { CommandExecutionError, UnexpectedParseError } from "commons/errors";
 import { as } from "helpers/helpers";
 
 interface ICommand {
@@ -38,20 +38,20 @@ function makeWind(
 }
 
 export class CloudCommand implements ICommand {
-  #cloudRegex = /^([A-Z]{3})(\d{3})?([A-Z]{2,3})?$/;
+  #cloudRegex =
+    /^([A-Z]{3})(?:\/{3}|(\d{3}))?(?:\/{3}|(?:([A-Z]{2,3})(?:\/([A-Z]{2,3}))?))?$/;
 
   parse(cloudString: string): ICloud | undefined {
     const m = cloudString.match(this.#cloudRegex);
 
     if (!m) return;
 
-    const quantity = CloudQuantity[m[1] as CloudQuantity];
+    const quantity = as(m[1], CloudQuantity);
     const height = 100 * +m[2] || undefined;
-    const type = CloudType[m[3] as CloudType];
+    const type = m[3] ? as(m[3], CloudType) : undefined;
+    const secondaryType = m[4] ? as(m[4], CloudType) : undefined;
 
-    if (!quantity) return;
-
-    return { quantity, height, type };
+    return { quantity, height, type, secondaryType };
   }
 
   execute(container: IAbstractWeatherContainer, cloudString: string): boolean {
@@ -91,7 +91,6 @@ export class MainVisibilityCommand implements ICommand {
 
     if (!container.visibility) container.visibility = distance;
 
-    container.visibility = { ...container.visibility, ...distance };
     if (matches[2] === "NDV") container.visibility.ndv = true;
 
     return true;
@@ -99,7 +98,7 @@ export class MainVisibilityCommand implements ICommand {
 }
 
 export class WindCommand implements ICommand {
-  #regex = /^(VRB|\d{3})(\d{2})G?(\d{2})?(KT|MPS|KM\/H)?/;
+  #regex = /^(VRB|[0-3]\d{2})(\d{2})G?(\d{2})?(KT|MPS|KM\/H)?/;
 
   canParse(windString: string): boolean {
     return this.#regex.test(windString);

@@ -11,26 +11,10 @@ import {
   RunwayInfoUnit,
   Intensity,
   SpeedUnit,
+  IcingIntensity,
+  TurbulenceIntensity,
 } from "model/enum";
 import { Remark } from "command/remark";
-
-export interface ICountry {
-  name: string;
-}
-
-export interface IAirport {
-  name: string;
-  city: string;
-  country: string;
-  iata: string;
-  icao: string;
-  latitude: string;
-  longitude: string;
-  altitude: string;
-  timezone: string;
-  dst: boolean;
-  tzDatabase: unknown;
-}
 
 export interface IWind {
   speed: number;
@@ -118,6 +102,13 @@ export interface ICloud {
   height?: number;
   quantity: CloudQuantity;
   type?: CloudType;
+
+  /**
+   * Very uncommon. For example "FEW025TCU/CB" seen at airport VOTR.
+   *
+   * This property can be ignored in almost all cases.
+   */
+  secondaryType?: CloudType;
 }
 
 export interface IFlags {
@@ -174,10 +165,14 @@ export interface ITime {
 
 export interface IAbstractWeatherCode extends IAbstractWeatherContainer, ITime {
   day?: number;
-  airport?: IAirport;
   message: string;
   station: string;
   trends: IAbstractTrend[];
+}
+
+export interface ITafGroups {
+  turbulence?: ITurbulence[];
+  icing?: IIcing[];
 }
 
 export interface IAbstractWeatherCodeDated extends IAbstractWeatherCode {
@@ -197,7 +192,7 @@ export interface IMetar extends IAbstractWeatherCode {
   trends: IMetarTrend[];
 }
 
-export interface ITAF extends IAbstractWeatherCode {
+export interface ITAF extends IAbstractWeatherCode, ITafGroups {
   validity: IValidity;
   maxTemperature?: ITemperature;
   minTemperature?: ITemperature;
@@ -222,7 +217,7 @@ export interface IMetarTrend extends IAbstractTrend {
   times: IMetarTrendTime[];
 }
 
-export interface IBaseTAFTrend extends IAbstractTrend {
+export interface IBaseTAFTrend extends IAbstractTrend, ITafGroups {
   /**
    * Will not be found on FM trends. May exist on others.
    *
@@ -235,7 +230,7 @@ export interface IBaseTAFTrend extends IAbstractTrend {
    *
    * - FM trends also have `startMinutes`. They **DO NOT** have an explicit end
    *   validity (it is implied by the following FM).
-   * - All others (PROB, TEMPO, BECMG) have `endDay` and `endHour`.
+   * - All others (PROB, TEMPO, BECMG, INTER) have `endDay` and `endHour`.
    *
    * All properties are allowed to be accessed (as optionals), but if you want
    * type guarantees, you can check the trend type. For example:
@@ -248,6 +243,7 @@ export interface IBaseTAFTrend extends IAbstractTrend {
    *   case WeatherChangeType.PROB:
    *   case WeatherChangeType.BECMG:
    *   case WeatherChangeType.TEMPO:
+   *   case WeatherChangeType.INTER:
    *     // trend.validity now has endHour, endDay defined
    * }
    * ```
@@ -280,4 +276,40 @@ export interface IValidityDated extends IAbstractValidity, IEndValidity {
 
 export interface IFMValidity extends IAbstractValidity {
   startMinutes: number;
+}
+
+/**
+ * Represents icing in a TAF.
+ *
+ * http://prnfc.org/wp-content/uploads/2016/12/AF-METAR-TAF-Codes.pdf#page=28
+ *
+ * Top of icing = `baseHeight` + `depth`
+ */
+export interface IIcing {
+  /** The intensity of the icing. */
+  intensity: IcingIntensity;
+
+  /** The base of the icing layer in feet. */
+  baseHeight: number;
+
+  /** The icing layer depth in feet. */
+  depth: number;
+}
+
+/**
+ * Represents turbulence in a TAF.
+ *
+ * http://prnfc.org/wp-content/uploads/2016/12/AF-METAR-TAF-Codes.pdf#page=29
+ *
+ * Top of icing = `baseHeight` + `depth`
+ */
+export interface ITurbulence {
+  /** The intensity of the turbulence. */
+  intensity: TurbulenceIntensity;
+
+  /** The base limit of the turbulence layer in feet. */
+  baseHeight: number;
+
+  /** The turbulence layer depth in feet. */
+  depth: number;
 }

@@ -101,11 +101,13 @@ console.log(report.forecast);
 
 > ⚠️ **Warning:** Experimental API
 
-Provides all relevant weather conditions for a given timestamp. It returns a `ICompositeForecast` with a `base` and `additional` component. The `base` component is the base weather condition period (type = `FM`, `BECMG`, or `undefined`) - and there will always be one.
+Provides all relevant weather conditions for a given timestamp. It returns an `ICompositeForecast` with a `prevailing` and `supplemental` component. The `prevailing` component is the prevailing weather condition period (type = `FM`, `BECMG`, or `undefined`) - and there will always be one.
 
-The `additional` property is an array of weather condition periods valid for the given timestamp (any `PROB` and/or `TEMPO`)
+The `supplemental` property is an array of weather condition periods valid for the given timestamp (any `PROB`, `TEMPO` and/or `INTER`) - conditions that are ephemeral and/or lower probability.
 
-You will still need to write some logic to use this API to determine what data to use - for example, if `additional[0].visibility` exists, you may want to use it over `base.visibility`.
+You will still need to write some logic to determine what data to use - for example, if `supplemental[0].visibility` exists, you may want to use it over `prevailing.visibility`, or otherwise present it to the user.
+
+This function throws a `TimestampOutOfBoundsError` if the provided date is outside of the report validity period.
 
 #### Example
 
@@ -172,6 +174,10 @@ function findSeaLevelPressure(remarks: Remark[]): number | undefined {
   }
 }
 ```
+
+## Determining flight category, ceiling, etc
+
+Because certain abstractions such as flight category and flight ceiling can vary by country, this logic is left up to you to implement. However, if you're looking for somewhere to start, check out the example site (based on United States flight rules) in [example/src/helpers/metarTaf.ts](https://github.com/aeharding/metar-taf-parser/blob/main/example/src/helpers/metarTaf.ts). Feel free to copy - it's MIT licensed.
 
 ## Development
 

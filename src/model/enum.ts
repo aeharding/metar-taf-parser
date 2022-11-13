@@ -219,6 +219,13 @@ export enum WeatherChangeType {
   TEMPO = "TEMPO",
 
   /**
+   * For periods up to 30 minutes (`INTER` or intermittent).
+   *
+   * Otherwise, similar to `TEMPO`
+   */
+  INTER = "INTER",
+
+  /**
    * Probability Forecast
    *
    * ie. `PROB40 0006`
@@ -300,4 +307,76 @@ export enum RunwayInfoTrend {
 export enum RunwayInfoUnit {
   Feet = "FT",
   Meters = "m",
+}
+
+export enum IcingIntensity {
+  /**
+   * Trace Icing or None.
+   *
+   * Air Force code 0 means a trace of icing.
+   * World Meteorological Organization code 0 means no icing
+   */
+  None = "0",
+
+  /** Light Mixed Icing. */
+  Light = "1",
+
+  /** Light Rime Icing In Cloud. */
+  LightRimeIcingCloud = "2",
+
+  /** Light Clear Icing In Precipitation. */
+  LightClearIcingPrecipitation = "3",
+
+  /** Moderate Mixed Icing. */
+  ModerateMixedIcing = "4",
+
+  /** Moderate Rime Icing In Cloud. */
+  ModerateRimeIcingCloud = "5",
+
+  /** Moderate Clear Icing In Precipitation. */
+  ModerateClearIcingPrecipitation = "6",
+
+  /** Severe Mixed Icing. */
+  SevereMixedIcing = "7",
+
+  /** Severe Rime Icing In Cloud. */
+  SevereRimeIcingCloud = "8",
+
+  /** Severe Clear Icing In Precipitation. */
+  SevereClearIcingPrecipitation = "9",
+}
+
+export enum TurbulenceIntensity {
+  /** None. */
+  None = "0",
+
+  /** Light turbulence. */
+  Light = "1",
+
+  /** Moderate turbulence in clear air, occasional. */
+  ModerateClearAirOccasional = "2",
+
+  /** Moderate turbulence in clear air, frequent. */
+  ModerateClearAirFrequent = "3",
+
+  /** Moderate turbulence in cloud, occasional. */
+  ModerateCloudOccasional = "4",
+
+  /** Moderate turbulence in cloud, frequent. */
+  ModerateCloudFrequent = "5",
+
+  /** Severe turbulence in clear air, occasional. */
+  SevereClearAirOccasional = "6",
+
+  /** Severe turbulence in clear air, frequent. */
+  SevereClearAirFrequent = "7",
+
+  /** Severe turbulence in cloud, occasional. */
+  SevereCloudOccasional = "8",
+
+  /** Severe turbulence in cloud, frequent. */
+  SevereCloudFrequent = "9",
+
+  /** Extreme turbulence */
+  Extreme = "X",
 }

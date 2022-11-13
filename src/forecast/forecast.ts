@@ -1,4 +1,4 @@
-import { getReportDate } from "helpers/date";
+import { determineReportDate } from "helpers/date";
 import { TAFTrendDated } from "dates/taf";
 import { ITAFDated } from "dates/taf";
 import { ParseError, UnexpectedParseError } from "commons/errors";
@@ -49,14 +49,34 @@ export interface IForecastContainer extends IFlags {
 }
 
 export function getForecastFromTAF(taf: ITAFDated): IForecastContainer {
+  const {
+    trends,
+    wind,
+    visibility,
+    verticalVisibility,
+    windShear,
+    cavok,
+    remark,
+    remarks,
+    clouds,
+    weatherConditions,
+    initialRaw,
+    validity,
+    ...tafWithoutBaseProperties
+  } = taf;
+
   return {
-    ...taf,
-    start: getReportDate(
+    ...tafWithoutBaseProperties,
+    start: determineReportDate(
       taf.issued,
       taf.validity.startDay,
       taf.validity.startHour
     ),
-    end: getReportDate(taf.issued, taf.validity.endDay, taf.validity.endHour),
+    end: determineReportDate(
+      taf.issued,
+      taf.validity.endDay,
+      taf.validity.endHour
+    ),
     forecast: hydrateEndDates(
       [makeInitialForecast(taf), ...taf.trends],
       taf.validity
@@ -79,6 +99,8 @@ function makeInitialForecast(taf: ITAFDated): ForecastWithoutDates {
     clouds: taf.clouds,
     weatherConditions: taf.weatherConditions,
     raw: taf.initialRaw,
+    turbulence: taf.turbulence,
+    icing: taf.icing,
     validity: {
       // End day/hour are for end of the entire TAF
       startDay: taf.validity.startDay,
@@ -121,8 +143,11 @@ function hydrateEndDates(
     const nextTrend = findNext(i + 1);
 
     if (!hasImplicitEnd(currentTrend)) {
+      const { validity, ...trend } = currentTrend;
+
       forecasts.push({
-        ...currentTrend,
+        ...trend,
+
         start: currentTrend.validity.start,
 
         // Has a type and not a FM/BECMG/undefined, so always has an end
@@ -132,11 +157,13 @@ function hydrateEndDates(
     }
 
     let forecast: Forecast;
+    const { validity, ...trendWithoutValidity } = currentTrend;
 
     if (nextTrend === undefined) {
       forecast = hydrateWithPreviousContextIfNeeded(
         {
-          ...currentTrend,
+          ...trendWithoutValidity,
+
           start: currentTrend.validity.start,
           end: reportValidity.end,
           ...byIfNeeded(currentTrend),
@@ -146,7 +173,8 @@ function hydrateEndDates(
     } else {
       forecast = hydrateWithPreviousContextIfNeeded(
         {
-          ...currentTrend,
+          ...trendWithoutValidity,
+
           start: currentTrend.validity.start,
           end: new Date(nextTrend.validity.start),
           ...byIfNeeded(currentTrend),
@@ -170,6 +198,8 @@ function hydrateWithPreviousContextIfNeeded(
   forecast: Forecast,
   context: Forecast | undefined
 ): Forecast {
+  // BECMG is the only forecast type that inherits old conditions
+  // Anything else starts anew
   if (forecast.type !== WeatherChangeType.BECMG || !context) return forecast;
 
   // Remarks should not be carried over
@@ -177,12 +207,26 @@ function hydrateWithPreviousContextIfNeeded(
   delete context.remark;
   context.remarks = [];
 
+  // vertical visibility should not be carried over, if clouds exist
+  if (forecast.clouds.length) delete context.verticalVisibility;
+
+  // CAVOK should not propagate if anything other than wind changes
+  if (
+    forecast.clouds.length ||
+    forecast.verticalVisibility ||
+    forecast.weatherConditions.length ||
+    forecast.visibility
+  )
+    delete context.cavok;
+
   forecast = {
     ...context,
     ...forecast,
   };
 
-  if (!forecast.clouds.length) forecast.clouds = context.clouds;
+  if (!forecast.clouds.length) {
+    forecast.clouds = context.clouds;
+  }
 
   if (!forecast.weatherConditions.length)
     forecast.weatherConditions = context.weatherConditions;
@@ -192,18 +236,17 @@ function hydrateWithPreviousContextIfNeeded(
 
 export interface ICompositeForecast {
   /**
-   * The base forecast (type is `FM` or initial group)
+   * Prevailing conditions: type is `FM`, `BECMG` or initial conditions (`undefined` type)
    */
-  base: Forecast;
+  prevailing: Forecast;
 
   /**
-   * Any forecast here should pre-empt the base forecast. These forecasts may
-   * have probabilities of occuring, be temporary, or otherwise notable
-   * precipitation events
+   * supplemental forecasts may have probabilities of occuring, be temporary,
+   * or otherwise notable change of conditions. They enhance the prevailing forecast.
    *
-   * `type` is (`BECMG`, `TEMPO` or `PROB`)
+   * `type` is (`TEMPO`, `INTER` or `PROB`)
    */
-  additional: Forecast[];
+  supplemental: Forecast[];
 }
 
 export class TimestampOutOfBoundsError extends ParseError {
@@ -228,16 +271,16 @@ export function getCompositeForecastForDate(
       "Provided timestamp is outside the report validity period"
     );
 
-  let base: Forecast | undefined;
-  let additional: Forecast[] = [];
+  let prevailing: Forecast | undefined;
+  let supplemental: Forecast[] = [];
 
   for (const forecast of forecastContainer.forecast) {
     if (
       hasImplicitEnd(forecast) &&
       forecast.start.getTime() <= date.getTime()
     ) {
-      // Is FM or initial forecast
-      base = forecast;
+      // Is FM, BECMG or initial forecast
+      prevailing = forecast;
     }
 
     if (
@@ -246,14 +289,15 @@ export function getCompositeForecastForDate(
       forecast.end.getTime() - date.getTime() > 0 &&
       forecast.start.getTime() - date.getTime() <= 0
     ) {
-      // Is TEMPO, BECMG etc
-      additional.push(forecast);
+      // Is TEMPO, INTER, PROB etc
+      supplemental.push(forecast);
     }
   }
 
-  if (!base) throw new UnexpectedParseError("Unable to find trend for date");
+  if (!prevailing)
+    throw new UnexpectedParseError("Unable to find trend for date");
 
-  return { base, additional };
+  return { prevailing, supplemental };
 }
 
 function byIfNeeded(forecast: ForecastWithoutDates): { by?: Date } {

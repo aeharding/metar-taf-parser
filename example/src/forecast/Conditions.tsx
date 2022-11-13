@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { isEqual, uniqWith } from "lodash";
 import { IWeatherCondition } from "metar-taf-parser";
-import { IHour } from "./Forecast";
+import { IHour } from "./hourly/HourlyForecast";
 
 const Nothing = styled.div`
   opacity: 0.5;
@@ -14,11 +14,16 @@ interface ConditionsProp {
 
 export default function Conditions({ hour }: ConditionsProp) {
   const allConditions = uniqWith(
-    [hour.base, ...hour.additional]
+    [hour.prevailing, ...hour.supplemental]
       .reverse()
       .flatMap((forecast) => forecast.weatherConditions),
     isEqual
   );
+
+  const nothing = <Nothing>No current phenomenon</Nothing>;
+
+  if (allConditions.length === 1 && allConditions[0].phenomenons[0] === "NSW")
+    return nothing;
 
   return allConditions.length > 0 ? (
     <>
@@ -27,7 +32,7 @@ export default function Conditions({ hour }: ConditionsProp) {
       ))}
     </>
   ) : (
-    <Nothing>No current phenomenon</Nothing>
+    nothing
   );
 }
 
