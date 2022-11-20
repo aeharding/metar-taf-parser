@@ -43,7 +43,7 @@ export default [
       {
         dir: "dist",
         name: camelCase(libraryName),
-        format: "es",
+        format: "cjs",
       },
     ],
     watch: {
@@ -53,7 +53,7 @@ export default [
   },
   {
     input: "./dist/index.d.ts",
-    output: [{ file: "metar-taf-parser.d.ts", format: "es" }],
+    output: [{ file: "metar-taf-parser.d.ts", format: "cjs" }],
     plugins: [tscAlias(), dts()],
   },
 ];
