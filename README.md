@@ -1,4 +1,4 @@
-# ✈️ [metar-taf-parser](https://aeharding.github.io/metar-taf-parser)
+# ✈️ [metar-taf-parser](https://aeharding.github.io/metar-taf-parser) - support CommonJS
 
 Parser for METeorological Aerodrome Reports (METARs) and Terminal Aerodrome Forecasts (TAFs). This is a port of [python-metar-taf-parser](https://github.com/mivek/python-metar-taf-parser) to Typescript with some additional features.
 
