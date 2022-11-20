@@ -54,16 +54,28 @@ describe("RemarkParser", () => {
 
 class StubParser extends AbstractParser {}
 
-describe("RemarkParser", () => {
+describe("parseWeatherCondition", () => {
   (() => {
     const code = "-DZ";
 
     test(`parses "${code}"`, () => {
       const weatherCondition = new StubParser(en).parseWeatherCondition(code);
 
-      expect(weatherCondition.intensity).toBe(Intensity.LIGHT);
-      expect(weatherCondition.phenomenons).toHaveLength(1);
-      expect(weatherCondition.phenomenons[0]).toBe(Phenomenon.DRIZZLE);
+      expect(weatherCondition?.intensity).toBe(Intensity.LIGHT);
+      expect(weatherCondition?.phenomenons).toHaveLength(1);
+      expect(weatherCondition?.phenomenons[0]).toBe(Phenomenon.DRIZZLE);
+    });
+  })();
+
+  (() => {
+    const code = "-SNRA";
+
+    test(`parses "${code}" in order`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition?.phenomenons).toHaveLength(2);
+      expect(weatherCondition?.phenomenons[0]).toBe(Phenomenon.SNOW);
+      expect(weatherCondition?.phenomenons[1]).toBe(Phenomenon.RAIN);
     });
   })();
 
@@ -73,12 +85,51 @@ describe("RemarkParser", () => {
     test(`parses "${code}"`, () => {
       const weatherCondition = new StubParser(en).parseWeatherCondition(code);
 
-      expect(weatherCondition.intensity).toBeUndefined();
-      expect(weatherCondition.descriptive).toBe(Descriptive.SHOWERS);
-      expect(weatherCondition.phenomenons).toEqual([
+      expect(weatherCondition?.intensity).toBeUndefined();
+      expect(weatherCondition?.descriptive).toBe(Descriptive.SHOWERS);
+      expect(weatherCondition?.phenomenons).toEqual([
         Phenomenon.RAIN,
         Phenomenon.HAIL,
       ]);
+    });
+  })();
+
+  (() => {
+    const code = "-DZ/BR";
+
+    test(`parses "${code}"`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition?.intensity).toBe(Intensity.LIGHT);
+      expect(weatherCondition?.descriptive).toBeUndefined();
+      expect(weatherCondition?.phenomenons).toEqual([
+        Phenomenon.DRIZZLE,
+        Phenomenon.MIST,
+      ]);
+    });
+  })();
+
+  (() => {
+    // This malformed code was seen on airport VOMD
+    const code = "BR/";
+
+    test(`parses "${code}"`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition?.intensity).toBeUndefined();
+      expect(weatherCondition?.descriptive).toBeUndefined();
+      expect(weatherCondition?.phenomenons).toEqual([Phenomenon.MIST]);
+    });
+  })();
+
+  (() => {
+    // Invalid code shouldn't parse
+    const code = "BRd";
+
+    test(`does not parse "${code}"`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition).toBeUndefined();
     });
   })();
 
@@ -1194,6 +1245,42 @@ describe("TAFParser", () => {
     expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
       Phenomenon.NO_SIGNIFICANT_WEATHER
     );
+  });
+
+  test("should not parse bogus weather conditions", () => {
+    const taf = `TAF AMD KVOK 232200Z 2322/2423 15015G20KT 9999 BKN035 BKN050 510008 QNH2966INS
+    BECMG 2411/2412 17012KT 9000 -SHRA FEW006 BKN014 OVC021 510065 QNH2965INS TX24/2322Z TN16/2413Z LAST NO AMDS AFT 2322 NEXT 2409`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends).toHaveLength(1);
+    expect(parsed.trends[0].weatherConditions).toHaveLength(1);
+    expect(parsed.trends[0].weatherConditions[0].intensity).toBe(
+      Intensity.LIGHT
+    );
+    expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
+      Phenomenon.RAIN
+    );
+  });
+
+  test("should parse weather conditions with slash", () => {
+    const taf = `VOMM 281700Z 2818/2924 05005KT 4000 -RA/BR SCT020 BKN100 TEMPO 2818/2824 3000 TSRA/RA SCT018 FEW025TCU/CB BKN080 BECMG 2905/2906 05015KT 6000 BECMG 2915/2916 05005KT 4000 -DZ/BR`;
+
+    const parser = new TAFParser(en);
+
+    let parsed = parser.parse(taf);
+
+    expect(parsed.trends[2].weatherConditions).toHaveLength(1);
+    expect(parsed.trends[2].weatherConditions[0].intensity).toBe(
+      Intensity.LIGHT
+    );
+    expect(parsed.trends[2].weatherConditions[0].phenomenons).toEqual([
+      "DZ",
+      "BR",
+    ]);
+    expect(parsed.trends[2].weatherConditions[0].descriptive).toBeUndefined();
   });
 
   test("should parse with 'TAF AMD TAF AMD'", () => {

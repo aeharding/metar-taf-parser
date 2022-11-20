@@ -160,16 +160,26 @@ export abstract class AbstractParser {
 
   constructor(protected locale: Locale) {}
 
-  parseWeatherCondition(input: string): IWeatherCondition {
+  parseWeatherCondition(input: string): IWeatherCondition | undefined {
     let intensity: Intensity | undefined;
     if (input.match(this.#INTENSITY_REGEX)) {
       const match = input.match(this.#INTENSITY_REGEX)?.[0];
-      if (match) intensity = match as Intensity;
+      if (match) {
+        intensity = match as Intensity;
+        input = input.slice(match.length);
+      }
     }
 
     let descriptive: Descriptive | undefined;
-    for (const key of Object.values(Descriptive)) {
-      if (input.includes(key)) descriptive = key as Descriptive;
+    const descriptives = Object.values(Descriptive);
+    for (let i = 0; i < descriptives.length; i++) {
+      const key = descriptives[i];
+
+      if (input.startsWith(key)) {
+        descriptive = key as Descriptive;
+        input = input.slice(key.length);
+        break;
+      }
     }
 
     const weatherCondition: IWeatherCondition = {
@@ -178,13 +188,28 @@ export abstract class AbstractParser {
       phenomenons: [],
     };
 
-    for (const key of Object.values(Phenomenon)) {
+    const phenomenons = Object.values(Phenomenon);
+    for (let i = 0; i < phenomenons.length; i++) {
+      const key = phenomenons[i];
+
       // Thunderstorm as descriptive should not be added as a phenomenon
       if ((descriptive as string) === key) continue;
 
-      if (input.includes(key))
+      // Phenomenons can be separated with a slash
+      const conditionRegex = new RegExp(`^\/?${key}`);
+      const inputMatch = input.match(conditionRegex)?.[0];
+      if (inputMatch) {
         weatherCondition.phenomenons.push(key as Phenomenon);
+        input = input.slice(inputMatch.length);
+
+        // Restart the search for an additional phenomenon
+        i = -1;
+        continue;
+      }
     }
+
+    // If anything is left unparsed, it's not a valid weather condition
+    if (input.replace(/\//g, "").length) return;
 
     return weatherCondition;
   }
@@ -251,7 +276,7 @@ export abstract class AbstractParser {
 
     const weatherCondition = this.parseWeatherCondition(input);
 
-    if (isWeatherConditionValid(weatherCondition)) {
+    if (weatherCondition && isWeatherConditionValid(weatherCondition)) {
       abstractWeatherContainer.weatherConditions.push(weatherCondition);
       return true;
     }
