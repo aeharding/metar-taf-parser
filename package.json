@@ -12,7 +12,7 @@
     "deserialize",
     "decoder"
   ],
-  "type": "module",
+  "type": "commonjs",
   "main": "metar-taf-parser.js",
   "author": "Alexander Harding <2166114+aeharding@users.noreply.github.com>",
   "license": "MIT",
