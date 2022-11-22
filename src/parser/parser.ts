@@ -263,6 +263,13 @@ export abstract class AbstractParser {
       return true;
     }
 
+    const weatherCondition = this.parseWeatherCondition(input);
+
+    if (weatherCondition && isWeatherConditionValid(weatherCondition)) {
+      abstractWeatherContainer.weatherConditions.push(weatherCondition);
+      return true;
+    }
+
     const command = this.#commonSupplier.get(input);
 
     if (command) {
@@ -272,13 +279,6 @@ export abstract class AbstractParser {
         if (error instanceof CommandExecutionError) return false;
         throw error;
       }
-    }
-
-    const weatherCondition = this.parseWeatherCondition(input);
-
-    if (weatherCondition && isWeatherConditionValid(weatherCondition)) {
-      abstractWeatherContainer.weatherConditions.push(weatherCondition);
-      return true;
     }
 
     return false;
