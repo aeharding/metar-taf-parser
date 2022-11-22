@@ -133,6 +133,19 @@ describe("parseWeatherCondition", () => {
     });
   })();
 
+  (() => {
+    // Valid code should parse
+    const code = "VCBLSN";
+
+    test(`should parse "${code}"`, () => {
+      const weatherCondition = new StubParser(en).parseWeatherCondition(code);
+
+      expect(weatherCondition?.intensity).toBe(Intensity.IN_VICINITY);
+      expect(weatherCondition?.descriptive).toBe(Descriptive.BLOWING);
+      expect(weatherCondition?.phenomenons).toEqual([Phenomenon.SNOW]);
+    });
+  })();
+
   test("tokenize", () => {
     const code =
       "METAR KTTN 051853Z 04011KT 1 1/2SM VCTS SN FZFG BKN003 OVC010 M02/M02 A3006 RMK AO2 TSB40 SLP176 P0002 T10171017=";
@@ -478,9 +491,9 @@ describe("MetarParser", () => {
   });
 
   test("parse less than 1/4 vis", () => {
-    const taf = new MetarParser(en).parse("SUMU 070520Z M1/4SM");
+    const metar = new MetarParser(en).parse("SUMU 070520Z M1/4SM");
 
-    expect(taf.visibility).toEqual({
+    expect(metar.visibility).toEqual({
       indicator: ValueIndicator.LessThan,
       value: 0.25,
       unit: DistanceUnit.StatuteMiles,
@@ -488,9 +501,9 @@ describe("MetarParser", () => {
   });
 
   test("parse less than P6SM vis", () => {
-    const taf = new MetarParser(en).parse("SUMU 070520Z P6SM");
+    const metar = new MetarParser(en).parse("SUMU 070520Z P6SM");
 
-    expect(taf.visibility).toEqual({
+    expect(metar.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 6,
       unit: DistanceUnit.StatuteMiles,
@@ -498,18 +511,18 @@ describe("MetarParser", () => {
   });
 
   test("parses 3 1/4 vis", () => {
-    const taf = new MetarParser(en).parse("SUMU 070520Z 3 1/4SM");
+    const metar = new MetarParser(en).parse("SUMU 070520Z 3 1/4SM");
 
-    expect(taf.visibility).toEqual({
+    expect(metar.visibility).toEqual({
       value: 3.25,
       unit: DistanceUnit.StatuteMiles,
     });
   });
 
   test("parses more than 1 1/2 vis", () => {
-    const taf = new MetarParser(en).parse("SUMU 070520Z P1 1/2SM");
+    const metar = new MetarParser(en).parse("SUMU 070520Z P1 1/2SM");
 
-    expect(taf.visibility).toEqual({
+    expect(metar.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 1.5,
       unit: DistanceUnit.StatuteMiles,
@@ -517,27 +530,49 @@ describe("MetarParser", () => {
   });
 
   test("parses unknown cloud types", () => {
-    const taf = new MetarParser(en).parse(
+    const metar = new MetarParser(en).parse(
       "EKVG 291550Z AUTO 13009KT 9999 BKN037/// BKN048/// 07/06 Q1009 RMK FEW011/// FEW035/// WIND SKEID 13020KT"
     );
 
-    expect(taf.clouds).toHaveLength(2);
+    expect(metar.clouds).toHaveLength(2);
   });
 
   test("does not parse invalid cloud quantities", () => {
-    const taf = new MetarParser(en).parse(
+    const metar = new MetarParser(en).parse(
       "EKVG 291550Z AUTO 13009KT 9999 BKN037AAA"
     );
 
-    expect(taf.clouds).toHaveLength(0);
+    expect(metar.clouds).toHaveLength(0);
   });
 
   test("does not parse invalid cloud types", () => {
-    const taf = new MetarParser(en).parse(
+    const metar = new MetarParser(en).parse(
       "EKVG 291550Z AUTO 13009KT 9999 AAA037"
     );
 
-    expect(taf.clouds).toHaveLength(0);
+    expect(metar.clouds).toHaveLength(0);
+  });
+
+  test("parses 3 weather conditions, including 'vicinity blowing snow'", () => {
+    // https://github.com/aeharding/metar-taf-parser/discussions/47
+
+    const metar = new MetarParser(en).parse(
+      "CYVM 282100Z 36028G36KT 1SM -SN DRSN VCBLSN OVC008 M03/M04 A2935 RMK SN2ST8 LAST STFFD OBS/NXT 291200UTC SLP940"
+    );
+
+    expect(metar.weatherConditions).toHaveLength(3);
+
+    expect(metar.weatherConditions[0].intensity).toBe(Intensity.LIGHT);
+    expect(metar.weatherConditions[0].descriptive).toBeUndefined();
+    expect(metar.weatherConditions[0].phenomenons).toEqual([Phenomenon.SNOW]);
+
+    expect(metar.weatherConditions[1].intensity).toBeUndefined();
+    expect(metar.weatherConditions[1].descriptive).toBe(Descriptive.DRIFTING);
+    expect(metar.weatherConditions[1].phenomenons).toEqual([Phenomenon.SNOW]);
+
+    expect(metar.weatherConditions[2].intensity).toBe(Intensity.IN_VICINITY);
+    expect(metar.weatherConditions[2].descriptive).toBe(Descriptive.BLOWING);
+    expect(metar.weatherConditions[2].phenomenons).toEqual([Phenomenon.SNOW]);
   });
 });
 
