@@ -232,6 +232,30 @@ describe("MetarParser", () => {
     expect(metar.runwaysInfo[0].trend).toBe("N");
   });
 
+  test("parses 'AUTO' as station if no station identifier", () => {
+    const input = "AUTO 061950Z 10002KT 9999NDV NCD 01/M00 Q1015 RMK=";
+
+    const metar = new MetarParser(en).parse(input);
+
+    expect(metar.auto).toBeUndefined();
+    expect(metar.station).toBe("AUTO");
+    expect(metar.day).toBe(6);
+    expect(metar.hour).toBe(19);
+    expect(metar.minute).toBe(50);
+  });
+
+  test("parses station with flag preceding rest of message", () => {
+    const input = "AUTO LSZL 061950Z 10002KT 9999NDV NCD 01/M00 Q1015 RMK=";
+
+    const metar = new MetarParser(en).parse(input);
+
+    expect(metar.auto).toBe(true);
+    expect(metar.station).toBe("LSZL");
+    expect(metar.day).toBe(6);
+    expect(metar.hour).toBe(19);
+    expect(metar.minute).toBe(50);
+  });
+
   test("tempo", () => {
     const input =
       "LFBG 081130Z AUTO 23012KT 9999 SCT022 BKN072 BKN090 22/16 Q1011 TEMPO 26015G25KT 3000 TSRA SCT025CB BKN050";
