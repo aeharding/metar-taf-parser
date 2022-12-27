@@ -31,6 +31,10 @@ import { CommandSupplier as TafCommandSupplier } from "command/taf";
 import { Locale } from "commons/i18n";
 import { CommandExecutionError } from "commons/errors";
 
+function isStation(stationString: string): boolean {
+  return stationString.length === 4;
+}
+
 /**
  * Parses the delivery time of a METAR/TAF
  * @param abstractWeatherCode The TAF or METAR object
@@ -263,6 +267,13 @@ export abstract class AbstractParser {
       return true;
     }
 
+    const weatherCondition = this.parseWeatherCondition(input);
+
+    if (weatherCondition && isWeatherConditionValid(weatherCondition)) {
+      abstractWeatherContainer.weatherConditions.push(weatherCondition);
+      return true;
+    }
+
     const command = this.#commonSupplier.get(input);
 
     if (command) {
@@ -272,13 +283,6 @@ export abstract class AbstractParser {
         if (error instanceof CommandExecutionError) return false;
         throw error;
       }
-    }
-
-    const weatherCondition = this.parseWeatherCondition(input);
-
-    if (weatherCondition && isWeatherConditionValid(weatherCondition)) {
-      abstractWeatherContainer.weatherConditions.push(weatherCondition);
-      return true;
     }
 
     return false;
@@ -336,9 +340,18 @@ export class MetarParser extends AbstractParser {
   parse(input: string): IMetar {
     const metarTab = this.tokenize(input);
 
+    let index = 0;
+
+    // Only parse flag if precedes station identifier
+    if (isStation(metarTab[index + 1])) {
+      var flags = findFlags(metarTab[index]);
+      if (flags) index += 1;
+    }
+
     const metar: IMetar = {
-      ...parseDeliveryTime(metarTab[1]),
-      station: metarTab[0],
+      ...parseDeliveryTime(metarTab[index + 1]),
+      station: metarTab[index],
+      ...flags,
       message: input,
       remarks: [],
       clouds: [],
@@ -347,7 +360,7 @@ export class MetarParser extends AbstractParser {
       runwaysInfo: [],
     };
 
-    let index = 2;
+    index += 2;
 
     while (index < metarTab.length) {
       if (
