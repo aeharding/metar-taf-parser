@@ -22,16 +22,16 @@
   },
   "scripts": {
     "clean": "rimraf dist locale metar-taf-parser.*",
-    "build": "yarn clean && rollup -c rollup.config.ts && cp -R dist/locale/. locale/ && cp dist/metar-taf-parser.js metar-taf-parser.js && yarn clean:after",
+    "build": "npm run clean && rollup -c rollup.config.ts && cp -R dist/locale/. locale/ && cp dist/metar-taf-parser.js metar-taf-parser.js && npm run clean:after",
     "prepare": "npm run build",
     "clean:after": "rimraf dist",
     "start": "rollup -c rollup.config.ts -w",
     "check-types": "tsc --skipLibCheck --noEmit",
     "check-formatting": "prettier --check '**/*.{js,json,css,md,scss,tsx,ts}'",
-    "watch": "watch 'yarn build' src",
+    "watch": "watch 'npm run build' src",
     "test": "jest --coverage",
     "test-watch": "jest --watch --coverage",
-    "prepublishOnly": "yarn clean && yarn build"
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "files": [
     "locale",
