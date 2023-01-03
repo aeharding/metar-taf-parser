@@ -1,9 +1,8 @@
-import { IFMValidity, IMetar, ITAF, IValidity, TAFTrend } from "model/model";
+import { IMetar, ITAF } from "model/model";
 import { MetarParser, TAFParser } from "parser/parser";
 import { ParseError, InvalidWeatherStatementError } from "commons/errors";
 import { Locale } from "commons/i18n";
 import en from "locale/en";
-import { WeatherChangeType } from "model/enum";
 import { IMetarDated, metarDatesHydrator } from "./dates/metar";
 import { ITAFDated, tafDatesHydrator } from "./dates/taf";
 import { getForecastFromTAF, IForecastContainer } from "forecast/forecast";
@@ -62,6 +61,7 @@ export {
   TimestampOutOfBoundsError,
 } from "forecast/forecast";
 export { TAFTrendDated, ITAFDated } from "dates/taf";
+export { IMetarDated } from "dates/metar";
 
 export interface IMetarTAFParserOptions {
   locale?: Locale;
