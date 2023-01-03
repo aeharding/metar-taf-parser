@@ -1,6 +1,6 @@
 {
   "name": "metar-taf-parser",
-  "version": "7.1.2",
+  "version": "7.1.3",
   "description": "Parse METAR and TAF reports",
   "homepage": "https://aeharding.github.io/metar-taf-parser",
   "keywords": [
