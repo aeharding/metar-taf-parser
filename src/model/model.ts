@@ -13,6 +13,7 @@ import {
   SpeedUnit,
   IcingIntensity,
   TurbulenceIntensity,
+  MetarType,
 } from "model/enum";
 import { Remark } from "command/remark";
 
@@ -180,6 +181,7 @@ export interface IAbstractWeatherCodeDated extends IAbstractWeatherCode {
 }
 
 export interface IMetar extends IAbstractWeatherCode {
+  type?: MetarType;
   temperature?: number;
   dewPoint?: number;
   altimeter?: number;

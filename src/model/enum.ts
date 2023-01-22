@@ -1,3 +1,8 @@
+export enum MetarType {
+  METAR = "METAR",
+  SPECI = "SPECI",
+}
+
 export enum CloudQuantity {
   /**
    * Sky clear

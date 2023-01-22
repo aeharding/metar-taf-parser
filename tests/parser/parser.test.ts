@@ -20,6 +20,7 @@ import {
   SpeedUnit,
   TurbulenceIntensity,
   IcingIntensity,
+  MetarType,
 } from "model/enum";
 import { IAbstractWeatherContainer } from "model/model";
 import { Direction } from "model/enum";
@@ -597,6 +598,29 @@ describe("MetarParser", () => {
     expect(metar.weatherConditions[2].intensity).toBe(Intensity.IN_VICINITY);
     expect(metar.weatherConditions[2].descriptive).toBe(Descriptive.BLOWING);
     expect(metar.weatherConditions[2].phenomenons).toEqual([Phenomenon.SNOW]);
+  });
+
+  describe("metar type", () => {
+    test("parses without", () => {
+      const metar = new MetarParser(en).parse("SUMU 070520Z 3 1/4SM");
+
+      expect(metar.type).toBeUndefined();
+      expect(metar.station).toEqual("SUMU");
+    });
+
+    test("parses METAR", () => {
+      const metar = new MetarParser(en).parse("METAR SUMU 070520Z 3 1/4SM");
+
+      expect(metar.type).toEqual(MetarType.METAR);
+      expect(metar.station).toEqual("SUMU");
+    });
+
+    test("parses SPECI", () => {
+      const metar = new MetarParser(en).parse("SPECI SUMU 070520Z 3 1/4SM");
+
+      expect(metar.type).toEqual(MetarType.SPECI);
+      expect(metar.station).toEqual("SUMU");
+    });
   });
 });
 
