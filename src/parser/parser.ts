@@ -15,7 +15,7 @@ import {
   IValidityDated,
   IFlags,
 } from "model/model";
-import { DistanceUnit, ValueIndicator } from "model/enum";
+import { DistanceUnit, MetarType, ValueIndicator } from "model/enum";
 import * as converter from "commons/converter";
 import { pySplit } from "helpers/helpers";
 import { CommandSupplier } from "command/common";
@@ -342,6 +342,9 @@ export class MetarParser extends AbstractParser {
 
     let index = 0;
 
+    const type = this.parseType(metarTab[index]);
+    if (type) index++;
+
     // Only parse flag if precedes station identifier
     if (isStation(metarTab[index + 1])) {
       var flags = findFlags(metarTab[index]);
@@ -349,8 +352,9 @@ export class MetarParser extends AbstractParser {
     }
 
     const metar: IMetar = {
-      ...parseDeliveryTime(metarTab[index + 1]),
+      type,
       station: metarTab[index],
+      ...parseDeliveryTime(metarTab[index + 1]),
       ...flags,
       message: input,
       remarks: [],
@@ -402,6 +406,12 @@ export class MetarParser extends AbstractParser {
     }
 
     return metar;
+  }
+
+  parseType(token: string): MetarType | undefined {
+    for (const type in MetarType) {
+      if (token === MetarType[type as MetarType]) return type as MetarType;
+    }
   }
 }
 
