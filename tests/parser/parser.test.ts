@@ -600,18 +600,27 @@ describe("MetarParser", () => {
     expect(metar.weatherConditions[2].phenomenons).toEqual([Phenomenon.SNOW]);
   });
 
-  test("parses METAR at beginning", () => {
-    const metar = new MetarParser(en).parse("METAR SUMU 070520Z 3 1/4SM");
+  describe("metar type", () => {
+    test("parses without", () => {
+      const metar = new MetarParser(en).parse("SUMU 070520Z 3 1/4SM");
 
-    expect(metar.type).toEqual(MetarType.METAR);
-    expect(metar.station).toEqual("SUMU");
-  });
+      expect(metar.type).toBeUndefined();
+      expect(metar.station).toEqual("SUMU");
+    });
 
-  test("parses SPECI at beginning", () => {
-    const metar = new MetarParser(en).parse("SPECI SUMU 070520Z 3 1/4SM");
+    test("parses METAR", () => {
+      const metar = new MetarParser(en).parse("METAR SUMU 070520Z 3 1/4SM");
 
-    expect(metar.type).toEqual(MetarType.SPECI);
-    expect(metar.station).toEqual("SUMU");
+      expect(metar.type).toEqual(MetarType.METAR);
+      expect(metar.station).toEqual("SUMU");
+    });
+
+    test("parses SPECI", () => {
+      const metar = new MetarParser(en).parse("SPECI SUMU 070520Z 3 1/4SM");
+
+      expect(metar.type).toEqual(MetarType.SPECI);
+      expect(metar.station).toEqual("SUMU");
+    });
   });
 });
 
