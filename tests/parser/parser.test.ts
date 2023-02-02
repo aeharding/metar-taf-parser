@@ -22,7 +22,7 @@ import {
   IcingIntensity,
   MetarType,
 } from "model/enum";
-import { IAbstractWeatherContainer } from "model/model";
+import { IAbstractWeatherContainer, IRunwayInfoRange } from "model/model";
 import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
@@ -229,8 +229,8 @@ describe("MetarParser", () => {
     });
     expect(metar.runwaysInfo).toHaveLength(8);
     expect(metar.runwaysInfo[0].name).toBe("27L");
-    expect(metar.runwaysInfo[0].minRange).toBe(375);
-    expect(metar.runwaysInfo[0].trend).toBe("N");
+    expect((metar.runwaysInfo[0] as IRunwayInfoRange).minRange).toBe(375);
+    expect((metar.runwaysInfo[0] as IRunwayInfoRange).trend).toBe("N");
   });
 
   test("parses 'AUTO' as station if no station identifier", () => {

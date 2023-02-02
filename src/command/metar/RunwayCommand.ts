@@ -1,21 +1,42 @@
 import { UnexpectedParseError } from "commons/errors";
 import { IMetar } from "model/model";
 import { as } from "helpers/helpers";
-import { RunwayInfoTrend, RunwayInfoUnit, ValueIndicator } from "model/enum";
+import {
+  DepositCoverage,
+  DepositType,
+  RunwayInfoTrend,
+  RunwayInfoUnit,
+  ValueIndicator,
+} from "model/enum";
 import { ICommand } from "../metar";
 
 export class RunwayCommand implements ICommand {
   #genericRegex = /^(R\d{2}\w?\/)/;
   #runwayMaxRangeRegex = /^R(\d{2}\w?)\/(\d{4})V(\d{3,4})([UDN])?(FT)?/;
   #runwayRegex = /^R(\d{2}\w?)\/([MP])?(\d{4})([UDN])?(FT)?$/;
+  #runwayDepositRegex = /^R(\d{2}\w?)\/([/\d])([/\d])(\/\/|\d{2})(\/\/|\d{2})$/;
 
   canParse(input: string): boolean {
     return this.#genericRegex.test(input);
   }
 
   execute(metar: IMetar, input: string) {
-    // TODO idk if this matches super well...
-    if (this.#runwayRegex.test(input)) {
+    if (this.#runwayDepositRegex.test(input)) {
+      const matches = input.match(this.#runwayDepositRegex);
+
+      if (!matches) throw new UnexpectedParseError("Should be able to parse");
+
+      const depositType = as(matches[2], DepositType);
+      const coverage = as(matches[3], DepositCoverage);
+
+      metar.runwaysInfo.push({
+        name: matches[1],
+        depositType,
+        coverage,
+        thickness: matches[4],
+        brakingCapacity: matches[5],
+      });
+    } else if (this.#runwayRegex.test(input)) {
       const matches = input.match(this.#runwayRegex);
 
       if (!matches) throw new UnexpectedParseError("Should be able to parse");
