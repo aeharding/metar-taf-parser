@@ -385,3 +385,28 @@ export enum TurbulenceIntensity {
   /** Extreme turbulence */
   Extreme = "X",
 }
+
+export enum DepositType {
+  /** (runway clearance in progress) */
+  NotReported = "/",
+
+  ClearDry = "0",
+  Damp = "1",
+  WetWaterPatches = "2",
+  RimeFrostCovered = "3",
+  DrySnow = "4",
+  WetSnow = "5",
+  Slush = "6",
+  Ice = "7",
+  CompactedSnow = "8",
+  FrozenRidges = "9",
+}
+
+export enum DepositCoverage {
+  NotReported = "/",
+
+  Less10 = "1",
+  From11To25 = "2",
+  From26To50 = "5",
+  From51To100 = "9",
+}

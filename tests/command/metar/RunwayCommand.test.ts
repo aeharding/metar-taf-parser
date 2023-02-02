@@ -1,6 +1,12 @@
 import { RunwayCommand } from "command/metar/RunwayCommand";
 import { IMetar } from "model/model";
-import { RunwayInfoTrend, RunwayInfoUnit, ValueIndicator } from "model/enum";
+import {
+  DepositCoverage,
+  DepositType,
+  RunwayInfoTrend,
+  RunwayInfoUnit,
+  ValueIndicator,
+} from "model/enum";
 
 describe("RunwayCommand", () => {
   const command = new RunwayCommand();
@@ -18,9 +24,12 @@ describe("RunwayCommand", () => {
         command.execute(metar, code);
 
         expect(metar.runwaysInfo).toHaveLength(1);
-        expect(metar.runwaysInfo[0].name).toBe("26");
-        expect(metar.runwaysInfo[0].minRange).toBe(600);
-        expect(metar.runwaysInfo[0].trend).toBe("U");
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "26",
+          minRange: 600,
+          trend: RunwayInfoTrend.Uprising,
+          unit: RunwayInfoUnit.Meters,
+        });
       });
     });
   })();
@@ -107,6 +116,69 @@ describe("RunwayCommand", () => {
           minRange: 800,
           unit: RunwayInfoUnit.Feet,
         });
+      });
+    });
+  })();
+
+  (() => {
+    const code = "R05/629294"; // runway deposit
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(1);
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "05",
+          depositType: DepositType.Slush,
+          coverage: DepositCoverage.From11To25,
+          thickness: "92",
+          brakingCapacity: "94",
+        });
+      });
+    });
+  })();
+  (() => {
+    const code = "R05//29294"; // runway deposit with not reported type
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(1);
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "05",
+          depositType: DepositType.NotReported,
+          coverage: DepositCoverage.From11To25,
+          thickness: "92",
+          brakingCapacity: "94",
+        });
+      });
+    });
+  })();
+  (() => {
+    const code = "R05/6292/4"; // runway deposit with invalid deposit
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(0);
       });
     });
   })();
