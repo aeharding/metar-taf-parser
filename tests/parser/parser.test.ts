@@ -21,6 +21,7 @@ import {
   TurbulenceIntensity,
   IcingIntensity,
   MetarType,
+  AltimeterUnit,
 } from "model/enum";
 import { IAbstractWeatherContainer, IRunwayInfoRange } from "model/model";
 import { Direction } from "model/enum";
@@ -436,7 +437,10 @@ describe("MetarParser", () => {
     });
     expect(metar.temperature).toBe(9);
     expect(metar.dewPoint).toBe(6);
-    expect(metar.altimeter).toBe(1031);
+    expect(metar.altimeter).toStrictEqual({
+      value: 1031,
+      unit: AltimeterUnit.HPa,
+    });
     expect(metar.nosig).toBe(true);
   });
 
@@ -445,7 +449,10 @@ describe("MetarParser", () => {
       "KTTN 051853Z 04011KT 9999 VCTS SN FZFG BKN003 OVC010 M02/M02 A3006"
     );
 
-    expect(metar.altimeter).toBe(1017);
+    expect(metar.altimeter).toStrictEqual({
+      value: 30.06,
+      unit: AltimeterUnit.InHg,
+    });
     expect(metar.weatherConditions).toHaveLength(3);
   });
 

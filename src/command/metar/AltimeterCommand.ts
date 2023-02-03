@@ -1,5 +1,6 @@
 import { UnexpectedParseError } from "commons/errors";
 import { IMetar } from "model/model";
+import { AltimeterUnit } from "model/enum";
 import { ICommand } from "../metar";
 
 export class AltimeterCommand implements ICommand {
@@ -14,6 +15,9 @@ export class AltimeterCommand implements ICommand {
 
     if (!matches) throw new UnexpectedParseError("Match not found");
 
-    metar.altimeter = Math.trunc(+matches[1]);
+    metar.altimeter = {
+      value: +matches[1],
+      unit: AltimeterUnit.HPa,
+    };
   }
 }

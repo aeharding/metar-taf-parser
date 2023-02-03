@@ -94,10 +94,6 @@ export function convertTemperature(input: string): number {
   return +input;
 }
 
-export function convertInchesMercuryToPascal(input: number): number {
-  return 33.8639 * input;
-}
-
 /**
  * Converts number `.toFixed(1)` before outputting to match python implementation
  */

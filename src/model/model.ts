@@ -16,6 +16,7 @@ import {
   MetarType,
   DepositType,
   DepositCoverage,
+  AltimeterUnit,
 } from "model/enum";
 import { Remark } from "command/remark";
 
@@ -71,6 +72,11 @@ export function isWeatherConditionValid(weather: IWeatherCondition): boolean {
     (weather.intensity === Intensity.IN_VICINITY &&
       weather.descriptive == Descriptive.SHOWERS)
   );
+}
+
+export interface IAltimeter {
+  value: number;
+  unit: AltimeterUnit;
 }
 
 export interface ITemperature {
@@ -239,7 +245,7 @@ export interface IMetar extends IAbstractWeatherCode {
   type?: MetarType;
   temperature?: number;
   dewPoint?: number;
-  altimeter?: number;
+  altimeter?: IAltimeter;
   nosig?: true;
   runwaysInfo: RunwayInfo[];
 

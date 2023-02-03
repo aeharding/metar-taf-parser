@@ -410,3 +410,19 @@ export enum DepositCoverage {
   From26To50 = "5",
   From51To100 = "9",
 }
+
+export enum AltimeterUnit {
+  /**
+   * Inches of mercury (inHg)
+   *
+   * e.g. A2994 parses as 29.94 inHg
+   */
+  InHg = "inHg",
+
+  /**
+   * Hectopascals (hPa), also known as millibars
+   *
+   * e.g. Q1018 parses as 1018 millibars
+   */
+  HPa = "hPa",
+}
