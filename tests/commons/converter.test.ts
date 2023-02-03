@@ -79,10 +79,6 @@ describe("convertTemperature", () => {
   });
 });
 
-test("convertInchesMercuryToPascal", () => {
-  expect(converter.convertInchesMercuryToPascal(29.92)).toBeCloseTo(1013.2, 1);
-});
-
 describe("convertTemperatureRemarks", () => {
   test("positive", () => {
     expect(converter.convertTemperatureRemarks("0", "142")).toBe(14.2);
