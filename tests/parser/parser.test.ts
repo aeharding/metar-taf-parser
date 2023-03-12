@@ -383,6 +383,22 @@ describe("MetarParser", () => {
     });
   });
 
+  test("wind of 0000KT should not parse as minVisibility", () => {
+    const metar = new MetarParser(en).parse(
+      "KATW 022045Z 0000KT 10SM SCT120 00/M08 A2996"
+    );
+
+    expect(metar.wind).toStrictEqual({
+      degrees: 0,
+      speed: 0,
+      unit: "KT",
+      gust: undefined,
+      direction: "N",
+    });
+
+    expect(metar.visibility?.min).toBeUndefined();
+  });
+
   test("wind variation", () => {
     const metar = new MetarParser(en).parse("LFPG 161430Z 24015G25KT 180V300");
 
