@@ -13,7 +13,7 @@ import {
   IValidity,
   IWeatherCondition,
   IValidityDated,
-  IFlags
+  IFlags,
 } from "model/model";
 import { DistanceUnit, MetarType, ValueIndicator } from "model/enum";
 import * as converter from "commons/converter";
@@ -24,12 +24,16 @@ import {
   Phenomenon,
   Descriptive,
   TimeIndicator,
-  WeatherChangeType
+  WeatherChangeType,
 } from "model/enum";
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
 import { CommandSupplier as TafCommandSupplier } from "command/taf";
 import { Locale } from "commons/i18n";
-import { CommandExecutionError, ParseError, UnsupportedWeatherStatementError } from "commons/errors";
+import {
+  CommandExecutionError,
+  ParseError,
+  UnsupportedWeatherStatementError,
+} from "commons/errors";
 
 function isStation(stationString: string): boolean {
   return stationString.length === 4;
@@ -52,7 +56,7 @@ function parseDeliveryTime(
   return {
     day,
     hour,
-    minute
+    minute,
   };
 }
 
@@ -112,7 +116,7 @@ export function parseTemperature(input: string): ITemperature {
   return {
     temperature: converter.convertTemperature(parts[0].slice(2)),
     day: +parts[1].slice(0, 2),
-    hour: +parts[1].slice(2, 4)
+    hour: +parts[1].slice(2, 4),
   };
 }
 
@@ -128,7 +132,7 @@ export function parseValidity(input: string): IValidityDated | IValidity {
     startDay: +parts[0].slice(0, 2),
     startHour: +parts[0].slice(2),
     endDay: +parts[1].slice(0, 2),
-    endHour: +parts[1].slice(2)
+    endHour: +parts[1].slice(2),
   };
 }
 
@@ -141,7 +145,7 @@ function parseFromValidity(input: string): IFMValidity {
   return {
     startDay: +input.slice(2, 4),
     startHour: +input.slice(4, 6),
-    startMinutes: +input.slice(6, 8)
+    startMinutes: +input.slice(6, 8),
   };
 }
 
@@ -162,8 +166,7 @@ export abstract class AbstractParser {
   #CAVOK = "CAVOK";
   #commonSupplier = new CommandSupplier();
 
-  constructor(protected locale: Locale) {
-  }
+  constructor(protected locale: Locale) {}
 
   parseWeatherCondition(input: string): IWeatherCondition | undefined {
     let intensity: Intensity | undefined;
@@ -190,7 +193,7 @@ export abstract class AbstractParser {
     const weatherCondition: IWeatherCondition = {
       intensity,
       descriptive,
-      phenomenons: []
+      phenomenons: [],
     };
 
     const phenomenons = Object.values(Phenomenon);
@@ -262,7 +265,7 @@ export abstract class AbstractParser {
       abstractWeatherContainer.visibility = {
         indicator: ValueIndicator.GreaterThan,
         value: 9999,
-        unit: DistanceUnit.Meters
+        unit: DistanceUnit.Meters,
       };
 
       return true;
@@ -310,7 +313,7 @@ export class MetarParser extends AbstractParser {
       trendParts[i] !== this.TEMPO &&
       trendParts[i] !== this.INTER &&
       trendParts[i] !== this.BECMG
-      ) {
+    ) {
       if (
         trendParts[i].startsWith(this.FM) ||
         trendParts[i].startsWith(this.TL) ||
@@ -319,7 +322,7 @@ export class MetarParser extends AbstractParser {
         const trendTime: IMetarTrendTime = {
           type: TimeIndicator[trendParts[i].slice(0, 2) as TimeIndicator],
           hour: +trendParts[i].slice(2, 4),
-          minute: +trendParts[i].slice(4, 6)
+          minute: +trendParts[i].slice(4, 6),
         };
 
         trend.times.push(trendTime);
@@ -362,7 +365,7 @@ export class MetarParser extends AbstractParser {
       clouds: [],
       weatherConditions: [],
       trends: [],
-      runwaysInfo: []
+      runwaysInfo: [],
     };
 
     index += 2;
@@ -387,7 +390,7 @@ export class MetarParser extends AbstractParser {
             clouds: [],
             times: [],
             remarks: [],
-            raw: ""
+            raw: "",
           };
 
           index = this.parseTrend(index, trend, metarTab);
@@ -460,19 +463,21 @@ export class TAFParser extends AbstractParser {
    * @param input original input.
    */
   throwIfUnsupported(linesTokens: string[][], input: string) {
-
     // TAFs in NOAA cycle files beginning `PART x OF y`, implying they are
     // incomplete. Being absurdly careful about identifying this to avoid any
     // false positives...
     if (linesTokens.length >= 1 && linesTokens[0].length >= 4) {
       const tokens = linesTokens[0];
       if ("PART" === tokens[0] && "OF" === tokens[2]) {
-        const indices = [tokens[1], tokens[3]]
-          .filter(token => /\d/.test(token));
+        const indices = [tokens[1], tokens[3]].filter((token) =>
+          /\d/.test(token)
+        );
         if (2 === indices.length) {
           const [part, total] = indices;
           throw new UnsupportedWeatherStatementError(
-            `Partial; "PART ${part} OF ${total}"`, input);
+            `Partial; "PART ${part} OF ${total}"`,
+            input
+          );
         }
       }
     }
@@ -506,7 +511,7 @@ export class TAFParser extends AbstractParser {
       remarks: [],
       clouds: [],
       weatherConditions: [],
-      initialRaw: lines[0].join(" ")
+      initialRaw: lines[0].join(" "),
     };
 
     for (let i = index + 1; i < lines[0].length; i++) {
@@ -526,7 +531,7 @@ export class TAFParser extends AbstractParser {
     }
 
     const minMaxTemperatureLines = [
-      lines[0].slice(index + 1) // EU countries have min/max in first line
+      lines[0].slice(index + 1), // EU countries have min/max in first line
     ];
 
     // US military bases have min/max in last line
@@ -600,7 +605,7 @@ export class TAFParser extends AbstractParser {
         ...this.makeEmptyTAFTrend(),
         type: WeatherChangeType.FM,
         validity: parseFromValidity(lineTokens[0]),
-        raw: lineTokens.join(" ")
+        raw: lineTokens.join(" "),
       };
     } else if (lineTokens[0].startsWith(this.PROB)) {
       const validity = this.findLineValidity(index, lineTokens);
@@ -610,7 +615,7 @@ export class TAFParser extends AbstractParser {
         ...this.makeEmptyTAFTrend(),
         type: WeatherChangeType.PROB,
         validity,
-        raw: lineTokens.join(" ")
+        raw: lineTokens.join(" "),
       };
 
       if (
@@ -621,7 +626,7 @@ export class TAFParser extends AbstractParser {
           ...this.makeEmptyTAFTrend(),
           type: WeatherChangeType[lineTokens[1] as WeatherChangeType],
           validity,
-          raw: lineTokens.join(" ")
+          raw: lineTokens.join(" "),
         };
         index = 2;
       }
@@ -635,7 +640,7 @@ export class TAFParser extends AbstractParser {
         ...this.makeEmptyTAFTrend(),
         type: WeatherChangeType[lineTokens[0] as WeatherChangeType],
         validity,
-        raw: lineTokens.join(" ")
+        raw: lineTokens.join(" "),
       };
     }
 
@@ -686,14 +691,13 @@ export class TAFParser extends AbstractParser {
     return {
       remarks: [],
       clouds: [],
-      weatherConditions: []
+      weatherConditions: [],
     };
   }
 }
 
 export class RemarkParser {
-  constructor(private locale: Locale) {
-  }
+  constructor(private locale: Locale) {}
 
   #supplier = new RemarkCommandSupplier(this.locale);
 
