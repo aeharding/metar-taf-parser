@@ -5,7 +5,7 @@ import {
   parseTemperature,
   parseValidity,
   RemarkParser,
-  TAFParser,
+  TAFParser
 } from "parser/parser";
 import {
   CloudQuantity,
@@ -21,12 +21,13 @@ import {
   TurbulenceIntensity,
   IcingIntensity,
   MetarType,
-  AltimeterUnit,
+  AltimeterUnit
 } from "model/enum";
 import { IAbstractWeatherContainer, IRunwayInfoRange } from "model/model";
 import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
+import { UnsupportedWeatherStatementError } from "commons/errors";
 
 describe("RemarkParser", () => {
   (() => {
@@ -38,23 +39,24 @@ describe("RemarkParser", () => {
       expect(remarks).toStrictEqual<Remark[]>([
         {
           type: RemarkType.Unknown,
-          raw: "Token",
+          raw: "Token"
         },
         {
           type: RemarkType.AO1,
           description: en.Remark.AO1,
-          raw: "AO1",
+          raw: "AO1"
         },
         {
           type: RemarkType.Unknown,
-          raw: "End of remark",
-        },
+          raw: "End of remark"
+        }
       ]);
     });
   })();
 });
 
-class StubParser extends AbstractParser {}
+class StubParser extends AbstractParser {
+}
 
 describe("parseWeatherCondition", () => {
   (() => {
@@ -91,7 +93,7 @@ describe("parseWeatherCondition", () => {
       expect(weatherCondition?.descriptive).toBe(Descriptive.SHOWERS);
       expect(weatherCondition?.phenomenons).toEqual([
         Phenomenon.RAIN,
-        Phenomenon.HAIL,
+        Phenomenon.HAIL
       ]);
     });
   })();
@@ -106,7 +108,7 @@ describe("parseWeatherCondition", () => {
       expect(weatherCondition?.descriptive).toBeUndefined();
       expect(weatherCondition?.phenomenons).toEqual([
         Phenomenon.DRIZZLE,
-        Phenomenon.MIST,
+        Phenomenon.MIST
       ]);
     });
   })();
@@ -169,7 +171,7 @@ describe("parseWeatherCondition", () => {
       "TSB40",
       "SLP176",
       "P0002",
-      "T10171017",
+      "T10171017"
     ];
 
     const res = new StubParser(en).tokenize(code);
@@ -188,7 +190,7 @@ describe("parseWeatherCondition", () => {
     ["SCT026CB", true],
     ["ZZZ026CV", false],
     ["+SHGSRA", true],
-    ["+VFDR", false],
+    ["+VFDR", false]
   ];
 
   values.forEach(([input, expected]) => {
@@ -199,7 +201,7 @@ describe("parseWeatherCondition", () => {
             weatherConditions: [],
             visibility: {},
             wind: {},
-            clouds: [],
+            clouds: []
           } as unknown as IAbstractWeatherContainer,
           input
         )
@@ -226,7 +228,7 @@ describe("MetarParser", () => {
     expect(metar.visibility).toBeDefined();
     expect(metar.visibility).toEqual({
       value: 350,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(metar.runwaysInfo).toHaveLength(8);
     expect(metar.runwaysInfo[0].name).toBe("27L");
@@ -278,7 +280,7 @@ describe("MetarParser", () => {
     expect(trend.times).toHaveLength(0);
     expect(trend.visibility).toEqual({
       value: 3000,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(trend.weatherConditions).toHaveLength(1);
     expect(trend.raw).toBe("TEMPO 26015G25KT 3000 TSRA SCT025CB BKN050");
@@ -357,7 +359,7 @@ describe("MetarParser", () => {
     expect(metar.visibility).toStrictEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(trend.raw).toBe("TEMPO FM1700 TL1830 SHRA");
   });
@@ -378,8 +380,8 @@ describe("MetarParser", () => {
       unit: DistanceUnit.Meters,
       min: {
         value: 1100,
-        direction: "w",
-      },
+        direction: "w"
+      }
     });
   });
 
@@ -393,7 +395,7 @@ describe("MetarParser", () => {
       speed: 0,
       unit: "KT",
       gust: undefined,
-      direction: "N",
+      direction: "N"
     });
 
     expect(metar.visibility?.min).toBeUndefined();
@@ -421,7 +423,7 @@ describe("MetarParser", () => {
     expect(metar.wind?.degrees).toBe(280);
     expect(metar.visibility).toStrictEqual({
       value: 350,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(metar.verticalVisibility).toBe(200);
     expect(metar.weatherConditions[0].phenomenons[0]).toBe(Phenomenon.FOG);
@@ -436,7 +438,7 @@ describe("MetarParser", () => {
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
       unit: DistanceUnit.Meters,
-      ndv: true,
+      ndv: true
     });
   });
 
@@ -449,13 +451,13 @@ describe("MetarParser", () => {
     expect(metar.visibility).toStrictEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(metar.temperature).toBe(9);
     expect(metar.dewPoint).toBe(6);
     expect(metar.altimeter).toStrictEqual({
       value: 1031,
-      unit: AltimeterUnit.HPa,
+      unit: AltimeterUnit.HPa
     });
     expect(metar.nosig).toBe(true);
   });
@@ -467,7 +469,7 @@ describe("MetarParser", () => {
 
     expect(metar.altimeter).toStrictEqual({
       value: 30.06,
-      unit: AltimeterUnit.InHg,
+      unit: AltimeterUnit.InHg
     });
     expect(metar.weatherConditions).toHaveLength(3);
   });
@@ -544,7 +546,7 @@ describe("MetarParser", () => {
     expect(metar.visibility).toEqual({
       indicator: ValueIndicator.LessThan,
       value: 0.25,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
   });
 
@@ -554,7 +556,7 @@ describe("MetarParser", () => {
     expect(metar.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 6,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
   });
 
@@ -563,7 +565,7 @@ describe("MetarParser", () => {
 
     expect(metar.visibility).toEqual({
       value: 3.25,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
   });
 
@@ -573,7 +575,7 @@ describe("MetarParser", () => {
     expect(metar.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 1.5,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
   });
 
@@ -705,7 +707,7 @@ describe("TAFParser", () => {
 
     expect(taf.visibility).toEqual({
       value: 6000,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
 
     expect(taf.clouds).toHaveLength(1);
@@ -731,7 +733,7 @@ describe("TAFParser", () => {
     expect(trend0.validity.endHour).toBe(9);
     expect(trend0.visibility).toEqual({
       value: 3000,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(trend0.weatherConditions).toHaveLength(1);
     expect(trend0.weatherConditions[0].intensity).toBeUndefined();
@@ -752,7 +754,7 @@ describe("TAFParser", () => {
     expect(trend1.wind).toBeUndefined();
     expect(trend1.visibility).toEqual({
       value: 400,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(trend1.weatherConditions).toHaveLength(1);
     expect(trend1.weatherConditions[0].intensity).toBeUndefined();
@@ -773,7 +775,7 @@ describe("TAFParser", () => {
     expect(trend2.validity.endHour).toBe(16);
     expect(trend2.visibility).toEqual({
       value: 4000,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(trend2.weatherConditions).toHaveLength(1);
     expect(trend2.weatherConditions[0].intensity).toBe(Intensity.LIGHT);
@@ -806,7 +808,7 @@ describe("TAFParser", () => {
     expect(trend4.validity.endHour).toBe(8);
     expect(trend4.visibility).toEqual({
       value: 3000,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(trend4.weatherConditions).toHaveLength(1);
     expect(trend4.weatherConditions[0].intensity).toBeUndefined();
@@ -827,7 +829,7 @@ describe("TAFParser", () => {
     expect(trend5.validity.endHour).toBe(7);
     expect(trend5.visibility).toEqual({
       value: 400,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(trend5.weatherConditions).toHaveLength(1);
     expect(trend5.weatherConditions[0].intensity).toBeUndefined();
@@ -870,7 +872,7 @@ describe("TAFParser", () => {
     expect(taf.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
 
     // Checks on clouds
@@ -913,7 +915,7 @@ describe("TAFParser", () => {
     expect(becmg0.validity.endHour).toBe(4);
     expect(becmg0.visibility).toEqual({
       value: 4000,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(becmg0.weatherConditions[0].intensity).toBeUndefined();
     expect(becmg0.weatherConditions[0].descriptive).toBe(Descriptive.SHALLOW);
@@ -929,7 +931,7 @@ describe("TAFParser", () => {
     expect(prob0.validity.endHour).toBe(7);
     expect(prob0.visibility).toEqual({
       value: 1500,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(prob0.weatherConditions[0].intensity).toBeUndefined();
     expect(prob0.weatherConditions[0].descriptive).toBe(Descriptive.PATCHES);
@@ -949,7 +951,7 @@ describe("TAFParser", () => {
     expect(becmg1.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(becmg1.weatherConditions).toHaveLength(0);
     expect(becmg1.clouds).toHaveLength(1);
@@ -998,7 +1000,7 @@ describe("TAFParser", () => {
     expect(taf.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
 
     // Checks on clouds
@@ -1032,7 +1034,7 @@ describe("TAFParser", () => {
     expect(becmg1.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(becmg1.wind?.degrees).toBe(100);
     expect(becmg1.wind?.speed).toBe(10);
@@ -1053,7 +1055,7 @@ describe("TAFParser", () => {
     expect(becmg2.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters,
+      unit: DistanceUnit.Meters
     });
     expect(becmg2.wind?.degrees).toBeUndefined();
     expect(becmg2.wind?.speed).toBe(6);
@@ -1110,22 +1112,22 @@ describe("TAFParser", () => {
     // THEN the visibility of the main event is 6 SM
     expect(taf.visibility).toEqual({
       value: 6,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
     // THEN the visibility of the first tempo is 11/2 SM
     expect(taf.trends[0].visibility).toEqual({
       value: 5.5,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
     // THEN the visibility of the second tempo is 3/4 SM
     expect(taf.trends[2].visibility).toEqual({
       value: 0.75,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
     // Then the visibility of the FROM part is 2SN
     expect(taf.trends[1].visibility).toEqual({
       value: 2,
-      unit: DistanceUnit.StatuteMiles,
+      unit: DistanceUnit.StatuteMiles
     });
     expect(taf.amendment).toBe(true);
   });
@@ -1384,7 +1386,7 @@ describe("TAFParser", () => {
     );
     expect(parsed.trends[2].weatherConditions[0].phenomenons).toEqual([
       "DZ",
-      "BR",
+      "BR"
     ]);
     expect(parsed.trends[2].weatherConditions[0].descriptive).toBeUndefined();
   });
@@ -1578,7 +1580,7 @@ describe("RemarkParser", () => {
     expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.AO1,
       description: _("Remark.AO1", en),
-      raw: "AO1",
+      raw: "AO1"
     });
   });
 
@@ -1589,7 +1591,7 @@ describe("RemarkParser", () => {
     expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.AO2,
       description: _("Remark.AO2", en),
-      raw: "AO2",
+      raw: "AO2"
     });
   });
 
@@ -1600,7 +1602,7 @@ describe("RemarkParser", () => {
     expect(remarks[0]).toEqual<Remark>({
       type: RemarkType.AO1,
       description: _("Remark.AO1", en),
-      raw: "AO1",
+      raw: "AO1"
     });
     expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.WindPeak,
@@ -1608,7 +1610,7 @@ describe("RemarkParser", () => {
       raw: "PK WND 28045/15",
       speed: 45,
       degrees: 280,
-      startMinute: 15,
+      startMinute: 15
     });
   });
 
@@ -1619,7 +1621,7 @@ describe("RemarkParser", () => {
     expect(remarks[0]).toEqual<Remark>({
       type: RemarkType.AO1,
       description: _("Remark.AO1", en),
-      raw: "AO1",
+      raw: "AO1"
     });
     expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.WindPeak,
@@ -1628,7 +1630,7 @@ describe("RemarkParser", () => {
       speed: 45,
       degrees: 280,
       startHour: 15,
-      startMinute: 15,
+      startMinute: 15
     });
   });
 
@@ -1640,7 +1642,7 @@ describe("RemarkParser", () => {
       type: RemarkType.WindShift,
       description: format(_("Remark.WindShift.0", en), "", 30),
       raw: "WSHFT 30",
-      startMinute: 30,
+      startMinute: 30
     });
   });
 
@@ -1653,7 +1655,7 @@ describe("RemarkParser", () => {
       description: format(_("Remark.WindShift.0", en), 15, 30),
       raw: "WSHFT 1530",
       startHour: 15,
-      startMinute: 30,
+      startMinute: 30
     });
   });
 
@@ -1666,7 +1668,7 @@ describe("RemarkParser", () => {
       description: format(_("Remark.WindShift.FROPA", en), 15, 30),
       raw: "WSHFT 1530 FROPA",
       startHour: 15,
-      startMinute: 30,
+      startMinute: 30
     });
   });
 
@@ -1678,7 +1680,7 @@ describe("RemarkParser", () => {
       type: RemarkType.WindShiftFropa,
       description: format(_("Remark.WindShift.FROPA", en), "", 30),
       raw: "WSHFT 30 FROPA",
-      startMinute: 30,
+      startMinute: 30
     });
   });
 
@@ -1690,7 +1692,7 @@ describe("RemarkParser", () => {
       type: RemarkType.TowerVisibility,
       description: format(_("Remark.Tower.Visibility", en), "16 1/2"),
       raw: "TWR VIS 16 1/2",
-      distance: 16.5,
+      distance: 16.5
     });
   });
 
@@ -1702,7 +1704,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SurfaceVisibility,
       description: format(_("Remark.Surface.Visibility", en), "16 1/2"),
       raw: "SFC VIS 16 1/2",
-      distance: 16.5,
+      distance: 16.5
     });
   });
 
@@ -1719,7 +1721,7 @@ describe("RemarkParser", () => {
       ),
       raw: "VIS 1/2V2",
       minVisibility: 0.5,
-      maxVisibility: 2,
+      maxVisibility: 2
     });
   });
 
@@ -1736,7 +1738,7 @@ describe("RemarkParser", () => {
       ),
       raw: "VIS NE 2 1/2",
       distance: 2.5,
-      direction: Direction.NE,
+      direction: Direction.NE
     });
   });
 
@@ -1753,7 +1755,7 @@ describe("RemarkParser", () => {
       ),
       raw: "VIS 2 1/2 RWY11",
       distance: 2.5,
-      location: "RWY11",
+      location: "RWY11"
     });
   });
 
@@ -1775,7 +1777,7 @@ describe("RemarkParser", () => {
       tornadicType: "TORNADO",
       startMinute: 13,
       distance: 6,
-      direction: Direction.NE,
+      direction: Direction.NE
     });
   });
 
@@ -1798,7 +1800,7 @@ describe("RemarkParser", () => {
       startHour: 15,
       startMinute: 13,
       distance: 6,
-      direction: Direction.NE,
+      direction: Direction.NE
     });
   });
 
@@ -1827,7 +1829,7 @@ describe("RemarkParser", () => {
       endHour: 16,
       endMinute: 30,
       distance: 6,
-      direction: Direction.NE,
+      direction: Direction.NE
     });
   });
 
@@ -1849,7 +1851,7 @@ describe("RemarkParser", () => {
       tornadicType: "WATERSPOUT",
       endMinute: 16,
       distance: 12,
-      direction: Direction.NE,
+      direction: Direction.NE
     });
   });
 
@@ -1872,7 +1874,7 @@ describe("RemarkParser", () => {
       endHour: 15,
       endMinute: 16,
       distance: 12,
-      direction: Direction.NE,
+      direction: Direction.NE
     });
   });
 
@@ -1894,7 +1896,7 @@ describe("RemarkParser", () => {
       raw: "RAB05E30",
       phenomenon: Phenomenon.RAIN,
       startMin: 5,
-      endMin: 30,
+      endMin: 30
     });
     expect(remarks[2]).toEqual<Remark>({
       type: RemarkType.PrecipitationBegEnd,
@@ -1912,7 +1914,7 @@ describe("RemarkParser", () => {
       startHour: 15,
       startMin: 20,
       endHour: 16,
-      endMin: 55,
+      endMin: 55
     });
   });
 
@@ -1935,7 +1937,7 @@ describe("RemarkParser", () => {
       descriptive: Descriptive.SHOWERS,
       phenomenon: Phenomenon.RAIN,
       startMin: 5,
-      endMin: 30,
+      endMin: 30
     });
     expect(remarks[2]).toEqual<Remark>({
       type: RemarkType.PrecipitationBegEnd,
@@ -1952,7 +1954,7 @@ describe("RemarkParser", () => {
       descriptive: Descriptive.SHOWERS,
       phenomenon: Phenomenon.SNOW,
       startMin: 20,
-      endMin: 55,
+      endMin: 55
     });
   });
 
@@ -1972,7 +1974,7 @@ describe("RemarkParser", () => {
       raw: "SHRAB05",
       descriptive: Descriptive.SHOWERS,
       phenomenon: Phenomenon.RAIN,
-      startMin: 5,
+      startMin: 5
     });
     expect(remarks[2]).toEqual<Remark>({
       type: RemarkType.PrecipitationBeg,
@@ -1987,7 +1989,7 @@ describe("RemarkParser", () => {
       descriptive: Descriptive.SHOWERS,
       phenomenon: Phenomenon.SNOW,
       startHour: 2,
-      startMin: 20,
+      startMin: 20
     });
   });
 
@@ -2009,7 +2011,7 @@ describe("RemarkParser", () => {
       raw: "SHRAE05",
       descriptive: Descriptive.SHOWERS,
       phenomenon: Phenomenon.RAIN,
-      endMin: 5,
+      endMin: 5
     });
     expect(remarks[2]).toEqual<Remark>({
       type: RemarkType.PrecipitationEnd,
@@ -2024,7 +2026,7 @@ describe("RemarkParser", () => {
       descriptive: Descriptive.SHOWERS,
       phenomenon: Phenomenon.SNOW,
       endHour: 1,
-      endMin: 20,
+      endMin: 20
     });
   });
 
@@ -2047,7 +2049,7 @@ describe("RemarkParser", () => {
       phenomenon: Phenomenon.THUNDERSTORM,
       startHour: 1,
       startMin: 59,
-      endMin: 30,
+      endMin: 30
     });
   });
 
@@ -2062,7 +2064,7 @@ describe("RemarkParser", () => {
         _("Converter.SE", en)
       ),
       raw: "TS SE",
-      location: Direction.SE,
+      location: Direction.SE
     });
   });
 
@@ -2079,7 +2081,7 @@ describe("RemarkParser", () => {
       ),
       raw: "TS SE MOV NE",
       location: Direction.SE,
-      moving: Direction.NE,
+      moving: Direction.NE
     });
   });
 
@@ -2091,7 +2093,7 @@ describe("RemarkParser", () => {
       type: RemarkType.HailSize,
       description: format(_("Remark.Hail.0", en), "1 3/4"),
       raw: "GR 1 3/4",
-      size: 1.75,
+      size: 1.75
     });
   });
 
@@ -2103,7 +2105,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SmallHailSize,
       description: format(_("Remark.Hail.LesserThan", en), "1/4"),
       raw: "GR LESS THAN 1/4",
-      size: 0.25,
+      size: 0.25
     });
   });
 
@@ -2115,7 +2117,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SnowPellets,
       description: format(_("Remark.Snow.Pellets", en), _("Remark.MOD", en)),
       raw: "GS MOD",
-      amount: "MOD",
+      amount: "MOD"
     });
   });
 
@@ -2130,7 +2132,7 @@ describe("RemarkParser", () => {
         _("Converter.SW", en)
       ),
       raw: "VIRGA SW",
-      direction: Direction.SW,
+      direction: Direction.SW
     });
   });
 
@@ -2141,7 +2143,7 @@ describe("RemarkParser", () => {
     expect(remarks[1]).toEqual<Remark>({
       type: RemarkType.VIRGA,
       description: format(_("Remark.VIRGA", en)),
-      raw: "VIRGA",
+      raw: "VIRGA"
     });
   });
 
@@ -2154,7 +2156,7 @@ describe("RemarkParser", () => {
       description: format(_("Remark.Ceiling.Height", en), 500, 1000),
       raw: "CIG 005V010",
       min: 500,
-      max: 1000,
+      max: 1000
     });
   });
 
@@ -2173,7 +2175,7 @@ describe("RemarkParser", () => {
       raw: "FU BKN020",
       quantity: CloudQuantity.BKN,
       height: 2000,
-      phenomenon: Phenomenon.SMOKE,
+      phenomenon: Phenomenon.SMOKE
     });
   });
 
@@ -2188,7 +2190,7 @@ describe("RemarkParser", () => {
         _("CloudQuantity.OVC", en)
       ),
       raw: "BKN V OVC",
-      cloudQuantityRange: [CloudQuantity.BKN, CloudQuantity.OVC],
+      cloudQuantityRange: [CloudQuantity.BKN, CloudQuantity.OVC]
     });
   });
 
@@ -2205,7 +2207,7 @@ describe("RemarkParser", () => {
       ),
       raw: "BKN014 V OVC",
       cloudQuantityRange: [CloudQuantity.BKN, CloudQuantity.OVC],
-      height: 1400,
+      height: 1400
     });
   });
 
@@ -2221,7 +2223,7 @@ describe("RemarkParser", () => {
       ),
       raw: "CIG 002 RWY11",
       height: 200,
-      location: "RWY11",
+      location: "RWY11"
     });
   });
 
@@ -2232,7 +2234,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SeaLevelPressure,
       description: format(_("Remark.Sea.Level.Pressure", en), "1013.4"),
       raw: "SLP134",
-      pressure: 1013.4,
+      pressure: 1013.4
     });
   });
 
@@ -2243,7 +2245,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SeaLevelPressure,
       description: format(_("Remark.Sea.Level.Pressure", en), "998.2"),
       raw: "SLP982",
-      pressure: 998.2,
+      pressure: 998.2
     });
   });
 
@@ -2255,7 +2257,7 @@ describe("RemarkParser", () => {
       description: format(_("Remark.Snow.Increasing.Rapidly", en), 2, 10),
       raw: "SNINCR 2/10",
       inchesLastHour: 2,
-      totalDepth: 10,
+      totalDepth: 10
     });
   });
 
@@ -2268,7 +2270,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SeaLevelPressure,
       description: format(_("Remark.Sea.Level.Pressure", en), "1009.1"),
       raw: "SLP091",
-      pressure: 1009.1,
+      pressure: 1009.1
     });
   });
 
@@ -2281,7 +2283,7 @@ describe("RemarkParser", () => {
         "24-hour maximum temperature of 10.0°C and 24-hour minimum temperature of -1.5°C",
       raw: "401001015",
       max: 10,
-      min: -1.5,
+      min: -1.5
     });
   });
 
@@ -2292,7 +2294,7 @@ describe("RemarkParser", () => {
       type: RemarkType.HourlyMaximumTemperature,
       description: "6-hourly maximum temperature of -2.1°C",
       raw: "11021",
-      max: -2.1,
+      max: -2.1
     });
   });
 
@@ -2303,7 +2305,7 @@ describe("RemarkParser", () => {
       type: RemarkType.HourlyMaximumTemperature,
       description: "6-hourly maximum temperature of 14.2°C",
       raw: "10142",
-      max: 14.2,
+      max: 14.2
     });
   });
 
@@ -2314,7 +2316,7 @@ describe("RemarkParser", () => {
       type: RemarkType.HourlyMinimumTemperature,
       description: "6-hourly minimum temperature of -0.1°C",
       raw: "21001",
-      min: -0.1,
+      min: -0.1
     });
   });
 
@@ -2325,7 +2327,7 @@ describe("RemarkParser", () => {
       type: RemarkType.HourlyMinimumTemperature,
       description: "6-hourly minimum temperature of 1.2°C",
       raw: "20012",
-      min: 1.2,
+      min: 1.2
     });
   });
 
@@ -2338,7 +2340,7 @@ describe("RemarkParser", () => {
         "steady or unsteady increase of 3.2 hectopascals in the past 3 hours",
       raw: "52032",
       code: 2,
-      pressureChange: 3.2,
+      pressureChange: 3.2
     });
   });
 
@@ -2349,7 +2351,7 @@ describe("RemarkParser", () => {
       type: RemarkType.PrecipitationAmount24Hour,
       description: "1.25 inches of precipitation fell in the last 24 hours",
       raw: "70125",
-      amount: 1.25,
+      amount: 1.25
     });
   });
 
@@ -2360,7 +2362,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SnowDepth,
       description: "snow depth of 21 inches",
       raw: "4/021",
-      depth: 21,
+      depth: 21
     });
   });
 
@@ -2371,7 +2373,7 @@ describe("RemarkParser", () => {
       type: RemarkType.SunshineDuration,
       description: "96 minutes of sunshine",
       raw: "98096",
-      duration: 96,
+      duration: 96
     });
   });
 
@@ -2382,7 +2384,7 @@ describe("RemarkParser", () => {
       type: RemarkType.WaterEquivalentSnow,
       description: "water equivalent of 3.6 inches of snow",
       raw: "933036",
-      amount: 3.6,
+      amount: 3.6
     });
   });
 
@@ -2394,7 +2396,7 @@ describe("RemarkParser", () => {
       description: "4/100 of an inch of ice accretion in the past 1 hour(s)",
       raw: "l1004",
       amount: 0.04,
-      periodInHours: 1,
+      periodInHours: 1
     });
   });
 
@@ -2405,7 +2407,7 @@ describe("RemarkParser", () => {
       type: RemarkType.HourlyTemperatureDewPoint,
       description: "hourly temperature of 2.6°C",
       raw: "T0026",
-      temperature: 2.6,
+      temperature: 2.6
     });
   });
 
@@ -2417,7 +2419,7 @@ describe("RemarkParser", () => {
       description: "hourly temperature of 2.6°C and dew point of -1.5°C",
       raw: "T00261015",
       temperature: 2.6,
-      dewPoint: -1.5,
+      dewPoint: -1.5
     });
   });
 
@@ -2429,7 +2431,7 @@ describe("RemarkParser", () => {
       description: "2.17 inches of precipitation fell in the last 3 hours",
       raw: "30217",
       amount: 2.17,
-      periodInHours: 3,
+      periodInHours: 3
     });
   });
 
@@ -2441,7 +2443,30 @@ describe("RemarkParser", () => {
       description: "2.17 inches of precipitation fell in the last 6 hours",
       raw: "60217",
       amount: 2.17,
-      periodInHours: 6,
+      periodInHours: 6
     });
+  });
+
+  test("descriptively reject TAFs beginning with 'PART x OF y'", () => {
+    const input = [
+      "PART 2 OF 2 TAF SBGL 082150Z 0900/1006 09007KT CAVOK TN21/0909Z TX30/0917Z " +
+      "      BECMG 0903/0905 34005KT SCT020 PROB40 0909/0912 4000 BR SCT010 BKN020 " +
+      "      BECMG 0912/0914 01005KT FEW023 " +
+      "      BECMG 0917/0919 23017KT SCT020 " +
+      "      BECMG 0921/0923 27008KT BKN025 " +
+      "      BECMG 1004/1006 5000 BR BKN010 " +
+      "      RMK PHP"
+    ].join("\n");
+    try {
+      new TAFParser(en).parse(input);
+      expect(true).toBe(false);
+    } catch (ex) {
+      expect(ex).toBeInstanceOf(UnsupportedWeatherStatementError);
+      if (ex instanceof UnsupportedWeatherStatementError) {
+        expect(ex.reason).toContain("PART 2 OF 2");
+        expect(ex.name).toBe("UnsupportedWeatherStatementError");
+        expect(ex.message).toContain(input);
+      }
+    }
   });
 });
