@@ -2449,12 +2449,12 @@ describe("RemarkParser", () => {
 
   test("descriptively reject TAFs beginning with 'PART x OF y'", () => {
     const input = [
-      "PART 2 OF 2 TAF SBGL 082150Z 0900/1006 09007KT CAVOK TN21/0909Z TX30/0917Z " +
-      "      BECMG 0903/0905 34005KT SCT020 PROB40 0909/0912 4000 BR SCT010 BKN020 " +
-      "      BECMG 0912/0914 01005KT FEW023 " +
-      "      BECMG 0917/0919 23017KT SCT020 " +
-      "      BECMG 0921/0923 27008KT BKN025 " +
-      "      BECMG 1004/1006 5000 BR BKN010 " +
+      "PART 2 OF 2 TAF SBGL 082150Z 0900/1006 09007KT CAVOK TN21/0909Z TX30/0917Z ",
+      "      BECMG 0903/0905 34005KT SCT020 PROB40 0909/0912 4000 BR SCT010 BKN020 ",
+      "      BECMG 0912/0914 01005KT FEW023 ",
+      "      BECMG 0917/0919 23017KT SCT020 ",
+      "      BECMG 0921/0923 27008KT BKN025 ",
+      "      BECMG 1004/1006 5000 BR BKN010 ",
       "      RMK PHP"
     ].join("\n");
     try {
