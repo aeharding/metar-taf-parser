@@ -125,6 +125,16 @@ TAF
         expect(taf.minute).toBeUndefined();
       });
     });
+
+    test("parses station ident beginning with 'FM'", () => {
+      const taf = parseTAF([
+        "TAF FMMI 082300Z 0900/1006 16006KT 9999 FEW017 BKN020 PROB30",
+        "TEMPO 0908/0916 4500 RADZ",
+        "BECMG 0909/0911 10010KT",
+        "BECMG 0918/0920 16006KT"
+      ].join("\n"));
+      expect(taf.station).toBe("FMMI");
+    });
   });
 
   describe("parseTAFAsForecast", () => {
