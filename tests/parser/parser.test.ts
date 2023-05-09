@@ -2448,12 +2448,14 @@ describe("RemarkParser", () => {
   // Issue 67: previously failed in parseDeliveryTime() due to "FM" being
   // treated as an FM trend.
   test("parse TAF with station ident beginning with 'FM'", () => {
-    const taf = new TAFParser(en).parse([
-      "TAF FMMI 082300Z 0900/1006 16006KT 9999 FEW017 BKN020 PROB30",
-      "TEMPO 0908/0916 4500 RADZ",
-      "BECMG 0909/0911 10010KT",
-      "BECMG 0918/0920 16006KT"
-    ].join("\n"));
+    const taf = new TAFParser(en).parse(
+      [
+        "TAF FMMI 082300Z 0900/1006 16006KT 9999 FEW017 BKN020 PROB30",
+        "TEMPO 0908/0916 4500 RADZ",
+        "BECMG 0909/0911 10010KT",
+        "BECMG 0918/0920 16006KT",
+      ].join("\n")
+    );
 
     // Check on station
     expect(taf.station).toBe("FMMI");
@@ -2480,7 +2482,7 @@ describe("RemarkParser", () => {
     expect(taf.visibility).toEqual({
       indicator: ValueIndicator.GreaterThan,
       value: 9999,
-      unit: DistanceUnit.Meters
+      unit: DistanceUnit.Meters,
     });
 
     // Checks on clouds
@@ -2513,7 +2515,7 @@ describe("RemarkParser", () => {
     expect(tempo.validity.endHour).toBe(16);
     expect(tempo.visibility).toEqual({
       value: 4500,
-      unit: DistanceUnit.Meters
+      unit: DistanceUnit.Meters,
     });
     expect(tempo.weatherConditions).toHaveLength(1);
     expect(tempo.weatherConditions[0].phenomenons[0]).toBe("RA");
@@ -2535,7 +2537,6 @@ describe("RemarkParser", () => {
     expect(becmg1.wind?.direction).toBe("E");
     expect(becmg1.wind?.speed).toBe(10);
     expect(becmg1.wind?.unit).toBe("KT");
-
 
     // Checks on trend 3: "BECMG 0918/0920 16006KT"
     const becmg2 = taf.trends[2];
