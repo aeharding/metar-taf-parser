@@ -566,7 +566,7 @@ export class TAFParser extends AbstractParser {
     const lines = joinProbIfNeeded(
       cleanLine
         .replace(
-          /\s(?=PROB\d{2}\s(?=TEMPO|INTER)|TEMPO|INTER|BECMG|FM|PROB)/g,
+          /\s(?=PROB\d{2}\s(?=TEMPO|INTER)|TEMPO|INTER|BECMG|FM(?![A-Z]{2}\s)|PROB)/g,
           "\n"
         )
         .split(/\n/)
