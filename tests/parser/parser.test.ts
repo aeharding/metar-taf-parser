@@ -27,7 +27,7 @@ import { IAbstractWeatherContainer, IRunwayInfoRange } from "model/model";
 import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
-import { UnsupportedWeatherStatementError } from "commons/errors";
+import { PartialWeatherStatementError } from "commons/errors";
 
 describe("RemarkParser", () => {
   (() => {
@@ -2448,7 +2448,7 @@ describe("RemarkParser", () => {
 
   test("descriptively reject TAFs beginning with 'PART x OF y'", () => {
     const input = [
-      "PART 2 OF 2 TAF SBGL 082150Z 0900/1006 09007KT CAVOK TN21/0909Z TX30/0917Z ",
+      "PART 1 OF 3 TAF SBGL 082150Z 0900/1006 09007KT CAVOK TN21/0909Z TX30/0917Z ",
       "      BECMG 0903/0905 34005KT SCT020 PROB40 0909/0912 4000 BR SCT010 BKN020 ",
       "      BECMG 0912/0914 01005KT FEW023 ",
       "      BECMG 0917/0919 23017KT SCT020 ",
@@ -2460,11 +2460,14 @@ describe("RemarkParser", () => {
       new TAFParser(en).parse(input);
       expect(true).toBe(false);
     } catch (ex) {
-      expect(ex).toBeInstanceOf(UnsupportedWeatherStatementError);
-      if (ex instanceof UnsupportedWeatherStatementError) {
-        expect(ex.reason).toContain("PART 2 OF 2");
-        expect(ex.name).toBe("UnsupportedWeatherStatementError");
-        expect(ex.message).toContain(input);
+      expect(ex).toBeInstanceOf(PartialWeatherStatementError);
+      if (ex instanceof PartialWeatherStatementError) {
+        expect(ex.part).toBe(1);
+        expect(ex.total).toBe(3);
+        expect(ex.name).toBe("PartialWeatherStatementError");
+        expect(ex.message).toContain(
+          "Input is partial TAF (PART 1 OF 3), see: https://github.com/aeharding/metar-taf-parser/issues/68"
+        );
       }
     }
   });

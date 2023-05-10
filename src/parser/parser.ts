@@ -32,7 +32,7 @@ import { Locale } from "commons/i18n";
 import {
   CommandExecutionError,
   ParseError,
-  UnsupportedWeatherStatementError,
+  PartialWeatherStatementError,
 } from "commons/errors";
 
 function isStation(stationString: string): boolean {
@@ -431,6 +431,30 @@ export class TAFParser extends AbstractParser {
   #commandSupplier = new TafCommandSupplier();
 
   #validityPattern = /^\d{4}\/\d{4}$/;
+  #partialPattern = /^PART (\d) OF (\d) /;
+
+  /**
+   * Check a tokenized TAF against patterns that are explicitly not supported,
+   * throwing a descriptive exception to assist anyone who might want to apply
+   * any necessary custom parsing.
+   *
+   * @param input original input.
+   */
+  throwIfPartial(input: string) {
+    // TAFs in NOAA cycle files beginning `PART x OF y`,
+    // implying they are incomplete
+    const matches = input.match(this.#partialPattern);
+
+    if (matches) {
+      const [partialMessage, part, total] = matches;
+
+      throw new PartialWeatherStatementError(
+        partialMessage.trim(),
+        +part,
+        +total
+      );
+    }
+  }
 
   /**
    * TAF messages can be formatted poorly
@@ -455,43 +479,15 @@ export class TAFParser extends AbstractParser {
   }
 
   /**
-   * Check a tokenized TAF against patterns that are explicitly not supported,
-   * throwing a descriptive exception to assist anyone who might want to apply
-   * any necessary custom parsing.
-   *
-   * @param linesTokens tokenized input.
-   * @param input original input.
-   */
-  throwIfUnsupported(linesTokens: string[][], input: string) {
-    // TAFs in NOAA cycle files beginning `PART x OF y`, implying they are
-    // incomplete. Being absurdly careful about identifying this to avoid any
-    // false positives...
-    if (linesTokens.length >= 1 && linesTokens[0].length >= 4) {
-      const tokens = linesTokens[0];
-      if ("PART" === tokens[0] && "OF" === tokens[2]) {
-        const indices = [tokens[1], tokens[3]].filter((token) =>
-          /\d/.test(token)
-        );
-        if (2 === indices.length) {
-          const [part, total] = indices;
-          throw new UnsupportedWeatherStatementError(
-            `Partial; "PART ${part} OF ${total}"`,
-            input
-          );
-        }
-      }
-    }
-  }
-
-  /**
    * the message to parse
    * @param input
    * @returns a TAF object
    * @throws ParseError if the message is invalid
    */
   parse(input: string): ITAF {
+    this.throwIfPartial(input);
+
     const lines = this.extractLinesTokens(input);
-    this.throwIfUnsupported(lines, input);
 
     let [index, flags] = this.parseMessageStart(lines[0]);
 

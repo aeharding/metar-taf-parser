@@ -27,19 +27,19 @@ export class InvalidWeatherStatementError extends ParseError {
  * Thrown when an input contains data elements that are recognized but
  * intentionally not supported.
  */
-export class UnsupportedWeatherStatementError extends ParseError {
-  name = "UnsupportedWeatherStatementError";
-  cause?: unknown;
+export class PartialWeatherStatementError extends InvalidWeatherStatementError {
+  name = "PartialWeatherStatementError";
+  part: number;
+  total: number;
 
-  constructor(public readonly reason: string, cause?: unknown) {
+  constructor(partialMessage: string, part: number, total: number) {
     super(
-      typeof cause === "string"
-        ? `Unsupported weather string (${reason}): ${cause}`
-        : `Unsupported weather string (${reason})`
+      `Input is partial TAF (${partialMessage}), see: https://github.com/aeharding/metar-taf-parser/issues/68`
     );
     Object.setPrototypeOf(this, new.target.prototype);
 
-    if (typeof cause !== "string") this.cause = cause;
+    this.part = part;
+    this.total = total;
   }
 }
 
