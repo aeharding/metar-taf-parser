@@ -27,6 +27,7 @@ import { IAbstractWeatherContainer, IRunwayInfoRange } from "model/model";
 import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
+import { PartialWeatherStatementError } from "commons/errors";
 
 describe("RemarkParser", () => {
   (() => {
@@ -2443,6 +2444,32 @@ describe("RemarkParser", () => {
       amount: 2.17,
       periodInHours: 6,
     });
+  });
+
+  test("descriptively reject TAFs beginning with 'PART x OF y'", () => {
+    const input = [
+      "PART 1 OF 3 TAF SBGL 082150Z 0900/1006 09007KT CAVOK TN21/0909Z TX30/0917Z ",
+      "      BECMG 0903/0905 34005KT SCT020 PROB40 0909/0912 4000 BR SCT010 BKN020 ",
+      "      BECMG 0912/0914 01005KT FEW023 ",
+      "      BECMG 0917/0919 23017KT SCT020 ",
+      "      BECMG 0921/0923 27008KT BKN025 ",
+      "      BECMG 1004/1006 5000 BR BKN010 ",
+      "      RMK PHP",
+    ].join("\n");
+    try {
+      new TAFParser(en).parse(input);
+      expect(true).toBe(false);
+    } catch (ex) {
+      expect(ex).toBeInstanceOf(PartialWeatherStatementError);
+      if (ex instanceof PartialWeatherStatementError) {
+        expect(ex.part).toBe(1);
+        expect(ex.total).toBe(3);
+        expect(ex.name).toBe("PartialWeatherStatementError");
+        expect(ex.message).toContain(
+          "Input is partial TAF (PART 1 OF 3), see: https://github.com/aeharding/metar-taf-parser/issues/68"
+        );
+      }
+    }
   });
 
   // Issue 67: previously failed in parseDeliveryTime() due to "FM" being
