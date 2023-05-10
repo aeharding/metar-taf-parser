@@ -2471,7 +2471,7 @@ describe("RemarkParser", () => {
       }
     }
   });
-    
+
   // Issue 67: previously failed in parseDeliveryTime() due to "FM" being
   // treated as an FM trend.
   test("parse TAF with station ident beginning with 'FM'", () => {
