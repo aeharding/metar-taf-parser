@@ -264,8 +264,8 @@ export function getCompositeForecastForDate(
 ): ICompositeForecast {
   // Validity bounds check
   if (
-    date.getTime() > forecastContainer.end.getTime() ||
-    date.getTime() < forecastContainer.start.getTime()
+    date.getTime() < forecastContainer.start.getTime() ||
+    date.getTime() >= forecastContainer.end.getTime()
   )
     throw new TimestampOutOfBoundsError(
       "Provided timestamp is outside the report validity period"

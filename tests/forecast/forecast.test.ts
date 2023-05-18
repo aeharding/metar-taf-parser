@@ -395,6 +395,24 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         )
       ).toThrowError(TimestampOutOfBoundsError);
     });
+
+    test("NOT throw inclusive start hour", () => {
+      expect(() =>
+        getCompositeForecastForDate(
+          new Date("2022-04-15T00:00:00.000Z"),
+          forecast
+        )
+      ).not.toThrowError(TimestampOutOfBoundsError);
+    });
+
+    test("throws exclusive end hour", () => {
+      expect(() =>
+        getCompositeForecastForDate(
+          new Date("2022-04-16T00:00:00.000Z"),
+          forecast
+        )
+      ).toThrowError(TimestampOutOfBoundsError);
+    });
   });
   describe("getCompositeForecastForDate", () => {
     const taf = parseTAF(
