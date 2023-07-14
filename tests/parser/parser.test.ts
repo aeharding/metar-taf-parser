@@ -20,11 +20,14 @@ import {
   SpeedUnit,
   TurbulenceIntensity,
   IcingIntensity,
+  MetarType,
+  AltimeterUnit,
 } from "model/enum";
-import { IAbstractWeatherContainer } from "model/model";
+import { IAbstractWeatherContainer, IRunwayInfoRange } from "model/model";
 import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
+import { PartialWeatherStatementError } from "commons/errors";
 
 describe("RemarkParser", () => {
   (() => {
@@ -228,8 +231,8 @@ describe("MetarParser", () => {
     });
     expect(metar.runwaysInfo).toHaveLength(8);
     expect(metar.runwaysInfo[0].name).toBe("27L");
-    expect(metar.runwaysInfo[0].minRange).toBe(375);
-    expect(metar.runwaysInfo[0].trend).toBe("N");
+    expect((metar.runwaysInfo[0] as IRunwayInfoRange).minRange).toBe(375);
+    expect((metar.runwaysInfo[0] as IRunwayInfoRange).trend).toBe("N");
   });
 
   test("parses 'AUTO' as station if no station identifier", () => {
@@ -381,6 +384,22 @@ describe("MetarParser", () => {
     });
   });
 
+  test("wind of 0000KT should not parse as minVisibility", () => {
+    const metar = new MetarParser(en).parse(
+      "KATW 022045Z 0000KT 10SM SCT120 00/M08 A2996"
+    );
+
+    expect(metar.wind).toStrictEqual({
+      degrees: 0,
+      speed: 0,
+      unit: "KT",
+      gust: undefined,
+      direction: "N",
+    });
+
+    expect(metar.visibility?.min).toBeUndefined();
+  });
+
   test("wind variation", () => {
     const metar = new MetarParser(en).parse("LFPG 161430Z 24015G25KT 180V300");
 
@@ -435,7 +454,10 @@ describe("MetarParser", () => {
     });
     expect(metar.temperature).toBe(9);
     expect(metar.dewPoint).toBe(6);
-    expect(metar.altimeter).toBe(1031);
+    expect(metar.altimeter).toStrictEqual({
+      value: 1031,
+      unit: AltimeterUnit.HPa,
+    });
     expect(metar.nosig).toBe(true);
   });
 
@@ -444,7 +466,10 @@ describe("MetarParser", () => {
       "KTTN 051853Z 04011KT 9999 VCTS SN FZFG BKN003 OVC010 M02/M02 A3006"
     );
 
-    expect(metar.altimeter).toBe(1017);
+    expect(metar.altimeter).toStrictEqual({
+      value: 30.06,
+      unit: AltimeterUnit.InHg,
+    });
     expect(metar.weatherConditions).toHaveLength(3);
   });
 
@@ -597,6 +622,29 @@ describe("MetarParser", () => {
     expect(metar.weatherConditions[2].intensity).toBe(Intensity.IN_VICINITY);
     expect(metar.weatherConditions[2].descriptive).toBe(Descriptive.BLOWING);
     expect(metar.weatherConditions[2].phenomenons).toEqual([Phenomenon.SNOW]);
+  });
+
+  describe("metar type", () => {
+    test("parses without", () => {
+      const metar = new MetarParser(en).parse("SUMU 070520Z 3 1/4SM");
+
+      expect(metar.type).toBeUndefined();
+      expect(metar.station).toEqual("SUMU");
+    });
+
+    test("parses METAR", () => {
+      const metar = new MetarParser(en).parse("METAR SUMU 070520Z 3 1/4SM");
+
+      expect(metar.type).toEqual(MetarType.METAR);
+      expect(metar.station).toEqual("SUMU");
+    });
+
+    test("parses SPECI", () => {
+      const metar = new MetarParser(en).parse("SPECI SUMU 070520Z 3 1/4SM");
+
+      expect(metar.type).toEqual(MetarType.SPECI);
+      expect(metar.station).toEqual("SUMU");
+    });
   });
 });
 
@@ -2396,5 +2444,141 @@ describe("RemarkParser", () => {
       amount: 2.17,
       periodInHours: 6,
     });
+  });
+
+  test("descriptively reject TAFs beginning with 'PART x OF y'", () => {
+    const input = [
+      "PART 1 OF 3 TAF SBGL 082150Z 0900/1006 09007KT CAVOK TN21/0909Z TX30/0917Z ",
+      "      BECMG 0903/0905 34005KT SCT020 PROB40 0909/0912 4000 BR SCT010 BKN020 ",
+      "      BECMG 0912/0914 01005KT FEW023 ",
+      "      BECMG 0917/0919 23017KT SCT020 ",
+      "      BECMG 0921/0923 27008KT BKN025 ",
+      "      BECMG 1004/1006 5000 BR BKN010 ",
+      "      RMK PHP",
+    ].join("\n");
+    try {
+      new TAFParser(en).parse(input);
+      expect(true).toBe(false);
+    } catch (ex) {
+      expect(ex).toBeInstanceOf(PartialWeatherStatementError);
+      if (ex instanceof PartialWeatherStatementError) {
+        expect(ex.part).toBe(1);
+        expect(ex.total).toBe(3);
+        expect(ex.name).toBe("PartialWeatherStatementError");
+        expect(ex.message).toContain(
+          "Input is partial TAF (PART 1 OF 3), see: https://github.com/aeharding/metar-taf-parser/issues/68"
+        );
+      }
+    }
+  });
+
+  // Issue 67: previously failed in parseDeliveryTime() due to "FM" being
+  // treated as an FM trend.
+  test("parse TAF with station ident beginning with 'FM'", () => {
+    const taf = new TAFParser(en).parse(
+      [
+        "TAF FMMI 082300Z 0900/1006 16006KT 9999 FEW017 BKN020 PROB30",
+        "TEMPO 0908/0916 4500 RADZ",
+        "BECMG 0909/0911 10010KT",
+        "BECMG 0918/0920 16006KT",
+      ].join("\n")
+    );
+
+    // Check on station
+    expect(taf.station).toBe("FMMI");
+
+    // Check on time delivery
+    expect(taf.day).toBe(8);
+    expect(taf.hour).toBe(23);
+    expect(taf.minute).toBe(0);
+
+    // Checks on validity
+    expect(taf.validity.startDay).toBe(9);
+    expect(taf.validity.startHour).toBe(0);
+    expect(taf.validity.endDay).toBe(10);
+    expect(taf.validity.endHour).toBe(6);
+
+    // Checks on wind
+    expect(taf.wind?.degrees).toBe(160);
+    expect(taf.wind?.direction).toBe("SSE");
+    expect(taf.wind?.speed).toBe(6);
+    expect(taf.wind?.gust).toBeUndefined();
+    expect(taf.wind?.unit).toBe("KT");
+
+    // Checks on visibility
+    expect(taf.visibility).toEqual({
+      indicator: ValueIndicator.GreaterThan,
+      value: 9999,
+      unit: DistanceUnit.Meters,
+    });
+
+    // Checks on clouds
+    expect(taf.clouds).toHaveLength(2);
+    expect(taf.clouds[0].quantity).toBe(CloudQuantity.FEW);
+    expect(taf.clouds[0].height).toBe(1700);
+    expect(taf.clouds[0].type).toBeUndefined();
+    expect(taf.clouds[1].quantity).toBe(CloudQuantity.BKN);
+    expect(taf.clouds[1].height).toBe(2000);
+    expect(taf.clouds[1].type).toBeUndefined();
+
+    // Check that no weatherCondition
+    expect(taf.weatherConditions).toHaveLength(0);
+
+    // Check no temperature
+    expect(taf.maxTemperature).toBeUndefined();
+    expect(taf.minTemperature).toBeUndefined();
+
+    // Checks on trends
+    expect(taf.trends).toHaveLength(3);
+
+    // Checks on trend 1: "PROB30 TEMPO 0908/0916 4500 RADZ"
+    const tempo = taf.trends[0];
+    expect(tempo.clouds).toHaveLength(0);
+    expect(tempo.probability).toBe(30);
+    expect(tempo.type).toBe("TEMPO");
+    expect(tempo.validity.startDay).toBe(9);
+    expect(tempo.validity.startHour).toBe(8);
+    expect(tempo.validity.endDay).toBe(9);
+    expect(tempo.validity.endHour).toBe(16);
+    expect(tempo.visibility).toEqual({
+      value: 4500,
+      unit: DistanceUnit.Meters,
+    });
+    expect(tempo.weatherConditions).toHaveLength(1);
+    expect(tempo.weatherConditions[0].phenomenons[0]).toBe("RA");
+    expect(tempo.weatherConditions[0].phenomenons[1]).toBe("DZ");
+    expect(tempo.wind).toBeUndefined();
+
+    // Checks on trend 2: "BECMG 0909/0911 10010KT",
+    const becmg1 = taf.trends[1];
+    expect(becmg1.clouds).toHaveLength(0);
+    expect(becmg1.probability).toBeUndefined();
+    expect(becmg1.type).toBe("BECMG");
+    expect(becmg1.validity.startDay).toBe(9);
+    expect(becmg1.validity.startHour).toBe(9);
+    expect(becmg1.validity.endDay).toBe(9);
+    expect(becmg1.validity.endHour).toBe(11);
+    expect(becmg1.visibility).toBeUndefined();
+    expect(becmg1.weatherConditions).toHaveLength(0);
+    expect(becmg1.wind?.degrees).toBe(100);
+    expect(becmg1.wind?.direction).toBe("E");
+    expect(becmg1.wind?.speed).toBe(10);
+    expect(becmg1.wind?.unit).toBe("KT");
+
+    // Checks on trend 3: "BECMG 0918/0920 16006KT"
+    const becmg2 = taf.trends[2];
+    expect(becmg2.clouds).toHaveLength(0);
+    expect(becmg2.probability).toBeUndefined();
+    expect(becmg2.type).toBe("BECMG");
+    expect(becmg2.validity.startDay).toBe(9);
+    expect(becmg2.validity.startHour).toBe(18);
+    expect(becmg2.validity.endDay).toBe(9);
+    expect(becmg2.validity.endHour).toBe(20);
+    expect(becmg2.visibility).toBeUndefined();
+    expect(becmg2.weatherConditions).toHaveLength(0);
+    expect(becmg2.wind?.degrees).toBe(160);
+    expect(becmg2.wind?.direction).toBe("SSE");
+    expect(becmg2.wind?.speed).toBe(6);
+    expect(becmg2.wind?.unit).toBe("KT");
   });
 });

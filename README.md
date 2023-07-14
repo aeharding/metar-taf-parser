@@ -32,6 +32,8 @@ The `parseMetar` & `parseTAF` functions are designed to parse the raw report str
 
 #### `parseMetar`
 
+If the payload begins with [`METAR` or `SPECI`](http://www.bom.gov.au/aviation/data/education/metar-speci.pdf), that will be added as the `type`.
+
 ```ts
 import { parseMetar } from "metar-taf-parser";
 

@@ -122,6 +122,22 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     );
   });
 
+  test("should properly parse start/end with one BECMG", () => {
+    const taf = parseTAF(
+      `
+    TAF ESGG 260830Z 2609/2709 02009KT 3000 BR BKN003
+      BECMG 2609/2611 9999 NSW FEW015
+    `,
+      { issued: new Date("2022-04-29") }
+    );
+
+    const forecast = getForecastFromTAF(taf);
+
+    expect(forecast.issued).toEqual(new Date("2022-04-26T08:30:00.000Z"));
+    expect(forecast.start).toEqual(new Date("2022-04-26T09:00:00.000Z"));
+    expect(forecast.end).toEqual(new Date("2022-04-27T09:00:00.000Z"));
+  });
+
   test("should hydrate BECMG", () => {
     const taf = parseTAF(
       `
@@ -375,6 +391,24 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
       expect(() =>
         getCompositeForecastForDate(
           new Date("2020-04-15T00:00:00.000Z"),
+          forecast
+        )
+      ).toThrowError(TimestampOutOfBoundsError);
+    });
+
+    test("NOT throw inclusive start hour", () => {
+      expect(() =>
+        getCompositeForecastForDate(
+          new Date("2022-04-15T00:00:00.000Z"),
+          forecast
+        )
+      ).not.toThrowError(TimestampOutOfBoundsError);
+    });
+
+    test("throws exclusive end hour", () => {
+      expect(() =>
+        getCompositeForecastForDate(
+          new Date("2022-04-16T00:00:00.000Z"),
           forecast
         )
       ).toThrowError(TimestampOutOfBoundsError);

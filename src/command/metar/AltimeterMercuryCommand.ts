@@ -1,6 +1,7 @@
 import * as converter from "commons/converter";
 import { UnexpectedParseError } from "commons/errors";
 import { IMetar } from "model/model";
+import { AltimeterUnit } from "model/enum";
 import { ICommand } from "../metar";
 
 export class AltimeterMercuryCommand implements ICommand {
@@ -17,8 +18,9 @@ export class AltimeterMercuryCommand implements ICommand {
 
     const mercury = +matches[1] / 100;
 
-    metar.altimeter = Math.trunc(
-      converter.convertInchesMercuryToPascal(mercury)
-    );
+    metar.altimeter = {
+      value: mercury,
+      unit: AltimeterUnit.InHg,
+    };
   }
 }

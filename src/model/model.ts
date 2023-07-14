@@ -13,6 +13,10 @@ import {
   SpeedUnit,
   IcingIntensity,
   TurbulenceIntensity,
+  MetarType,
+  DepositType,
+  DepositCoverage,
+  AltimeterUnit,
 } from "model/enum";
 import { Remark } from "command/remark";
 
@@ -70,6 +74,11 @@ export function isWeatherConditionValid(weather: IWeatherCondition): boolean {
   );
 }
 
+export interface IAltimeter {
+  value: number;
+  unit: AltimeterUnit;
+}
+
 export interface ITemperature {
   temperature: number;
   day: number;
@@ -80,7 +89,13 @@ export interface ITemperatureDated extends ITemperature {
   date: Date;
 }
 
-export interface IRunwayInfo {
+export type RunwayInfo = IRunwayInfoRange | IRunwayInfoDeposit;
+
+export interface IBaseRunwayInfo {
+  name: string;
+}
+
+export interface IRunwayInfoRange extends IBaseRunwayInfo {
   name: string;
   minRange: number;
   maxRange?: number;
@@ -96,6 +111,53 @@ export interface IRunwayInfo {
   trend?: RunwayInfoTrend;
 
   unit: RunwayInfoUnit;
+}
+
+export interface IRunwayInfoDeposit extends IBaseRunwayInfo {
+  depositType?: DepositType;
+  coverage?: DepositCoverage;
+
+  /**
+   * Depth of deposit
+   *
+   * Note: the quoted depth is the mean of a number of reading or if operationally significant the greatest depth measured.
+   *
+   * | Value | Description |
+   * | ----- | ----------- |
+   * | `"00"` | Less than 1mm |
+   * | `"01"` to `"90"` | Measurement in mm |
+   * | `"92"` | 10cm |
+   * | `"93"` | 15cm |
+   * | `"94"` | 20cm |
+   * | `"95"` | 25cm |
+   * | `"96"` | 30cm |
+   * | `"97"` | 35cm |
+   * | `"98"` | 40cm or more |
+   * | `"99"` | Runway not operational due to snow, slush, ice, large drifts or runway clearance, depth not reported |
+   * | `"//"` | Not operationally significant or not measurable |
+   */
+  thickness?: string;
+
+  /**
+   * Friction Coefficient or Braking Action
+   *
+   * Note: Where braking action is assessed at a number of points along the runway the mean value will be transmitted or if operationally significant the lowest value.
+   *
+   * If measuring equipment does not allow measurement of friction with satisfactory reliability (such as contaminated by wet snow, slush or loose snow) the figure 99 will be used.
+   *
+   * | Value | Description |
+   * | ----- | ----------- |
+   * | `"28"` | Friction coefficient 0.28
+   * | `"35"` | Friction coefficient 0.35
+   * | `"91"` | Braking action poor
+   * | `"92"` | Braking action medium to poor
+   * | `"93"` | Braking action medium
+   * | `"94"` | Braking action medium to good
+   * | `"95"` | Braking action good
+   * | `"99"` | Figures unreliable
+   * | `"//"` | Braking action not reported or runway not operations or airport closed.
+   */
+  brakingCapacity?: string;
 }
 
 export interface ICloud {
@@ -180,11 +242,12 @@ export interface IAbstractWeatherCodeDated extends IAbstractWeatherCode {
 }
 
 export interface IMetar extends IAbstractWeatherCode {
+  type?: MetarType;
   temperature?: number;
   dewPoint?: number;
-  altimeter?: number;
+  altimeter?: IAltimeter;
   nosig?: true;
-  runwaysInfo: IRunwayInfo[];
+  runwaysInfo: RunwayInfo[];
 
   /**
    * Not used in North America

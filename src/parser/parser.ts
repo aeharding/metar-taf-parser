@@ -15,7 +15,7 @@ import {
   IValidityDated,
   IFlags,
 } from "model/model";
-import { DistanceUnit, ValueIndicator } from "model/enum";
+import { DistanceUnit, MetarType, ValueIndicator } from "model/enum";
 import * as converter from "commons/converter";
 import { pySplit } from "helpers/helpers";
 import { CommandSupplier } from "command/common";
@@ -29,7 +29,11 @@ import {
 import { CommandSupplier as MetarCommandSupplier } from "command/metar";
 import { CommandSupplier as TafCommandSupplier } from "command/taf";
 import { Locale } from "commons/i18n";
-import { CommandExecutionError } from "commons/errors";
+import {
+  CommandExecutionError,
+  ParseError,
+  PartialWeatherStatementError,
+} from "commons/errors";
 
 function isStation(stationString: string): boolean {
   return stationString.length === 4;
@@ -342,6 +346,9 @@ export class MetarParser extends AbstractParser {
 
     let index = 0;
 
+    const type = this.parseType(metarTab[index]);
+    if (type) index++;
+
     // Only parse flag if precedes station identifier
     if (isStation(metarTab[index + 1])) {
       var flags = findFlags(metarTab[index]);
@@ -349,8 +356,9 @@ export class MetarParser extends AbstractParser {
     }
 
     const metar: IMetar = {
-      ...parseDeliveryTime(metarTab[index + 1]),
+      type,
       station: metarTab[index],
+      ...parseDeliveryTime(metarTab[index + 1]),
       ...flags,
       message: input,
       remarks: [],
@@ -403,6 +411,12 @@ export class MetarParser extends AbstractParser {
 
     return metar;
   }
+
+  parseType(token: string): MetarType | undefined {
+    for (const type in MetarType) {
+      if (token === MetarType[type as MetarType]) return type as MetarType;
+    }
+  }
 }
 
 /**
@@ -417,6 +431,30 @@ export class TAFParser extends AbstractParser {
   #commandSupplier = new TafCommandSupplier();
 
   #validityPattern = /^\d{4}\/\d{4}$/;
+  #partialPattern = /^PART (\d) OF (\d) /;
+
+  /**
+   * Check a tokenized TAF against patterns that are explicitly not supported,
+   * throwing a descriptive exception to assist anyone who might want to apply
+   * any necessary custom parsing.
+   *
+   * @param input original input.
+   */
+  throwIfPartial(input: string) {
+    // TAFs in NOAA cycle files beginning `PART x OF y`,
+    // implying they are incomplete
+    const matches = input.match(this.#partialPattern);
+
+    if (matches) {
+      const [partialMessage, part, total] = matches;
+
+      throw new PartialWeatherStatementError(
+        partialMessage.trim(),
+        +part,
+        +total
+      );
+    }
+  }
 
   /**
    * TAF messages can be formatted poorly
@@ -447,6 +485,8 @@ export class TAFParser extends AbstractParser {
    * @throws ParseError if the message is invalid
    */
   parse(input: string): ITAF {
+    this.throwIfPartial(input);
+
     const lines = this.extractLinesTokens(input);
 
     let [index, flags] = this.parseMessageStart(lines[0]);
@@ -526,7 +566,7 @@ export class TAFParser extends AbstractParser {
     const lines = joinProbIfNeeded(
       cleanLine
         .replace(
-          /\s(?=PROB\d{2}\s(?=TEMPO|INTER)|TEMPO|INTER|BECMG|FM|PROB)/g,
+          /\s(?=PROB\d{2}\s(?=TEMPO|INTER)|TEMPO|INTER|BECMG|FM(?![A-Z]{2}\s)|PROB)/g,
           "\n"
         )
         .split(/\n/)
@@ -541,6 +581,7 @@ export class TAFParser extends AbstractParser {
       }
       return ls;
     }
+
     const linesToken = lines.map(this.tokenize);
 
     return linesToken;

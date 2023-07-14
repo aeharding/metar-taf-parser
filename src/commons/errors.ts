@@ -24,6 +24,26 @@ export class InvalidWeatherStatementError extends ParseError {
 }
 
 /**
+ * Thrown when an input contains data elements that are recognized but
+ * intentionally not supported.
+ */
+export class PartialWeatherStatementError extends InvalidWeatherStatementError {
+  name = "PartialWeatherStatementError";
+  part: number;
+  total: number;
+
+  constructor(partialMessage: string, part: number, total: number) {
+    super(
+      `Input is partial TAF (${partialMessage}), see: https://github.com/aeharding/metar-taf-parser/issues/68`
+    );
+    Object.setPrototypeOf(this, new.target.prototype);
+
+    this.part = part;
+    this.total = total;
+  }
+}
+
+/**
  * Thrown when command marked as canParse, but couldn't parse when
  * executing (for example, an invalid CloudQuantity)
  */
