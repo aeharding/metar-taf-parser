@@ -98,7 +98,7 @@ export class MainVisibilityCommand implements ICommand {
 }
 
 export class WindCommand implements ICommand {
-  #regex = /^(VRB|00|[0-3]\d{2})(\d{2})G?(\d{2})?(KT|MPS|KM\/H)?/;
+  #regex = /^(VRB|00|[0-3]\d{2})(\d{2})G?(\d{2,3})?(KT|MPS|KM\/H)?/;
 
   canParse(windString: string): boolean {
     return this.#regex.test(windString);
@@ -149,7 +149,7 @@ export class WindVariationCommand implements ICommand {
 }
 
 export class WindShearCommand implements ICommand {
-  #regex = /^WS(\d{3})\/(\w{3})(\d{2})G?(\d{2})?(KT|MPS|KM\/H)/;
+  #regex = /^WS(\d{3})\/(\w{3})(\d{2})G?(\d{2,3})?(KT|MPS|KM\/H)/;
 
   canParse(windString: string): boolean {
     return this.#regex.test(windString);
