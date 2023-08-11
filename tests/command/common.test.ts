@@ -208,7 +208,7 @@ describe("WindCommand", () => {
       });
     });
   })();
-  
+
   (() => {
     const code = "12017G015KT";
 
