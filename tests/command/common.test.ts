@@ -210,6 +210,26 @@ describe("WindCommand", () => {
   })();
 
   (() => {
+    const code = "12017G015KT";
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        const wind = command.parseWind(code);
+
+        expect(wind.direction).toBe("ESE");
+        expect(wind.degrees).toBe(120);
+        expect(wind.speed).toBe(17);
+        expect(wind.gust).toBe(15);
+        expect(wind.unit).toBe("KT");
+      });
+    });
+  })();
+
+  (() => {
     const code = "VRB08KT";
 
     describe(code, () => {
