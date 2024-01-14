@@ -400,6 +400,18 @@ describe("MetarParser", () => {
     expect(metar.visibility?.min).toBeUndefined();
   });
 
+  test("wind of 00000MPS should parse with correct unit", () => {
+    const metar = new MetarParser(en).parse("KATL 270200Z 00000MPS");
+
+    expect(metar.wind).toStrictEqual({
+      degrees: 0,
+      speed: 0,
+      unit: "MPS",
+      gust: undefined,
+      direction: "N",
+    });
+  });
+
   test("wind variation", () => {
     const metar = new MetarParser(en).parse("LFPG 161430Z 24015G25KT 180V300");
 
