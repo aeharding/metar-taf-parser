@@ -386,7 +386,7 @@ describe("MetarParser", () => {
 
   test("wind of 0000KT should not parse as minVisibility", () => {
     const metar = new MetarParser(en).parse(
-      "KATW 022045Z 0000KT 10SM SCT120 00/M08 A2996"
+      "KATW 022045Z 00000KT 10SM SCT120 00/M08 A2996"
     );
 
     expect(metar.wind).toStrictEqual({
