@@ -399,7 +399,7 @@ describe("MetarParser", () => {
 
     expect(metar.visibility?.min).toBeUndefined();
   });
-
+  
   test("wind of 00000MPS should parse with correct unit", () => {
     const metar = new MetarParser(en).parse("KATL 270200Z 00000MPS");
 
@@ -410,6 +410,20 @@ describe("MetarParser", () => {
       gust: undefined,
       direction: "N",
     });
+  });
+
+  test("visibility should not parse as wind speed", () => {
+    const metar = new MetarParser(en).parse("VIDP 270200Z 00000MPS 0050");
+
+    expect(metar.wind).toStrictEqual({
+      degrees: 0,
+      speed: 0,
+      unit: "MPS",
+      gust: undefined,
+      direction: "N",
+    });
+
+    expect(metar.visibility).toStrictEqual({ unit: "m", value: 50 });
   });
 
   test("wind variation", () => {
