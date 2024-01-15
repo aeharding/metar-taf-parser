@@ -399,7 +399,7 @@ describe("MetarParser", () => {
 
     expect(metar.visibility?.min).toBeUndefined();
   });
-  
+
   test("wind of 00000MPS should parse with correct unit", () => {
     const metar = new MetarParser(en).parse("KATL 270200Z 00000MPS");
 
