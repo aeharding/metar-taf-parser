@@ -386,7 +386,7 @@ describe("MetarParser", () => {
 
   test("wind of 0000KT should not parse as minVisibility", () => {
     const metar = new MetarParser(en).parse(
-      "KATW 022045Z 0000KT 10SM SCT120 00/M08 A2996"
+      "KATW 022045Z 00000KT 10SM SCT120 00/M08 A2996"
     );
 
     expect(metar.wind).toStrictEqual({
@@ -398,6 +398,32 @@ describe("MetarParser", () => {
     });
 
     expect(metar.visibility?.min).toBeUndefined();
+  });
+
+  test("wind of 00000MPS should parse with correct unit", () => {
+    const metar = new MetarParser(en).parse("KATL 270200Z 00000MPS");
+
+    expect(metar.wind).toStrictEqual({
+      degrees: 0,
+      speed: 0,
+      unit: "MPS",
+      gust: undefined,
+      direction: "N",
+    });
+  });
+
+  test("visibility should not parse as wind speed", () => {
+    const metar = new MetarParser(en).parse("VIDP 270200Z 00000MPS 0050");
+
+    expect(metar.wind).toStrictEqual({
+      degrees: 0,
+      speed: 0,
+      unit: "MPS",
+      gust: undefined,
+      direction: "N",
+    });
+
+    expect(metar.visibility).toStrictEqual({ unit: "m", value: 50 });
   });
 
   test("wind variation", () => {
