@@ -35,7 +35,7 @@ export class ObscurationCommand extends Command {
       _("Remark.Obscuration", this.locale),
       _(`CloudQuantity.${quantity}`, this.locale),
       height,
-      _(`Phenomenon.${phenomenon}`, this.locale)
+      _(`Phenomenon.${phenomenon}`, this.locale),
     );
 
     remark.push({

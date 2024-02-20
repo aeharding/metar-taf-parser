@@ -30,7 +30,7 @@ export function pySplit(string: string, separator: string, n?: number) {
 export function resolve(
   obj: any,
   path: string | string[],
-  separator = "."
+  separator = ".",
 ): unknown {
   const properties = Array.isArray(path) ? path : path.split(separator);
 
@@ -45,11 +45,11 @@ export function resolve(
  */
 export function as<T extends Record<string, unknown>>(
   input: string,
-  enumExpected: T
+  enumExpected: T,
 ): T[keyof T] {
   if (!Object.values(enumExpected).includes(input))
     throw new CommandExecutionError(
-      `${input} not found in ${Object.values(enumExpected)}`
+      `${input} not found in ${Object.values(enumExpected)}`,
     );
 
   return input as T[keyof T];

@@ -11,7 +11,7 @@ export function determineReportDate(
   date: Date,
   day?: number,
   hour?: number,
-  minute = 0
+  minute = 0,
 ): Date {
   // Some TAF reports do not include a delivery time
   if (day == null || hour == null) return date;
@@ -34,7 +34,7 @@ function setDateComponents(
   date: Date,
   day: number,
   hour: number,
-  minute?: number
+  minute?: number,
 ): Date {
   date.setUTCDate(day);
   date.setUTCHours(hour);

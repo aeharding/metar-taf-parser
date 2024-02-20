@@ -31,7 +31,7 @@ export class VariableSkyHeightCommand extends Command {
       _("Remark.Variable.Sky.Condition.Height", this.locale),
       height,
       _(`CloudQuantity.${firstQuantity}`, this.locale),
-      _(`CloudQuantity.${secondQuantity}`, this.locale)
+      _(`CloudQuantity.${secondQuantity}`, this.locale),
     );
 
     remark.push({

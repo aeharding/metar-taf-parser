@@ -27,7 +27,7 @@ export class HourlyMaximumTemperatureCommand extends Command {
 
     const description = format(
       _("Remark.Hourly.Maximum.Temperature", this.locale),
-      convertTemperatureRemarks(matches[1], matches[2]).toFixed(1)
+      convertTemperatureRemarks(matches[1], matches[2]).toFixed(1),
     );
 
     remark.push({

@@ -45,7 +45,7 @@ function isStation(stationString: string): boolean {
  * @param timeString The string representing the delivery time
  */
 function parseDeliveryTime(
-  timeString: string
+  timeString: string,
 ): Pick<IAbstractWeatherCode, "day" | "hour" | "minute"> | undefined {
   const day = +timeString.slice(0, 2);
   const hour = +timeString.slice(2, 4);
@@ -62,7 +62,7 @@ function parseDeliveryTime(
 
 function parseFlags(
   abstractWeatherCode: IAbstractWeatherCode,
-  flag: string
+  flag: string,
 ): boolean {
   const flags = findFlags(flag);
 
@@ -93,10 +93,10 @@ function parseRemark(
   container: IAbstractWeatherContainer,
   line: string[],
   index: number,
-  locale: Locale
+  locale: Locale,
 ) {
   const remarks = new RemarkParser(locale).parse(
-    line.slice(index + 1).join(" ")
+    line.slice(index + 1).join(" "),
   );
 
   container.remarks = remarks;
@@ -258,7 +258,7 @@ export abstract class AbstractParser {
    */
   generalParse(
     abstractWeatherContainer: IAbstractWeatherContainer,
-    input: string
+    input: string,
   ): boolean {
     if (input === this.#CAVOK) {
       abstractWeatherContainer.cavok = true;
@@ -451,7 +451,7 @@ export class TAFParser extends AbstractParser {
       throw new PartialWeatherStatementError(
         partialMessage.trim(),
         +part,
-        +total
+        +total,
       );
     }
   }
@@ -567,9 +567,9 @@ export class TAFParser extends AbstractParser {
       cleanLine
         .replace(
           /\s(?=PROB\d{2}\s(?=TEMPO|INTER)|TEMPO|INTER|BECMG|FM(?![A-Z]{2}\s)|PROB)/g,
-          "\n"
+          "\n",
         )
-        .split(/\n/)
+        .split(/\n/),
     );
 
     // TODO cleanup
@@ -693,9 +693,11 @@ export class TAFParser extends AbstractParser {
 }
 
 export class RemarkParser {
-  constructor(private locale: Locale) {}
+  #supplier;
 
-  #supplier = new RemarkCommandSupplier(this.locale);
+  constructor(private locale: Locale) {
+    this.#supplier = new RemarkCommandSupplier(this.locale);
+  }
 
   parse(code: string): Remark[] {
     let rmkStr = code;
@@ -707,7 +709,7 @@ export class RemarkParser {
         if (e instanceof CommandExecutionError) {
           [rmkStr, rmkList] = this.#supplier.defaultCommand.execute(
             rmkStr,
-            rmkList
+            rmkList,
           );
         } else {
           throw e;

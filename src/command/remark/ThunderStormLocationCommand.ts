@@ -26,7 +26,7 @@ export class ThunderStormLocationCommand extends Command {
 
     const description = format(
       _("Remark.Thunderstorm.Location.0", this.locale),
-      _(`Converter.${location}`, this.locale)
+      _(`Converter.${location}`, this.locale),
     );
 
     remark.push({

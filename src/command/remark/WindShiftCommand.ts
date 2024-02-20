@@ -24,7 +24,7 @@ export class WindShiftCommand extends Command {
     const description = format(
       _("Remark.WindShift.0", this.locale),
       matches[1] || "",
-      matches[2]
+      matches[2],
     );
 
     remark.push({

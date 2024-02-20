@@ -26,7 +26,7 @@ function makeWind(
   direction: string,
   speed: string,
   gust: string,
-  unit: SpeedUnit
+  unit: SpeedUnit,
 ): IWind {
   return {
     speed: +speed,
@@ -81,7 +81,7 @@ export class MainVisibilityCommand implements ICommand {
 
   execute(
     container: IAbstractWeatherContainer,
-    visibilityString: string
+    visibilityString: string,
   ): boolean {
     const matches = visibilityString.match(this.#regex);
 
@@ -113,7 +113,7 @@ export class WindCommand implements ICommand {
       matches[1],
       matches[2],
       matches[3],
-      as(matches[4] || "KT", SpeedUnit)
+      as(matches[4] || "KT", SpeedUnit),
     );
   }
 
@@ -166,7 +166,7 @@ export class WindShearCommand implements ICommand {
         matches[2],
         matches[3],
         matches[4],
-        as(matches[5], SpeedUnit)
+        as(matches[5], SpeedUnit),
       ),
       height: 100 * +matches[1],
     };
@@ -183,7 +183,7 @@ export class VerticalVisibilityCommand implements ICommand {
 
   execute(
     container: IAbstractWeatherContainer,
-    visibilityString: string
+    visibilityString: string,
   ): boolean {
     const matches = visibilityString.match(this.#regex);
 
@@ -204,7 +204,7 @@ export class MinimalVisibilityCommand implements ICommand {
 
   execute(
     container: IAbstractWeatherContainer,
-    visibilityString: string
+    visibilityString: string,
   ): boolean {
     const matches = visibilityString.match(this.#regex);
 
@@ -231,7 +231,7 @@ export class MainVisibilityNauticalMilesCommand implements ICommand {
 
   execute(
     container: IAbstractWeatherContainer,
-    visibilityString: string
+    visibilityString: string,
   ): boolean {
     const distance = converter.convertNauticalMilesVisibility(visibilityString);
 

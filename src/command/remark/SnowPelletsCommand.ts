@@ -22,7 +22,7 @@ export class SnowPelletsCommand extends Command {
 
     const description = format(
       _("Remark.Snow.Pellets", this.locale),
-      _(`Remark.${matches[1]}` as any, this.locale)
+      _(`Remark.${matches[1]}` as any, this.locale),
     );
 
     remark.push({

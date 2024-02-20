@@ -30,7 +30,7 @@ describe("ThunderStormLocationCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("TS NN", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

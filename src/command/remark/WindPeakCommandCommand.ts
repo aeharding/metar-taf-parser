@@ -34,7 +34,7 @@ export class WindPeakCommand extends Command {
       degrees,
       speed,
       matches[3] || "",
-      matches[4]
+      matches[4],
     );
 
     remark.push({

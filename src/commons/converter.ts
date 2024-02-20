@@ -99,7 +99,7 @@ export function convertTemperature(input: string): number {
  */
 export function convertTemperatureRemarks(
   sign: string,
-  temperature: string
+  temperature: string,
 ): number {
   const temp = +temperature / 10;
 

@@ -23,7 +23,7 @@ export class SmallHailSizeCommand extends Command {
 
     const description = format(
       _("Remark.Hail.LesserThan", this.locale),
-      matches[1]
+      matches[1],
     );
 
     remark.push({

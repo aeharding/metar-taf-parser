@@ -29,7 +29,7 @@ export class IceAccretionCommand extends Command {
     const description = format(
       _("Remark.Ice.Accretion.Amount", this.locale),
       +matches[2],
-      +matches[1]
+      +matches[1],
     );
 
     remark.push({

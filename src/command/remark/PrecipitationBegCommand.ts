@@ -33,7 +33,7 @@ export class PrecipitationBegCommand extends Command {
       descriptive ? _(`Descriptive.${descriptive}`, this.locale) : "",
       _(`Phenomenon.${phenomenon}`, this.locale),
       matches[4] || "",
-      matches[5]
+      matches[5],
     )?.trim();
 
     remark.push({

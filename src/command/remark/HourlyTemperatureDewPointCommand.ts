@@ -35,7 +35,7 @@ export class HourlyTemperatureDewPointCommand extends Command {
     if (!matches[3]) {
       const description = format(
         _("Remark.Hourly.Temperature.0", this.locale),
-        temperature.toFixed(1)
+        temperature.toFixed(1),
       );
 
       remark.push({
@@ -50,7 +50,7 @@ export class HourlyTemperatureDewPointCommand extends Command {
       const description = format(
         _("Remark.Hourly.Temperature.Dew.Point", this.locale),
         temperature.toFixed(1),
-        dewPoint.toFixed(1)
+        dewPoint.toFixed(1),
       );
 
       remark.push({

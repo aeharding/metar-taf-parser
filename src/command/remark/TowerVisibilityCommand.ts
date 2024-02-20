@@ -24,7 +24,7 @@ export class TowerVisibilityCommand extends Command {
     const distance = matches[1];
     const description = format(
       _("Remark.Tower.Visibility", this.locale),
-      distance
+      distance,
     );
 
     remark.push({

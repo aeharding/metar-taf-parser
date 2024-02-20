@@ -2,7 +2,7 @@ import _ from "lodash";
 
 export function omitByDeep<V>(
   value: V,
-  iteratee: (item: unknown) => boolean
+  iteratee: (item: unknown) => boolean,
 ): any {
   const cb = (v: V) => omitByDeep(v, iteratee);
 

@@ -23,7 +23,7 @@ export class WaterEquivalentSnowCommand extends Command {
     const amount = +matches[1] / 10;
     const description = format(
       _("Remark.Water.Equivalent.Snow.Ground", this.locale),
-      amount
+      amount,
     );
 
     remark.push({

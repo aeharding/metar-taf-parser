@@ -41,7 +41,7 @@ export class TornadicActivityBegEndCommand extends Command {
       matches[6] || "",
       matches[7],
       matches[9],
-      _(`Converter.${direction}`, this.locale)
+      _(`Converter.${direction}`, this.locale),
     );
 
     remark.push({

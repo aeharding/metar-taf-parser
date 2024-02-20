@@ -9,7 +9,7 @@ describe("public API", () => {
   describe("parseMetar", () => {
     test("parses", () => {
       expect(parseMetar("LFPG 161430Z 24015G25KT 5000 1100w").station).toBe(
-        "LFPG"
+        "LFPG",
       );
     });
 
@@ -17,7 +17,7 @@ describe("public API", () => {
       expect(
         parseMetar("LFPG 161430Z 24015G25KT 5000 1100w", {
           issued: new Date("2022-01-16"),
-        }).issued
+        }).issued,
       ).toEqual(new Date("2022-01-16T14:30:00.000Z"));
     });
   });
@@ -41,7 +41,7 @@ TAF
         expect(
           parseTAF(rawTAF, {
             issued: new Date("2022-01-16"),
-          }).issued
+          }).issued,
         ).toEqual(new Date("2022-01-15T20:44:00.000Z"));
       });
 
@@ -51,10 +51,10 @@ TAF
         });
 
         expect(tafDated.validity.start).toEqual(
-          new Date("2022-01-15T21:00:00.000Z")
+          new Date("2022-01-15T21:00:00.000Z"),
         );
         expect(tafDated.validity.end).toEqual(
-          new Date("2022-01-16T18:00:00.000Z")
+          new Date("2022-01-16T18:00:00.000Z"),
         );
       });
 
@@ -63,16 +63,16 @@ TAF
           `
     TAF AMD SBPJ 221450Z 2218/2318 TN25/2309Z TX34/2316Z
         `,
-          { issued: new Date("2022-10-22") }
+          { issued: new Date("2022-10-22") },
         );
 
         expect(taf.maxTemperature?.temperature).toBe(34);
         expect(taf.maxTemperature?.date).toEqual(
-          new Date("2022-10-23T16:00:00.000Z")
+          new Date("2022-10-23T16:00:00.000Z"),
         );
         expect(taf.minTemperature?.temperature).toBe(25);
         expect(taf.minTemperature?.date).toEqual(
-          new Date("2022-10-23T09:00:00.000Z")
+          new Date("2022-10-23T09:00:00.000Z"),
         );
       });
 
@@ -84,27 +84,27 @@ TAF
         expect(tafDated.trends).toHaveLength(4);
         expect(tafDated.trends[0].type).toBe(WeatherChangeType.TEMPO);
         expect(tafDated.trends[0].validity.start).toEqual(
-          new Date("2022-01-15T21:00:00.000Z")
+          new Date("2022-01-15T21:00:00.000Z"),
         );
         expect(tafDated.trends[0].validity.end).toEqual(
-          new Date("2022-01-15T23:00:00.000Z")
+          new Date("2022-01-15T23:00:00.000Z"),
         );
 
         expect(tafDated.trends[1].type).toBe(WeatherChangeType.FM);
         expect(tafDated.trends[1].validity.start).toEqual(
-          new Date("2022-01-16T00:00:00.000Z")
+          new Date("2022-01-16T00:00:00.000Z"),
         );
         expect(tafDated.trends[1].validity.end).toBeUndefined();
 
         expect(tafDated.trends[2].type).toBe(WeatherChangeType.FM);
         expect(tafDated.trends[2].validity.start).toEqual(
-          new Date("2022-01-16T03:00:00.000Z")
+          new Date("2022-01-16T03:00:00.000Z"),
         );
         expect(tafDated.trends[2].validity.end).toBeUndefined();
 
         expect(tafDated.trends[3].type).toBe(WeatherChangeType.FM);
         expect(tafDated.trends[3].validity.start).toEqual(
-          new Date("2022-01-16T17:00:00.000Z")
+          new Date("2022-01-16T17:00:00.000Z"),
         );
         expect(tafDated.trends[3].validity.end).toBeUndefined();
       });
@@ -115,7 +115,7 @@ TAF
         "TAF KNBC 1215/1315 27010KT 9999 SCT010 BKN080 QNH2992INS TEMPO 1218/1300 25010G20KT 4800 TSRA BR BKN010CB BECMG 1300/1302 30015KT 6000 SHRA BR BKN015 QNH2998INS FM130430 04012KT 9999 NSW SCT020 BKN050 QNH2991INS T30/1219Z T22/1309Z",
         {
           issued: new Date("2022-08-12T14:57:00Z"),
-        }
+        },
       );
 
       test("has issued date", () => {
@@ -133,7 +133,7 @@ TAF
           "TEMPO 0908/0916 4500 RADZ",
           "BECMG 0909/0911 10010KT",
           "BECMG 0918/0920 16006KT",
-        ].join("\n")
+        ].join("\n"),
       );
       expect(taf.station).toBe("FMMI");
     });
@@ -151,7 +151,7 @@ TAF
 
     test("parses", () => {
       expect(
-        parseTAFAsForecast(rawTAF, { issued: new Date("2022-01-01") }).forecast
+        parseTAFAsForecast(rawTAF, { issued: new Date("2022-01-01") }).forecast,
       ).toHaveLength(5);
     });
   });

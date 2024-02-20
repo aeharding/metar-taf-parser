@@ -27,7 +27,7 @@ export class HourlyPrecipitationAmountCommand extends Command {
     const amount = +matches[1];
     const description = format(
       _("Remark.Precipitation.Amount.Hourly", this.locale),
-      amount
+      amount,
     );
 
     remark.push({

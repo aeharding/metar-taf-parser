@@ -46,7 +46,7 @@ export default function ForecastResult() {
     if (!forecast) return;
 
     setIssuedRelative(
-      formatDistanceToNow(forecast.issued, { addSuffix: true })
+      formatDistanceToNow(forecast.issued, { addSuffix: true }),
     );
   }, [forecast]);
 
@@ -78,7 +78,7 @@ export default function ForecastResult() {
     () => {
       updateIssued();
     },
-    forecast ? 1000 : null
+    forecast ? 1000 : null,
   );
 
   const backButton = (

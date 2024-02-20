@@ -23,7 +23,7 @@ export class SunshineDurationCommand extends Command {
     const duration = +matches[1];
     const description = format(
       _("Remark.Sunshine.Duration", this.locale),
-      duration
+      duration,
     );
 
     remark.push({

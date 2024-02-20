@@ -30,13 +30,13 @@ describe("VariableSkyCommand", () => {
 
   test("invalid 1st CloudQuantity should throw on execute", () => {
     expect(() => command.execute("RRR V BKN", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 
   test("invalid 2nd CloudQuantity should throw on execute", () => {
     expect(() => command.execute("BKN V GGG", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

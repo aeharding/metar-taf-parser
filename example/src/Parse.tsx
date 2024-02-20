@@ -175,7 +175,7 @@ interface ParseProps<T extends () => unknown> {
   parse: (
     message: string,
     options: Partial<Pick<IMetarTAFParserOptionsDated, "issued">> &
-      IMetarTAFParserOptions
+      IMetarTAFParserOptions,
   ) => ReturnType<T>;
   example: string;
   initialDate?: Date;
@@ -196,7 +196,7 @@ function Parse<T extends () => unknown>({
 
   const formatString = "yyyy-M-dd";
   const [issued, setIssued] = useState(
-    initialDate ? format(initialDate, formatString) : undefined
+    initialDate ? format(initialDate, formatString) : undefined,
   );
 
   useEffect(() => {
@@ -206,7 +206,7 @@ function Parse<T extends () => unknown>({
           parse?.(input, {
             locale: findLocale(lang),
             issued: issued ? new Date(issued) : undefined,
-          })
+          }),
         );
       else setResult(undefined);
 
@@ -232,7 +232,7 @@ function Parse<T extends () => unknown>({
     setInput(input);
     navigate(
       { search: input ? createSearchParams({ input }).toString() : undefined },
-      { replace: true }
+      { replace: true },
     );
   }
 

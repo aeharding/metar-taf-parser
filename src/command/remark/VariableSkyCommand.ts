@@ -28,7 +28,7 @@ export class VariableSkyCommand extends Command {
     const description = format(
       _("Remark.Variable.Sky.Condition.0", this.locale),
       _(`CloudQuantity.${firstQuantity}`, this.locale),
-      _(`CloudQuantity.${secondQuantity}`, this.locale)
+      _(`CloudQuantity.${secondQuantity}`, this.locale),
     );
 
     remark.push({

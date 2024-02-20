@@ -28,7 +28,7 @@ export class PrecipitationAmount24HourCommand extends Command {
     const amount = convertPrecipitationAmount(matches[1]);
     const description = format(
       _("Remark.Precipitation.Amount.24", this.locale),
-      amount
+      amount,
     );
 
     remark.push({

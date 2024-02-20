@@ -29,7 +29,7 @@ export class SeaLevelPressureCommand extends Command {
 
     const description = format(
       _("Remark.Sea.Level.Pressure", this.locale),
-      pressure
+      pressure,
     );
 
     remark.push({
