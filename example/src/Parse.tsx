@@ -20,7 +20,7 @@ import it from "metar-taf-parser/locale/it";
 import pl from "metar-taf-parser/locale/pl";
 import zh from "metar-taf-parser/locale/zh-CN";
 import { css } from "@emotion/react";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import { omitByDeep } from "./helpers/omitByDeep";
 
 // Types are broke
