@@ -5,7 +5,7 @@ describe("determineDate", () => {
     const now = new Date("2022-01-15");
 
     expect(determineReportDate(now, 13, 0).toISOString()).toBe(
-      "2022-01-13T00:00:00.000Z"
+      "2022-01-13T00:00:00.000Z",
     );
   });
 
@@ -13,7 +13,7 @@ describe("determineDate", () => {
     const now = new Date("2022-01-01");
 
     expect(determineReportDate(now, 29, 0).toISOString()).toBe(
-      "2021-12-29T00:00:00.000Z"
+      "2021-12-29T00:00:00.000Z",
     );
   });
 
@@ -21,7 +21,7 @@ describe("determineDate", () => {
     const now = new Date("2022-01-29");
 
     expect(determineReportDate(now, 3, 0).toISOString()).toBe(
-      "2022-02-03T00:00:00.000Z"
+      "2022-02-03T00:00:00.000Z",
     );
   });
 
@@ -29,7 +29,7 @@ describe("determineDate", () => {
     const now = new Date("2022-01-01");
 
     expect(determineReportDate(now, 29, 22, 45).toISOString()).toBe(
-      "2021-12-29T22:45:00.000Z"
+      "2021-12-29T22:45:00.000Z",
     );
   });
 });

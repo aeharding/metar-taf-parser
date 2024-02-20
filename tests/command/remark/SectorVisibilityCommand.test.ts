@@ -31,7 +31,7 @@ describe("SectorVisibilityCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("VIS SS 1 1/2", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

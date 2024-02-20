@@ -36,7 +36,7 @@ export class TornadicActivityEndCommand extends Command {
       matches[3] || "",
       matches[4],
       matches[6],
-      _(`Converter.${direction}`, this.locale)
+      _(`Converter.${direction}`, this.locale),
     );
 
     remark.push({

@@ -28,7 +28,7 @@ export class PrevailingVisibilityCommand extends Command {
     const description = format(
       _("Remark.Variable.Prevailing.Visibility", this.locale),
       minVisibility,
-      maxVisibility
+      maxVisibility,
     );
 
     remark.push({

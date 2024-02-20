@@ -34,7 +34,7 @@ export class CeilingHeightCommand extends Command {
     const description = format(
       _("Remark.Ceiling.Height", this.locale),
       min,
-      max
+      max,
     );
 
     remark.push({

@@ -17,7 +17,7 @@ export default function Conditions({ hour }: ConditionsProp) {
     [hour.prevailing, ...hour.supplemental]
       .reverse()
       .flatMap((forecast) => forecast.weatherConditions),
-    isEqual
+    isEqual,
   );
 
   const nothing = <Nothing>No current phenomenon</Nothing>;

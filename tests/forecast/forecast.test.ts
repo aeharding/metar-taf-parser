@@ -46,10 +46,10 @@ describe("getForecastFromTAF", () => {
 
     expect(forecast.forecast).toHaveLength(1);
     expect(forecast.forecast[0].start).toEqual(
-      new Date("2022-05-01T00:00:00.000Z")
+      new Date("2022-05-01T00:00:00.000Z"),
     );
     expect(forecast.forecast[0].end).toEqual(
-      new Date("2022-05-02T00:00:00.000Z")
+      new Date("2022-05-02T00:00:00.000Z"),
     );
   });
 
@@ -58,18 +58,18 @@ describe("getForecastFromTAF", () => {
       `
 TAF AMD SBPJ 221450Z 2218/2318 TN25/2309Z TX34/2316Z
     `,
-      { issued: new Date("2022-10-22") }
+      { issued: new Date("2022-10-22") },
     );
 
     const forecast = getForecastFromTAF(taf);
 
     expect(forecast.maxTemperature?.temperature).toBe(34);
     expect(forecast.maxTemperature?.date).toEqual(
-      new Date("2022-10-23T16:00:00.000Z")
+      new Date("2022-10-23T16:00:00.000Z"),
     );
     expect(forecast.minTemperature?.temperature).toBe(25);
     expect(forecast.minTemperature?.date).toEqual(
-      new Date("2022-10-23T09:00:00.000Z")
+      new Date("2022-10-23T09:00:00.000Z"),
     );
     expect(forecast.amendment).toBe(true);
   });
@@ -82,7 +82,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     FM150100 25012G25KT P6SM VCSH SCT040 BKN070
     FM150300 26011G21KT P6SM SCT080
     `,
-      { issued: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") },
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -93,32 +93,32 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
 
     expect(forecast.forecast).toHaveLength(4);
     expect(forecast.forecast[0].start).toEqual(
-      new Date("2022-04-15T00:00:00.000Z")
+      new Date("2022-04-15T00:00:00.000Z"),
     );
     expect(forecast.forecast[0].end).toEqual(
-      new Date("2022-04-15T01:00:00.000Z")
+      new Date("2022-04-15T01:00:00.000Z"),
     );
     expect(forecast.forecast[0].end).toEqual(forecast.forecast[2].start);
     expect(forecast.forecast[1].start).toEqual(
-      new Date("2022-04-15T00:00:00.000Z")
+      new Date("2022-04-15T00:00:00.000Z"),
     );
     expect(forecast.forecast[1].end).toEqual(
-      new Date("2022-04-15T02:00:00.000Z")
+      new Date("2022-04-15T02:00:00.000Z"),
     );
     expect(forecast.forecast[1].end).not.toEqual(forecast.forecast[2].start);
     expect(forecast.forecast[2].start).toEqual(
-      new Date("2022-04-15T01:00:00.000Z")
+      new Date("2022-04-15T01:00:00.000Z"),
     );
     expect(forecast.forecast[2].end).toEqual(forecast.forecast[3].start);
     expect(forecast.forecast[3].start).toEqual(
-      new Date("2022-04-15T03:00:00.000Z")
+      new Date("2022-04-15T03:00:00.000Z"),
     );
     expect(forecast.forecast[3].end).toEqual(
-      new Date("2022-04-16T00:00:00.000Z")
+      new Date("2022-04-16T00:00:00.000Z"),
     );
 
     expect(forecast.forecast[forecast.forecast.length - 1].end).toEqual(
-      forecast.end
+      forecast.end,
     );
   });
 
@@ -128,7 +128,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     TAF ESGG 260830Z 2609/2709 02009KT 3000 BR BKN003
       BECMG 2609/2611 9999 NSW FEW015
     `,
-      { issued: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") },
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -146,7 +146,7 @@ TAF SBPJ 221450Z 2218/2318 21006KT 8000 SCT030 FEW040TCU TN25/2309Z TX34/2316Z
   BECMG 2302/2304 16003KT 5000 FU RMK PGU
   BECMG 2313/2315 23005KT SCT030 FEW040TCU
     `,
-      { issued: new Date("2022-10-22") }
+      { issued: new Date("2022-10-22") },
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -208,7 +208,7 @@ TAF SBPJ 221450Z 2218/2318 21006KT 8000 SCT030 FEW040TCU TN25/2309Z TX34/2316Z
     expect(becmg2.by).toEqual(new Date("2022-10-23T15:00:00.000Z"));
 
     expect(forecast.forecast[forecast.forecast.length - 1].end).toEqual(
-      forecast.end
+      forecast.end,
     );
   });
 
@@ -220,7 +220,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     FM150100 25012G25KT P6SM VCSH SCT040 BKN070
     FM150300 26011G21KT P6SM SCT080
     `,
-      { issued: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") },
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -228,13 +228,13 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     expect(forecast.forecast).toHaveLength(4);
     expect(forecast.forecast[0].type).toBeUndefined();
     expect(forecast.forecast[0].raw).toBe(
-      "TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070"
+      "TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070",
     );
     expect(forecast.forecast[1].type).toBe(WeatherChangeType.TEMPO);
     expect(forecast.forecast[1].raw).toBe("TEMPO 1500/1501 6SM -SHRASN BKN035");
     expect(forecast.forecast[2].type).toBe(WeatherChangeType.FM);
     expect(forecast.forecast[2].raw).toBe(
-      "FM150100 25012G25KT P6SM VCSH SCT040 BKN070"
+      "FM150100 25012G25KT P6SM VCSH SCT040 BKN070",
     );
     expect(forecast.forecast[3].type).toBe(WeatherChangeType.FM);
     expect(forecast.forecast[3].raw).toBe("FM150300 26011G21KT P6SM SCT080");
@@ -250,7 +250,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
          FM160300 30006KT P6SM FEW230
          FM161700 30011G18KT P6SM BKN050
     `,
-      { issued: new Date("2022/04/15 21:46") }
+      { issued: new Date("2022/04/15 21:46") },
     );
     const forecast = getForecastFromTAF(taf);
 
@@ -267,7 +267,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         BECMG 3121/3124 17017KT
         BECMG 0103/0106 21025G35KT
       `,
-        { issued: new Date("2022/04/15 21:46") }
+        { issued: new Date("2022/04/15 21:46") },
       );
       const forecast = getForecastFromTAF(taf);
 
@@ -289,7 +289,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         BECMG 0117/0120 20015G25KT
         TEMPO 0117/0124 22023G33KT 5000 SHRA SCT018CB BKN022
       `,
-        { issued: new Date("2022/04/15 21:46") }
+        { issued: new Date("2022/04/15 21:46") },
       );
       const forecast = getForecastFromTAF(taf);
 
@@ -310,7 +310,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         TAF TAF EHAM 311720Z 3118/0124 12012KT CAVOK
         BECMG 3121/3124 17017KT VV001
       `,
-        { issued: new Date("2022/04/15 21:46") }
+        { issued: new Date("2022/04/15 21:46") },
       );
       const forecast = getForecastFromTAF(taf);
 
@@ -324,7 +324,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         TAF TAF EHAM 311720Z 3118/0124 12012KT CAVOK
         BECMG 3121/3124 17017KT OVC050
       `,
-        { issued: new Date("2022/04/15 21:46") }
+        { issued: new Date("2022/04/15 21:46") },
       );
       const forecast = getForecastFromTAF(taf);
 
@@ -338,7 +338,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         TAF TAF EHAM 311720Z 3118/0124 12012KT CAVOK
         BECMG 3121/3124 17017KT 5000
       `,
-        { issued: new Date("2022/04/15 21:46") }
+        { issued: new Date("2022/04/15 21:46") },
       );
       const forecast = getForecastFromTAF(taf);
 
@@ -355,7 +355,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         FM150100 25012G25KT P6SM VCSH SCT040 BKN070
         FM150300 26011G21KT P6SM SCT080
         `,
-      { issued: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") },
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -363,7 +363,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     test("finds TEMPO", () => {
       const composite = getCompositeForecastForDate(
         new Date("2022-04-15T00:00:00.000Z"),
-        forecast
+        forecast,
       );
 
       expect(composite.prevailing).toBeDefined();
@@ -373,7 +373,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     test("finds FM @ start, without the TEMPO (exclusive end validity)", () => {
       const composite = getCompositeForecastForDate(
         new Date("2022-04-15T01:00:00.000Z"),
-        forecast
+        forecast,
       );
 
       expect(composite.prevailing).toBeDefined();
@@ -384,15 +384,15 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
       expect(() =>
         getCompositeForecastForDate(
           new Date("2023-04-15T00:00:00.000Z"),
-          forecast
-        )
+          forecast,
+        ),
       ).toThrowError(TimestampOutOfBoundsError);
 
       expect(() =>
         getCompositeForecastForDate(
           new Date("2020-04-15T00:00:00.000Z"),
-          forecast
-        )
+          forecast,
+        ),
       ).toThrowError(TimestampOutOfBoundsError);
     });
 
@@ -400,8 +400,8 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
       expect(() =>
         getCompositeForecastForDate(
           new Date("2022-04-15T00:00:00.000Z"),
-          forecast
-        )
+          forecast,
+        ),
       ).not.toThrowError(TimestampOutOfBoundsError);
     });
 
@@ -409,8 +409,8 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
       expect(() =>
         getCompositeForecastForDate(
           new Date("2022-04-16T00:00:00.000Z"),
-          forecast
-        )
+          forecast,
+        ),
       ).toThrowError(TimestampOutOfBoundsError);
     });
   });
@@ -422,7 +422,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
         FM150100 25012G25KT P6SM VCSH SCT040 BKN070
         FM150300 26011G21KT P6SM SCT080
         `,
-      { issued: new Date("2022-04-29") }
+      { issued: new Date("2022-04-29") },
     );
 
     const forecast = getForecastFromTAF(taf);
@@ -430,7 +430,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
     test("finds INTER", () => {
       const composite = getCompositeForecastForDate(
         new Date("2022-04-15T00:00:00.000Z"),
-        forecast
+        forecast,
       );
 
       expect(composite.prevailing).toBeDefined();
@@ -448,7 +448,7 @@ TAF KMSN 142325Z 1500/1524 25014G30KT P6SM VCSH SCT035 BKN070
       BECMG 1308/1310 23010KT BKN013
       TEMPO 1312/1317 SCT013 FEW020CB
         `,
-      { issued: new Date("2022/11/12 12:51") }
+      { issued: new Date("2022/11/12 12:51") },
     );
 
     const forecast = getForecastFromTAF(taf);

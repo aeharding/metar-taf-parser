@@ -15,7 +15,7 @@ export class InvalidWeatherStatementError extends ParseError {
     super(
       typeof cause === "string"
         ? `Invalid weather string: ${cause}`
-        : "Invalid weather string"
+        : "Invalid weather string",
     );
     Object.setPrototypeOf(this, new.target.prototype);
 
@@ -34,7 +34,7 @@ export class PartialWeatherStatementError extends InvalidWeatherStatementError {
 
   constructor(partialMessage: string, part: number, total: number) {
     super(
-      `Input is partial TAF (${partialMessage}), see: https://github.com/aeharding/metar-taf-parser/issues/68`
+      `Input is partial TAF (${partialMessage}), see: https://github.com/aeharding/metar-taf-parser/issues/68`,
     );
     Object.setPrototypeOf(this, new.target.prototype);
 

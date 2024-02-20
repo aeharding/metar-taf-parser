@@ -70,16 +70,16 @@ export function getForecastFromTAF(taf: ITAFDated): IForecastContainer {
     start: determineReportDate(
       taf.issued,
       taf.validity.startDay,
-      taf.validity.startHour
+      taf.validity.startHour,
     ),
     end: determineReportDate(
       taf.issued,
       taf.validity.endDay,
-      taf.validity.endHour
+      taf.validity.endHour,
     ),
     forecast: hydrateEndDates(
       [makeInitialForecast(taf), ...taf.trends],
-      taf.validity
+      taf.validity,
     ),
   };
 }
@@ -126,7 +126,7 @@ function hasImplicitEnd({ type }: ForecastWithoutDates | Forecast): boolean {
 
 function hydrateEndDates(
   trends: ForecastWithoutDates[],
-  reportValidity: IValidityDated
+  reportValidity: IValidityDated,
 ): Forecast[] {
   function findNext(index: number): ForecastWithoutDates | undefined {
     for (let i = index; i < trends.length; i++) {
@@ -168,7 +168,7 @@ function hydrateEndDates(
           end: reportValidity.end,
           ...byIfNeeded(currentTrend),
         } as Forecast,
-        previouslyHydratedTrend
+        previouslyHydratedTrend,
       );
     } else {
       forecast = hydrateWithPreviousContextIfNeeded(
@@ -179,7 +179,7 @@ function hydrateEndDates(
           end: new Date(nextTrend.validity.start),
           ...byIfNeeded(currentTrend),
         } as Forecast,
-        previouslyHydratedTrend
+        previouslyHydratedTrend,
       );
     }
 
@@ -196,7 +196,7 @@ function hydrateEndDates(
  */
 function hydrateWithPreviousContextIfNeeded(
   forecast: Forecast,
-  context: Forecast | undefined
+  context: Forecast | undefined,
 ): Forecast {
   // BECMG is the only forecast type that inherits old conditions
   // Anything else starts anew
@@ -260,7 +260,7 @@ export class TimestampOutOfBoundsError extends ParseError {
 
 export function getCompositeForecastForDate(
   date: Date,
-  forecastContainer: IForecastContainer
+  forecastContainer: IForecastContainer,
 ): ICompositeForecast {
   // Validity bounds check
   if (
@@ -268,7 +268,7 @@ export function getCompositeForecastForDate(
     date.getTime() >= forecastContainer.end.getTime()
   )
     throw new TimestampOutOfBoundsError(
-      "Provided timestamp is outside the report validity period"
+      "Provided timestamp is outside the report validity period",
     );
 
   let prevailing: Forecast | undefined;

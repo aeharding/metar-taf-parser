@@ -26,7 +26,7 @@ export class VirgaDirectionCommand extends Command {
 
     const description = format(
       _("Remark.Virga.Direction", this.locale),
-      _(`Converter.${direction}`, this.locale)
+      _(`Converter.${direction}`, this.locale),
     );
 
     remark.push({

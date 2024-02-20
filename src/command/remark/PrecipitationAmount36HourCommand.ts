@@ -34,7 +34,7 @@ export class PrecipitationAmount36HourCommand extends Command {
     const description = format(
       _("Remark.Precipitation.Amount.3.6", this.locale),
       periodInHours,
-      amount
+      amount,
     );
 
     remark.push({

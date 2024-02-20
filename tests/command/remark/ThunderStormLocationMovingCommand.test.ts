@@ -32,13 +32,13 @@ describe("ThunderStormLocationMovingCommand", () => {
 
   test("invalid location should throw on execute", () => {
     expect(() => command.execute("TS SS MOV NE", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 
   test("invalid moving direction should throw on execute", () => {
     expect(() => command.execute("TS SE MOV NN", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

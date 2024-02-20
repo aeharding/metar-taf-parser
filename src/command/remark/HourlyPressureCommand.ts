@@ -46,7 +46,7 @@ export class HourlyPressureCommand extends Command {
     const part1 = _(`Remark.Barometer.${+matches[1]}` as any, this.locale);
     const part2 = format(
       _("Remark.Pressure.Tendency", this.locale),
-      +matches[2] / 10
+      +matches[2] / 10,
     );
     const description =
       part1 != null && part2 != null ? `${part1} ${part2}` : undefined;

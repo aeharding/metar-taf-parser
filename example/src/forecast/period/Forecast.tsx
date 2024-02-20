@@ -235,8 +235,8 @@ export default function Forecast({ data }: ForecastProps) {
                 {ceiling
                   ? `${ceiling.height?.toLocaleString()} ft AGL`
                   : data.verticalVisibility
-                  ? `Vertical visibility ${data.verticalVisibility.toFixed()} ft AGL`
-                  : "At least 12,000 ft AGL"}
+                    ? `Vertical visibility ${data.verticalVisibility.toFixed()} ft AGL`
+                    : "At least 12,000 ft AGL"}
               </td>
             </tr>
           ) : (
@@ -323,7 +323,7 @@ function formatWeather(weather: IWeatherCondition[]): React.ReactNode {
                 : undefined,
               formatDescriptive(
                 condition.descriptive,
-                !!condition.phenomenons.length
+                !!condition.phenomenons.length,
               ),
               condition.phenomenons
                 .map((phenomenon) => formatPhenomenon(phenomenon))
@@ -333,11 +333,11 @@ function formatWeather(weather: IWeatherCondition[]): React.ReactNode {
                 : undefined,
             ]
               .filter(notEmpty)
-              .join(" ")
+              .join(" "),
           )
           .join(", ")
           .toLowerCase()
-          .trim()
+          .trim(),
       )}
     </>
   );
@@ -348,7 +348,7 @@ function getPeriodRemark(forecast: IForecast): string | undefined {
     case WeatherChangeType.BECMG:
       return `Conditions expected to become as follows by ${formatWithTomorrowIfNeeded(
         forecast.by,
-        "p"
+        "p",
       )}.`;
     case WeatherChangeType.TEMPO:
       return "The following changes expected for less than half the time period.";
@@ -357,7 +357,7 @@ function getPeriodRemark(forecast: IForecast): string | undefined {
 
 export function formatWithTomorrowIfNeeded(
   date: Date,
-  formatStr: string
+  formatStr: string,
 ): string {
   return `${format(date, formatStr)}${
     new Date(date).getTime() >= startOfTomorrow().getTime() ? " tomorrow" : ""

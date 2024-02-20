@@ -79,37 +79,37 @@ export interface IMetarTAFParserOptionsDated extends IMetarTAFParserOptions {
 
 export function parseMetar(
   rawMetar: string,
-  options?: IMetarTAFParserOptions
+  options?: IMetarTAFParserOptions,
 ): IMetar;
 export function parseMetar(
   rawMetar: string,
-  options?: IMetarTAFParserOptionsDated
+  options?: IMetarTAFParserOptionsDated,
 ): IMetarDated;
 export function parseMetar(
   rawMetar: string,
-  options?: IMetarTAFParserOptions | IMetarTAFParserOptionsDated
+  options?: IMetarTAFParserOptions | IMetarTAFParserOptionsDated,
 ): IMetar | IMetarDated {
   return parse(rawMetar, options, MetarParser, metarDatesHydrator);
 }
 
 export function parseTAF(
   rawTAF: string,
-  options?: IMetarTAFParserOptions
+  options?: IMetarTAFParserOptions,
 ): ITAF;
 export function parseTAF(
   rawTAF: string,
-  options?: IMetarTAFParserOptionsDated
+  options?: IMetarTAFParserOptionsDated,
 ): ITAFDated;
 export function parseTAF(
   rawTAF: string,
-  options?: IMetarTAFParserOptions
+  options?: IMetarTAFParserOptions,
 ): ITAF | ITAFDated {
   return parse(rawTAF, options, TAFParser, tafDatesHydrator);
 }
 
 export function parseTAFAsForecast(
   rawTAF: string,
-  options: IMetarTAFParserOptionsDated
+  options: IMetarTAFParserOptionsDated,
 ): IForecastContainer {
   const taf = parseTAF(rawTAF, options);
 
@@ -126,7 +126,7 @@ function parse<T, TDated>(
   rawReport: string,
   options: IMetarTAFParserOptions | IMetarTAFParserOptionsDated | undefined,
   parser: Parser<T>,
-  datesHydrator: (report: T, issued: Date) => TDated
+  datesHydrator: (report: T, issued: Date) => TDated,
 ): T | TDated {
   const lang = options?.locale || en;
 

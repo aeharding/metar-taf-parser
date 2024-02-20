@@ -30,7 +30,7 @@ describe("VirgaDirectionCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("VIRGA WE", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

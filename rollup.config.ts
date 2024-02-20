@@ -18,7 +18,7 @@ const tscAlias = () => {
             } else {
               resolve(stdout);
             }
-          }
+          },
         );
       });
     },

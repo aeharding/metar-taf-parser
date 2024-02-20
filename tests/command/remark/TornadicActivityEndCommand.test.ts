@@ -34,7 +34,7 @@ describe("TornadicActivityEndCommand", () => {
 
   test("invalid direction should throw on execute", () => {
     expect(() => command.execute("TORNADO E1234 4 NS", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

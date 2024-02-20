@@ -37,7 +37,7 @@ export class PrecipitationBegEndCommand extends Command {
       matches[4] || "",
       matches[5],
       matches[6] || "",
-      matches[7]
+      matches[7],
     );
 
     remark.push({

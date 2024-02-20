@@ -29,7 +29,7 @@ export class SectorVisibilityCommand extends Command {
     const description = format(
       _("Remark.Sector.Visibility", this.locale),
       _(`Converter.${direction}`, this.locale),
-      matches[2]
+      matches[2],
     );
 
     remark.push({

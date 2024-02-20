@@ -92,13 +92,13 @@ describe("PrecipitationBegEndCommand", () => {
 
   test("invalid descriptive should throw on execute", () => {
     expect(() => command.execute("BBRAB0120E0151", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 
   test("invalid phenomenon should throw on execute", () => {
     expect(() => command.execute("BLRRB0120E0151", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

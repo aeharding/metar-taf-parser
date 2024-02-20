@@ -61,7 +61,7 @@ export default function Hour({ hour }: HourProps) {
       hour.prevailing.visibility,
       ...hour.supplemental.flatMap(({ visibility }) => visibility),
     ].filter(notEmpty),
-    "value"
+    "value",
   )[0];
 
   return (
@@ -117,7 +117,7 @@ function formatVisibility(visibility: Visibility | undefined): string {
 }
 
 function formatIndicator(
-  indicator: ValueIndicator | undefined
+  indicator: ValueIndicator | undefined,
 ): string | undefined {
   switch (indicator) {
     case ValueIndicator.GreaterThan:

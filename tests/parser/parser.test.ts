@@ -202,8 +202,8 @@ describe("parseWeatherCondition", () => {
             wind: {},
             clouds: [],
           } as unknown as IAbstractWeatherContainer,
-          input
-        )
+          input,
+        ),
       ).toBe(expected);
     });
   });
@@ -298,17 +298,17 @@ describe("MetarParser", () => {
 
   test("tempo becmg", () => {
     const metar = new MetarParser(en).parse(
-      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO SHRA BECMG SKC"
+      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO SHRA BECMG SKC",
     );
 
     expect(metar.trends).toHaveLength(2);
     expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
     expect(metar.trends[0].weatherConditions).toHaveLength(1);
     expect(metar.trends[0].weatherConditions[0].descriptive).toBe(
-      Descriptive.SHOWERS
+      Descriptive.SHOWERS,
     );
     expect(metar.trends[0].weatherConditions[0].phenomenons[0]).toBe(
-      Phenomenon.RAIN
+      Phenomenon.RAIN,
     );
     expect(metar.trends[0].raw).toBe("TEMPO SHRA");
     expect(metar.trends[1].type).toBe(WeatherChangeType.BECMG);
@@ -318,7 +318,7 @@ describe("MetarParser", () => {
 
   test("tempo fm", () => {
     const metar = new MetarParser(en).parse(
-      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1830 SHRA"
+      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1830 SHRA",
     );
 
     expect(metar.trends).toHaveLength(1);
@@ -337,7 +337,7 @@ describe("MetarParser", () => {
 
   test("tempo tl", () => {
     const metar = new MetarParser(en).parse(
-      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1700 TL1830 SHRA"
+      "LFRM 081630Z AUTO 30007KT 260V360 9999 24/15 Q1008 TEMPO FM1700 TL1830 SHRA",
     );
 
     expect(metar.trends).toHaveLength(1);
@@ -365,7 +365,7 @@ describe("MetarParser", () => {
 
   test("minVisibility", () => {
     const metar = new MetarParser(en).parse(
-      "LFPG 161430Z 24015G25KT 5000 1100w"
+      "LFPG 161430Z 24015G25KT 5000 1100w",
     );
 
     expect(metar.day).toBe(16);
@@ -386,7 +386,7 @@ describe("MetarParser", () => {
 
   test("wind of 0000KT should not parse as minVisibility", () => {
     const metar = new MetarParser(en).parse(
-      "KATW 022045Z 00000KT 10SM SCT120 00/M08 A2996"
+      "KATW 022045Z 00000KT 10SM SCT120 00/M08 A2996",
     );
 
     expect(metar.wind).toStrictEqual({
@@ -439,7 +439,7 @@ describe("MetarParser", () => {
 
   test("vertical visibility", () => {
     const metar = new MetarParser(en).parse(
-      "LFLL 160730Z 28002KT 0350 FG VV002"
+      "LFLL 160730Z 28002KT 0350 FG VV002",
     );
 
     expect(metar.day).toBe(16);
@@ -456,7 +456,7 @@ describe("MetarParser", () => {
 
   test("Ndv", () => {
     const metar = new MetarParser(en).parse(
-      "LSZL 300320Z AUTO 00000KT 9999NDV BKN060 OVC074 00/M04 Q1001\n RMK="
+      "LSZL 300320Z AUTO 00000KT 9999NDV BKN060 OVC074 00/M04 Q1001\n RMK=",
     );
 
     expect(metar.visibility).toStrictEqual({
@@ -469,7 +469,7 @@ describe("MetarParser", () => {
 
   test("cavok", () => {
     const metar = new MetarParser(en).parse(
-      "LFPG 212030Z 03003KT CAVOK 09/06 Q1031 NOSIG"
+      "LFPG 212030Z 03003KT CAVOK 09/06 Q1031 NOSIG",
     );
 
     expect(metar.cavok).toBe(true);
@@ -489,7 +489,7 @@ describe("MetarParser", () => {
 
   test("altimeter mercury", () => {
     const metar = new MetarParser(en).parse(
-      "KTTN 051853Z 04011KT 9999 VCTS SN FZFG BKN003 OVC010 M02/M02 A3006"
+      "KTTN 051853Z 04011KT 9999 VCTS SN FZFG BKN003 OVC010 M02/M02 A3006",
     );
 
     expect(metar.altimeter).toStrictEqual({
@@ -501,7 +501,7 @@ describe("MetarParser", () => {
 
   test("wind alternative form", () => {
     const metar = new MetarParser(en).parse(
-      "ENLK 081350Z 26026G40 240V300 9999 VCSH FEW025 BKN030 02/M01 Q0996"
+      "ENLK 081350Z 26026G40 240V300 9999 VCSH FEW025 BKN030 02/M01 Q0996",
     );
 
     expect(metar.wind?.degrees).toBe(260);
@@ -516,18 +516,18 @@ describe("MetarParser", () => {
 
   test("descriptive only", () => {
     const metar = new MetarParser(en).parse(
-      "AGGH 140340Z 05010KT 9999 TS FEW020 SCT021CB BKN300 32/26 Q1010"
+      "AGGH 140340Z 05010KT 9999 TS FEW020 SCT021CB BKN300 32/26 Q1010",
     );
 
     expect(metar.weatherConditions).toHaveLength(1);
     expect(metar.weatherConditions[0].descriptive).toBe(
-      Descriptive.THUNDERSTORM
+      Descriptive.THUNDERSTORM,
     );
   });
 
   test("invalid weather condition", () => {
     const metar = new MetarParser(en).parse(
-      "ENLK 081350Z 26026G40 240V300 9999 VCMI"
+      "ENLK 081350Z 26026G40 240V300 9999 VCMI",
     );
 
     expect(metar.weatherConditions).toHaveLength(0);
@@ -535,7 +535,7 @@ describe("MetarParser", () => {
 
   test("with runway deposit", () => {
     const metar = new MetarParser(en).parse(
-      "UNAA 240830Z 34002MPS CAVOK M14/M18 Q1019 R02/190054 NOSIG RMK QFE741"
+      "UNAA 240830Z 34002MPS CAVOK M14/M18 Q1019 R02/190054 NOSIG RMK QFE741",
     );
 
     expect(metar.station).toBe("UNAA");
@@ -556,7 +556,7 @@ describe("MetarParser", () => {
 
   test("with minimum visibility", () => {
     const metar = new MetarParser(en).parse(
-      "SUMU 070520Z 34025KT 8000 2000SW VCSH SCT013CB BKN026 00/M05 Q1012 TEMPO 2000 SHSN="
+      "SUMU 070520Z 34025KT 8000 2000SW VCSH SCT013CB BKN026 00/M05 Q1012 TEMPO 2000 SHSN=",
     );
 
     expect(metar.station).toBe("SUMU");
@@ -606,7 +606,7 @@ describe("MetarParser", () => {
 
   test("parses unknown cloud types", () => {
     const metar = new MetarParser(en).parse(
-      "EKVG 291550Z AUTO 13009KT 9999 BKN037/// BKN048/// 07/06 Q1009 RMK FEW011/// FEW035/// WIND SKEID 13020KT"
+      "EKVG 291550Z AUTO 13009KT 9999 BKN037/// BKN048/// 07/06 Q1009 RMK FEW011/// FEW035/// WIND SKEID 13020KT",
     );
 
     expect(metar.clouds).toHaveLength(2);
@@ -614,7 +614,7 @@ describe("MetarParser", () => {
 
   test("does not parse invalid cloud quantities", () => {
     const metar = new MetarParser(en).parse(
-      "EKVG 291550Z AUTO 13009KT 9999 BKN037AAA"
+      "EKVG 291550Z AUTO 13009KT 9999 BKN037AAA",
     );
 
     expect(metar.clouds).toHaveLength(0);
@@ -622,7 +622,7 @@ describe("MetarParser", () => {
 
   test("does not parse invalid cloud types", () => {
     const metar = new MetarParser(en).parse(
-      "EKVG 291550Z AUTO 13009KT 9999 AAA037"
+      "EKVG 291550Z AUTO 13009KT 9999 AAA037",
     );
 
     expect(metar.clouds).toHaveLength(0);
@@ -632,7 +632,7 @@ describe("MetarParser", () => {
     // https://github.com/aeharding/metar-taf-parser/discussions/47
 
     const metar = new MetarParser(en).parse(
-      "CYVM 282100Z 36028G36KT 1SM -SN DRSN VCBLSN OVC008 M03/M04 A2935 RMK SN2ST8 LAST STFFD OBS/NXT 291200UTC SLP940"
+      "CYVM 282100Z 36028G36KT 1SM -SN DRSN VCBLSN OVC008 M03/M04 A2935 RMK SN2ST8 LAST STFFD OBS/NXT 291200UTC SLP940",
     );
 
     expect(metar.weatherConditions).toHaveLength(3);
@@ -742,7 +742,7 @@ describe("TAFParser", () => {
     expect(taf.weatherConditions).toHaveLength(0);
 
     expect(taf.initialRaw).toBe(
-      "TAF TXFL 150500Z 1506/1612 17005KT 6000 SCT012"
+      "TAF TXFL 150500Z 1506/1612 17005KT 6000 SCT012",
     );
     expect(taf.message).toBe(code);
 
@@ -814,7 +814,7 @@ describe("TAFParser", () => {
     expect(trend2.clouds[1].type).toBeUndefined();
     expect(trend2.probability).toBe(40);
     expect(trend2.raw).toBe(
-      "PROB40 TEMPO 1512/1516 4000 -SHRA FEW030TCU BKN040"
+      "PROB40 TEMPO 1512/1516 4000 -SHRA FEW030TCU BKN040",
     );
 
     const trend3 = taf.trends[3];
@@ -866,13 +866,13 @@ describe("TAFParser", () => {
     expect(trend5.clouds[0].type).toBeUndefined();
     expect(trend5.probability).toBe(40);
     expect(trend5.raw).toBe(
-      "PROB40 TEMPO 1604/1607 0400 BCFG BKN002 TX17/1512Z TN07/1605Z"
+      "PROB40 TEMPO 1604/1607 0400 BCFG BKN002 TX17/1512Z TN07/1605Z",
     );
   });
 
   test("without line breaks", () => {
     const taf = new TAFParser(en).parse(
-      "TAF LSZH 292025Z 2921/3103 VRB03KT 9999 FEW020 BKN080 TX20/3014Z TN06/3003Z PROB30 TEMPO 2921/2923 SHRA BECMG 3001/3004 4000 MIFG NSC PROB40 3003/3007 1500 BCFG SCT004 PROB30 3004/3007 0800 FG VV003 BECMG 3006/3009 9999 FEW030 PROB40 TEMPO 3012/3017 30008KT"
+      "TAF LSZH 292025Z 2921/3103 VRB03KT 9999 FEW020 BKN080 TX20/3014Z TN06/3003Z PROB30 TEMPO 2921/2923 SHRA BECMG 3001/3004 4000 MIFG NSC PROB40 3003/3007 1500 BCFG SCT004 PROB30 3004/3007 0800 FG VV003 BECMG 3006/3009 9999 FEW030 PROB40 TEMPO 3012/3017 30008KT",
     );
 
     // Check on time delivery
@@ -1000,7 +1000,7 @@ describe("TAFParser", () => {
 
   test("parse without line breaks and ending temperature", () => {
     const taf = new TAFParser(en).parse(
-      "TAF KLSV 120700Z 1207/1313 VRB06KT 9999 SCT250 QNH2992INS BECMG 1217/1218 10010G15KT 9999 SCT250 QNH2980INS BECMG 1303/1304 VRB06KT 9999 FEW250 QNH2979INS TX42/1223Z TN24/1213Z"
+      "TAF KLSV 120700Z 1207/1313 VRB06KT 9999 SCT250 QNH2992INS BECMG 1217/1218 10010G15KT 9999 SCT250 QNH2980INS BECMG 1303/1304 VRB06KT 9999 FEW250 QNH2979INS TX42/1223Z TN24/1213Z",
     );
 
     // Check on time delivery
@@ -1095,7 +1095,7 @@ describe("TAFParser", () => {
 
   test("parse with 2 taf", () => {
     const taf = new TAFParser(en).parse(
-      "TAF TAF LFPG 191100Z 1912/2018 02010KT 9999 FEW040 PROB30 1217/1218"
+      "TAF TAF LFPG 191100Z 1912/2018 02010KT 9999 FEW040 PROB30 1217/1218",
     );
 
     expect(taf).toBeDefined();
@@ -1105,7 +1105,7 @@ describe("TAFParser", () => {
 
   test("parse with wind shear", () => {
     const taf = new TAFParser(en).parse(
-      "TAF KMKE 011530 0116/0218 WS020/24045KT FM010200 17005KT P6SM SKC WS020/23055KT"
+      "TAF KMKE 011530 0116/0218 WS020/24045KT FM010200 17005KT P6SM SKC WS020/23055KT",
     );
 
     // THEN the windshear of the principle part is decoded
@@ -1131,7 +1131,7 @@ describe("TAFParser", () => {
 
   test("with nautical miles visibility", () => {
     const taf = new TAFParser(en).parse(
-      "TAF AMD CZBF 300939Z 3010/3022 VRB03KT 6SM -SN OVC015 TEMPO 3010/3012 11/2SM -SN OVC009 \nFM301200 10008KT 2SM -SN OVC010 TEMPO 3012/3022 3/4SM -SN VV007 RMK FCST BASED ON AUTO OBS. NXT FCST BY 301400Z"
+      "TAF AMD CZBF 300939Z 3010/3022 VRB03KT 6SM -SN OVC015 TEMPO 3010/3012 11/2SM -SN OVC009 \nFM301200 10008KT 2SM -SN OVC010 TEMPO 3012/3022 3/4SM -SN VV007 RMK FCST BASED ON AUTO OBS. NXT FCST BY 301400Z",
     );
 
     // THEN the visibility of the main event is 6 SM
@@ -1169,7 +1169,7 @@ describe("TAFParser", () => {
 
   test("parse with remark", () => {
     const taf = new TAFParser(en).parse(
-      "TAF CZBF 300939Z 3010/3022 VRB03KT 6SM -SN OVC015 RMK FCST BASED ON AUTO OBS. NXT FCST BY 301400Z\n TEMPO 3010/3012 11/2SM -SN OVC009 FM301200 10008KT 2SM -SN OVC010 \nTEMPO 3012/3022 3/4SM -SN VV007"
+      "TAF CZBF 300939Z 3010/3022 VRB03KT 6SM -SN OVC015 RMK FCST BASED ON AUTO OBS. NXT FCST BY 301400Z\n TEMPO 3010/3012 11/2SM -SN OVC009 FM301200 10008KT 2SM -SN OVC010 \nTEMPO 3012/3022 3/4SM -SN VV007",
     );
 
     expect(taf).toBeDefined();
@@ -1179,7 +1179,7 @@ describe("TAFParser", () => {
 
   test("parse with trend remark", () => {
     const taf = new TAFParser(en).parse(
-      "TAF CZBF 300939Z 3010/3022 VRB03KT 6SM -SN OVC015\n TEMPO 3010/3012 11/2SM -SN OVC009 FM301200 10008KT 2SM -SN OVC010 TEMPO 3012/3022 3/4SM -SN VV007 RMK FCST BASED ON AUTO OBS. NXT FCST BY 301400Z"
+      "TAF CZBF 300939Z 3010/3022 VRB03KT 6SM -SN OVC015\n TEMPO 3010/3012 11/2SM -SN OVC009 FM301200 10008KT 2SM -SN OVC010 TEMPO 3012/3022 3/4SM -SN VV007 RMK FCST BASED ON AUTO OBS. NXT FCST BY 301400Z",
     );
 
     expect(taf.trends).toHaveLength(3);
@@ -1205,11 +1205,11 @@ describe("TAFParser", () => {
     expect(taf.trends[3].visibility?.unit).toBe(DistanceUnit.Meters);
     expect(taf.trends[3].weatherConditions).toHaveLength(1);
     expect(taf.trends[3].weatherConditions[0].descriptive).toBe(
-      Descriptive.SHOWERS
+      Descriptive.SHOWERS,
     );
     expect(taf.trends[3].weatherConditions[0].phenomenons).toHaveLength(1);
     expect(taf.trends[3].weatherConditions[0].phenomenons[0]).toBe(
-      Phenomenon.RAIN
+      Phenomenon.RAIN,
     );
     expect(taf.trends[3].clouds).toHaveLength(2);
     expect(taf.trends[3].clouds[0].quantity).toBe(CloudQuantity.SCT);
@@ -1257,7 +1257,7 @@ describe("TAFParser", () => {
     expect(taf.trends[0].weatherConditions[0].intensity).toBe(Intensity.LIGHT);
     expect(taf.trends[0].weatherConditions[0].phenomenons).toHaveLength(1);
     expect(taf.trends[0].weatherConditions[0].phenomenons[0]).toBe(
-      Phenomenon.SNOW
+      Phenomenon.SNOW,
     );
   });
 
@@ -1376,7 +1376,7 @@ describe("TAFParser", () => {
     expect(parsed.trends[0].type).toBe(WeatherChangeType.BECMG);
     expect(parsed.trends[0].weatherConditions).toHaveLength(1);
     expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
-      Phenomenon.NO_SIGNIFICANT_WEATHER
+      Phenomenon.NO_SIGNIFICANT_WEATHER,
     );
   });
 
@@ -1391,10 +1391,10 @@ describe("TAFParser", () => {
     expect(parsed.trends).toHaveLength(1);
     expect(parsed.trends[0].weatherConditions).toHaveLength(1);
     expect(parsed.trends[0].weatherConditions[0].intensity).toBe(
-      Intensity.LIGHT
+      Intensity.LIGHT,
     );
     expect(parsed.trends[0].weatherConditions[0].phenomenons[0]).toBe(
-      Phenomenon.RAIN
+      Phenomenon.RAIN,
     );
   });
 
@@ -1407,7 +1407,7 @@ describe("TAFParser", () => {
 
     expect(parsed.trends[2].weatherConditions).toHaveLength(1);
     expect(parsed.trends[2].weatherConditions[0].intensity).toBe(
-      Intensity.LIGHT
+      Intensity.LIGHT,
     );
     expect(parsed.trends[2].weatherConditions[0].phenomenons).toEqual([
       "DZ",
@@ -1463,7 +1463,7 @@ describe("TAFParser", () => {
 
       expect(parsed.turbulence).toHaveLength(1);
       expect(parsed.turbulence?.[0].intensity).toBe(
-        TurbulenceIntensity.ModerateClearAirFrequent
+        TurbulenceIntensity.ModerateClearAirFrequent,
       );
       expect(parsed.turbulence?.[0].baseHeight).toBe(0);
       expect(parsed.turbulence?.[0].depth).toBe(9000);
@@ -1479,13 +1479,13 @@ describe("TAFParser", () => {
       expect(parsed.turbulence).toHaveLength(2);
 
       expect(parsed.turbulence?.[0].intensity).toBe(
-        TurbulenceIntensity.ModerateClearAirFrequent
+        TurbulenceIntensity.ModerateClearAirFrequent,
       );
       expect(parsed.turbulence?.[0].baseHeight).toBe(0);
       expect(parsed.turbulence?.[0].depth).toBe(9000);
 
       expect(parsed.turbulence?.[1].intensity).toBe(
-        TurbulenceIntensity.Extreme
+        TurbulenceIntensity.Extreme,
       );
       expect(parsed.turbulence?.[1].baseHeight).toBe(3000);
       expect(parsed.turbulence?.[1].depth).toBe(4000);
@@ -1506,13 +1506,13 @@ describe("TAFParser", () => {
       expect(parsed.trends[1].turbulence).toHaveLength(2);
 
       expect(parsed.trends[1].turbulence?.[0].intensity).toBe(
-        TurbulenceIntensity.ModerateClearAirFrequent
+        TurbulenceIntensity.ModerateClearAirFrequent,
       );
       expect(parsed.trends[1].turbulence?.[0].baseHeight).toBe(0);
       expect(parsed.trends[1].turbulence?.[0].depth).toBe(9000);
 
       expect(parsed.trends[1].turbulence?.[1].intensity).toBe(
-        TurbulenceIntensity.Extreme
+        TurbulenceIntensity.Extreme,
       );
       expect(parsed.trends[1].turbulence?.[1].baseHeight).toBe(3000);
       expect(parsed.trends[1].turbulence?.[1].depth).toBe(4000);
@@ -1542,7 +1542,7 @@ describe("TAFParser", () => {
 
       expect(parsed.icing).toHaveLength(1);
       expect(parsed.icing?.[0].intensity).toBe(
-        IcingIntensity.LightRimeIcingCloud
+        IcingIntensity.LightRimeIcingCloud,
       );
       expect(parsed.icing?.[0].baseHeight).toBe(3000);
       expect(parsed.icing?.[0].depth).toBe(4000);
@@ -1558,7 +1558,7 @@ describe("TAFParser", () => {
       expect(parsed.icing).toHaveLength(2);
 
       expect(parsed.icing?.[0].intensity).toBe(
-        IcingIntensity.LightRimeIcingCloud
+        IcingIntensity.LightRimeIcingCloud,
       );
       expect(parsed.icing?.[0].baseHeight).toBe(3000);
       expect(parsed.icing?.[0].depth).toBe(4000);
@@ -1583,13 +1583,13 @@ describe("TAFParser", () => {
       expect(parsed.trends[1].icing).toHaveLength(2);
 
       expect(parsed.trends[1].icing?.[0].intensity).toBe(
-        IcingIntensity.LightRimeIcingCloud
+        IcingIntensity.LightRimeIcingCloud,
       );
       expect(parsed.trends[1].icing?.[0].baseHeight).toBe(3000);
       expect(parsed.trends[1].icing?.[0].depth).toBe(4000);
 
       expect(parsed.trends[1].icing?.[1].intensity).toBe(
-        IcingIntensity.SevereMixedIcing
+        IcingIntensity.SevereMixedIcing,
       );
       expect(parsed.trends[1].icing?.[1].baseHeight).toBe(0);
       expect(parsed.trends[1].icing?.[1].depth).toBe(9000);
@@ -1742,7 +1742,7 @@ describe("RemarkParser", () => {
       description: format(
         _("Remark.Variable.Prevailing.Visibility", en),
         "1/2",
-        "2"
+        "2",
       ),
       raw: "VIS 1/2V2",
       minVisibility: 0.5,
@@ -1759,7 +1759,7 @@ describe("RemarkParser", () => {
       description: format(
         _("Remark.Sector.Visibility", en),
         _("Converter.NE", en),
-        "2 1/2"
+        "2 1/2",
       ),
       raw: "VIS NE 2 1/2",
       distance: 2.5,
@@ -1776,7 +1776,7 @@ describe("RemarkParser", () => {
       description: format(
         _("Remark.Second.Location.Visibility", en),
         "2 1/2",
-        "RWY11"
+        "RWY11",
       ),
       raw: "VIS 2 1/2 RWY11",
       distance: 2.5,
@@ -1796,7 +1796,7 @@ describe("RemarkParser", () => {
         "",
         13,
         6,
-        _("Converter.NE", en)
+        _("Converter.NE", en),
       ),
       raw: "TORNADO B13 6 NE",
       tornadicType: "TORNADO",
@@ -1818,7 +1818,7 @@ describe("RemarkParser", () => {
         15,
         13,
         6,
-        _("Converter.NE", en)
+        _("Converter.NE", en),
       ),
       raw: "TORNADO B1513 6 NE",
       tornadicType: "TORNADO",
@@ -1831,7 +1831,7 @@ describe("RemarkParser", () => {
 
   test("parse tornadic activity funnel cloud", () => {
     const remarks = new RemarkParser(en).parse(
-      "AO1 FUNNEL CLOUD B1513E1630 6 NE"
+      "AO1 FUNNEL CLOUD B1513E1630 6 NE",
     );
 
     expect(remarks).toHaveLength(2);
@@ -1845,7 +1845,7 @@ describe("RemarkParser", () => {
         16,
         30,
         6,
-        _("Converter.NE", en)
+        _("Converter.NE", en),
       ),
       raw: "FUNNEL CLOUD B1513E1630 6 NE",
       tornadicType: "FUNNEL CLOUD",
@@ -1870,7 +1870,7 @@ describe("RemarkParser", () => {
         "",
         16,
         12,
-        _("Converter.NE", en)
+        _("Converter.NE", en),
       ),
       raw: "WATERSPOUT E16 12 NE",
       tornadicType: "WATERSPOUT",
@@ -1892,7 +1892,7 @@ describe("RemarkParser", () => {
         15,
         16,
         12,
-        _("Converter.NE", en)
+        _("Converter.NE", en),
       ),
       raw: "WATERSPOUT E1516 12 NE",
       tornadicType: "WATERSPOUT",
@@ -1916,7 +1916,7 @@ describe("RemarkParser", () => {
         "",
         "05",
         "",
-        30
+        30,
       ),
       raw: "RAB05E30",
       phenomenon: Phenomenon.RAIN,
@@ -1932,7 +1932,7 @@ describe("RemarkParser", () => {
         15,
         20,
         16,
-        55
+        55,
       ),
       raw: "SNB1520E1655",
       phenomenon: Phenomenon.SNOW,
@@ -1956,7 +1956,7 @@ describe("RemarkParser", () => {
         "",
         "05",
         "",
-        30
+        30,
       ),
       raw: "SHRAB05E30",
       descriptive: Descriptive.SHOWERS,
@@ -1973,7 +1973,7 @@ describe("RemarkParser", () => {
         "",
         20,
         "",
-        55
+        55,
       ),
       raw: "SHSNB20E55",
       descriptive: Descriptive.SHOWERS,
@@ -1994,7 +1994,7 @@ describe("RemarkParser", () => {
         _("Descriptive.SH", en),
         _("Phenomenon.RA", en),
         "",
-        "05"
+        "05",
       )?.trim(),
       raw: "SHRAB05",
       descriptive: Descriptive.SHOWERS,
@@ -2008,7 +2008,7 @@ describe("RemarkParser", () => {
         _("Descriptive.SH", en),
         _("Phenomenon.SN", en),
         "02",
-        20
+        20,
       )?.trim(),
       raw: "SHSNB0220",
       descriptive: Descriptive.SHOWERS,
@@ -2031,7 +2031,7 @@ describe("RemarkParser", () => {
         "",
         "05",
         "",
-        30
+        30,
       )?.trim(),
       raw: "SHRAE05",
       descriptive: Descriptive.SHOWERS,
@@ -2045,7 +2045,7 @@ describe("RemarkParser", () => {
         _("Descriptive.SH", en),
         _("Phenomenon.SN", en),
         "01",
-        20
+        20,
       )?.trim(),
       raw: "SHSNE0120",
       descriptive: Descriptive.SHOWERS,
@@ -2068,7 +2068,7 @@ describe("RemarkParser", () => {
         "01",
         59,
         "",
-        30
+        30,
       ),
       raw: "TSB0159E30",
       phenomenon: Phenomenon.THUNDERSTORM,
@@ -2086,7 +2086,7 @@ describe("RemarkParser", () => {
       type: RemarkType.ThunderStormLocation,
       description: format(
         _("Remark.Thunderstorm.Location.0", en),
-        _("Converter.SE", en)
+        _("Converter.SE", en),
       ),
       raw: "TS SE",
       location: Direction.SE,
@@ -2102,7 +2102,7 @@ describe("RemarkParser", () => {
       description: format(
         _("Remark.Thunderstorm.Location.Moving", en),
         _("Converter.SE", en),
-        _("Converter.NE", en)
+        _("Converter.NE", en),
       ),
       raw: "TS SE MOV NE",
       location: Direction.SE,
@@ -2154,7 +2154,7 @@ describe("RemarkParser", () => {
       type: RemarkType.VirgaDirection,
       description: format(
         _("Remark.Virga.Direction", en),
-        _("Converter.SW", en)
+        _("Converter.SW", en),
       ),
       raw: "VIRGA SW",
       direction: Direction.SW,
@@ -2195,7 +2195,7 @@ describe("RemarkParser", () => {
         _("Remark.Obscuration", en),
         _("CloudQuantity.BKN", en),
         2000,
-        _("Phenomenon.FU", en)
+        _("Phenomenon.FU", en),
       ),
       raw: "FU BKN020",
       quantity: CloudQuantity.BKN,
@@ -2212,7 +2212,7 @@ describe("RemarkParser", () => {
       description: format(
         _("Remark.Variable.Sky.Condition.0", en),
         _("CloudQuantity.BKN", en),
-        _("CloudQuantity.OVC", en)
+        _("CloudQuantity.OVC", en),
       ),
       raw: "BKN V OVC",
       cloudQuantityRange: [CloudQuantity.BKN, CloudQuantity.OVC],
@@ -2228,7 +2228,7 @@ describe("RemarkParser", () => {
         _("Remark.Variable.Sky.Condition.Height", en),
         1400,
         _("CloudQuantity.BKN", en),
-        _("CloudQuantity.OVC", en)
+        _("CloudQuantity.OVC", en),
       ),
       raw: "BKN014 V OVC",
       cloudQuantityRange: [CloudQuantity.BKN, CloudQuantity.OVC],
@@ -2244,7 +2244,7 @@ describe("RemarkParser", () => {
       description: format(
         _("Remark.Ceiling.Second.Location", en),
         200,
-        "RWY11"
+        "RWY11",
       ),
       raw: "CIG 002 RWY11",
       height: 200,
@@ -2288,7 +2288,7 @@ describe("RemarkParser", () => {
 
   test("parse rmk slp", () => {
     const remarks = new RemarkParser(en).parse(
-      "CF1AC8 CF TR SLP091 DENSITY ALT 200FT"
+      "CF1AC8 CF TR SLP091 DENSITY ALT 200FT",
     );
 
     expect(remarks[1]).toEqual<Remark>({
@@ -2492,7 +2492,7 @@ describe("RemarkParser", () => {
         expect(ex.total).toBe(3);
         expect(ex.name).toBe("PartialWeatherStatementError");
         expect(ex.message).toContain(
-          "Input is partial TAF (PART 1 OF 3), see: https://github.com/aeharding/metar-taf-parser/issues/68"
+          "Input is partial TAF (PART 1 OF 3), see: https://github.com/aeharding/metar-taf-parser/issues/68",
         );
       }
     }
@@ -2507,7 +2507,7 @@ describe("RemarkParser", () => {
         "TEMPO 0908/0916 4500 RADZ",
         "BECMG 0909/0911 10010KT",
         "BECMG 0918/0920 16006KT",
-      ].join("\n")
+      ].join("\n"),
     );
 
     // Check on station

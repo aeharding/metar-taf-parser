@@ -27,7 +27,7 @@ export class CeilingSecondLocationCommand extends Command {
     const description = format(
       _("Remark.Ceiling.Second.Location", this.locale),
       height,
-      location
+      location,
     );
 
     remark.push({

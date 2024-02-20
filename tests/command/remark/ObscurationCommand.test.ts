@@ -35,13 +35,13 @@ describe("ObscurationCommand", () => {
 
   test("invalid CloudQuantity should throw on execute", () => {
     expect(() => command.execute("FU BKG020", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 
   test("invalid Phenomenon should throw on execute", () => {
     expect(() => command.execute("FB BKN020", [])).toThrowError(
-      CommandExecutionError
+      CommandExecutionError,
     );
   });
 });

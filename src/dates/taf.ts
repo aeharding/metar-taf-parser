@@ -50,7 +50,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
     date,
     report.day,
     report.hour,
-    report.minute
+    report.minute,
   );
 
   return {
@@ -61,12 +61,12 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
       start: determineReportDate(
         issued,
         report.validity.startDay,
-        report.validity.startHour
+        report.validity.startHour,
       ),
       end: determineReportDate(
         issued,
         report.validity.endDay,
-        report.validity.endHour
+        report.validity.endHour,
       ),
     },
     minTemperature: report.minTemperature
@@ -75,7 +75,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
           date: determineReportDate(
             issued,
             report.minTemperature.day,
-            report.minTemperature.hour
+            report.minTemperature.hour,
           ),
         }
       : undefined,
@@ -85,7 +85,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
           date: determineReportDate(
             issued,
             report.maxTemperature.day,
-            report.maxTemperature.hour
+            report.maxTemperature.hour,
           ),
         }
       : undefined,
@@ -102,7 +102,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
                     issued,
                     trend.validity.startDay,
                     trend.validity.startHour,
-                    trend.validity.startMinutes
+                    trend.validity.startMinutes,
                   ),
                 };
               default:
@@ -111,17 +111,17 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
                   start: determineReportDate(
                     issued,
                     trend.validity.startDay,
-                    trend.validity.startHour
+                    trend.validity.startHour,
                   ),
                   end: determineReportDate(
                     issued,
                     trend.validity.endDay,
-                    trend.validity.endHour
+                    trend.validity.endHour,
                   ),
                 };
             }
           })(),
-        } as TAFTrendDated)
+        }) as TAFTrendDated,
     ),
   };
 }

@@ -27,7 +27,7 @@ export class SecondLocationVisibilityCommand extends Command {
     const description = format(
       _("Remark.Second.Location.Visibility", this.locale),
       distance,
-      location
+      location,
     );
 
     remark.push({

@@ -24,7 +24,7 @@ export class WindShiftFropaCommand extends Command {
     const description = format(
       _("Remark.WindShift.FROPA", this.locale),
       matches[1] || "",
-      matches[2]
+      matches[2],
     );
 
     remark.push({

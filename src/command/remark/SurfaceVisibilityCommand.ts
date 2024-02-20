@@ -24,7 +24,7 @@ export class SurfaceVisibilityCommand extends Command {
     const distance = matches[1];
     const description = format(
       _("Remark.Surface.Visibility", this.locale),
-      distance
+      distance,
     );
 
     remark.push({

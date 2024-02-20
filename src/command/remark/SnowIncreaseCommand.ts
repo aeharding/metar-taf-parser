@@ -27,7 +27,7 @@ export class SnowIncreaseCommand extends Command {
     const description = format(
       _("Remark.Snow.Increasing.Rapidly", this.locale),
       inchesLastHour,
-      totalDepth
+      totalDepth,
     );
 
     remark.push({

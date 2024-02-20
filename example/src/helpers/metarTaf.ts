@@ -86,7 +86,7 @@ export function formatPhenomenon(phenomenon: Phenomenon): string {
 
 export function formatDescriptive(
   descriptive: Descriptive | undefined,
-  hasPhenomenon: boolean
+  hasPhenomenon: boolean,
 ): string {
   switch (descriptive) {
     case Descriptive.SHOWERS:
@@ -152,7 +152,7 @@ export function formatCeiling(clouds: ICloud[]): string {
 }
 
 export function formatVerticalVisbility(
-  verticalVisibility: number | undefined
+  verticalVisibility: number | undefined,
 ): string | undefined {
   if (verticalVisibility == null) return;
 
@@ -218,7 +218,7 @@ function formatCloudType(type: CloudType): string {
 export function getFlightCategory(
   visibility: Visibility | undefined,
   clouds: ICloud[],
-  verticalVisibility?: number
+  verticalVisibility?: number,
 ): FlightCategory {
   const convertedVisibility = convertToMiles(visibility);
   const distance = convertedVisibility != null ? convertedVisibility : Infinity;
@@ -240,7 +240,7 @@ export function getFlightCategory(
  * Finds the ceiling. If no ceiling exists, returns the lowest cloud layer.
  */
 export function determineCeilingFromClouds(
-  clouds: ICloud[]
+  clouds: ICloud[],
 ): ICloud | undefined {
   let ceiling: ICloud | undefined;
 
@@ -261,7 +261,7 @@ export function determineCeilingFromClouds(
  * Finds the ceiling. If no ceiling exists, returns the lowest cloud layer.
  */
 function determineCeilingOrLowestLayerFromClouds(
-  clouds: ICloud[]
+  clouds: ICloud[],
 ): ICloud | undefined {
   let ceiling: ICloud | undefined;
 
@@ -315,7 +315,7 @@ export function getFlightCategoryCssColor(category: FlightCategory): string {
 }
 
 export function formatTurbulenceIntensity(
-  turbulenceIntensity: TurbulenceIntensity
+  turbulenceIntensity: TurbulenceIntensity,
 ): string {
   switch (turbulenceIntensity) {
     case TurbulenceIntensity.None:
