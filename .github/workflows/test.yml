@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: corepack enable
-      - run: pnpm install
+      - run: pnpm i --frozen-lockfile
       - run: pnpm build
       - run: pnpm check-types
       - run: pnpm check-formatting
