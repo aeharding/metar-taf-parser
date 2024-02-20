@@ -2,6 +2,7 @@
   "name": "example",
   "version": "0.1.0",
   "homepage": "https://aeharding.github.io/metar-taf-parser",
+  "packageManager": "pnpm@8.15.3+sha256.fc4a49bd609550a41e14d20efbce802a4b892aa4cac877322de2f0924f122991",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.4",
@@ -33,7 +34,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "predeploy": "npm run build",
+    "predeploy": "pnpm build",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build && cp build/index.html build/404.html",
