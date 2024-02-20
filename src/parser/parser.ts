@@ -160,18 +160,17 @@ export abstract class AbstractParser {
   BECMG = "BECMG";
   RMK = "RMK";
 
-  // Safari does not currently support negative lookbehind
-  // #TOKENIZE_REGEX = /\s((?=\d\/\dSM)(?<!\s\d\s)|(?!\d\/\dSM))|=/;
-  #INTENSITY_REGEX = /^(-|\+|VC)/;
-  #CAVOK = "CAVOK";
-  #commonSupplier = new CommandSupplier();
+  static #TOKENIZE_REGEX = /\s((?=\d\/\dSM)(?<!\s(P|M)?\d\s)|(?!\d\/\dSM))|=/;
+  static #INTENSITY_REGEX = /^(-|\+|VC)/;
+  static #CAVOK = "CAVOK";
+  static #commonSupplier = new CommandSupplier();
 
   constructor(protected locale: Locale) {}
 
   parseWeatherCondition(input: string): IWeatherCondition | undefined {
     let intensity: Intensity | undefined;
-    if (input.match(this.#INTENSITY_REGEX)) {
-      const match = input.match(this.#INTENSITY_REGEX)?.[0];
+    if (input.match(AbstractParser.#INTENSITY_REGEX)) {
+      const match = input.match(AbstractParser.#INTENSITY_REGEX)?.[0];
       if (match) {
         intensity = match as Intensity;
         input = input.slice(match.length);
@@ -228,26 +227,7 @@ export abstract class AbstractParser {
    * @returns List of tokens
    */
   tokenize(input: string) {
-    // Missing safari support. If added in the future, put this back
-    // return input.split(this.#TOKENIZE_REGEX).filter((v) => v);
-
-    // Hack for safari below...
-    const splitRegex = /\s|=/;
-    const smRegex = /^\d\/\dSM$/;
-    const digitRegex = /^(P|M)?\d$/;
-
-    // return input.split(this.#TOKENIZE_REGEX).filter((v) => v);
-    const splitted = input.split(splitRegex);
-
-    for (let i = 0; i < splitted.length; i++) {
-      if (digitRegex.test(splitted[i])) {
-        if (splitted[i + 1] && smRegex.test(splitted[i + 1])) {
-          splitted.splice(i, 2, `${splitted[i]} ${splitted[i + 1]}`);
-        }
-      }
-    }
-
-    return splitted.filter((t) => t);
+    return input.split(AbstractParser.#TOKENIZE_REGEX).filter((v) => v);
   }
 
   /**
@@ -260,7 +240,7 @@ export abstract class AbstractParser {
     abstractWeatherContainer: IAbstractWeatherContainer,
     input: string,
   ): boolean {
-    if (input === this.#CAVOK) {
+    if (input === AbstractParser.#CAVOK) {
       abstractWeatherContainer.cavok = true;
       abstractWeatherContainer.visibility = {
         indicator: ValueIndicator.GreaterThan,
@@ -278,7 +258,7 @@ export abstract class AbstractParser {
       return true;
     }
 
-    const command = this.#commonSupplier.get(input);
+    const command = AbstractParser.#commonSupplier.get(input);
 
     if (command) {
       try {
