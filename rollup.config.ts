@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-import { camelCase } from "lodash";
+import lodash from "lodash";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 
@@ -42,7 +42,7 @@ export default [
     output: [
       {
         dir: "dist",
-        name: camelCase(libraryName),
+        name: lodash.camelCase(libraryName),
         format: "es",
       },
     ],

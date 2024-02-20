@@ -693,9 +693,11 @@ export class TAFParser extends AbstractParser {
 }
 
 export class RemarkParser {
-  constructor(private locale: Locale) {}
+  #supplier
 
-  #supplier = new RemarkCommandSupplier(this.locale);
+  constructor(private locale: Locale) {
+    this.#supplier = new RemarkCommandSupplier(this.locale);
+  }
 
   parse(code: string): Remark[] {
     let rmkStr = code;
