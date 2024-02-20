@@ -19,7 +19,7 @@ Features:
 ## Installation
 
 ```sh
-yarn add metar-taf-parser
+pnpm i metar-taf-parser
 # or
 npm i --save metar-taf-parser
 ```

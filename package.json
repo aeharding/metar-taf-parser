@@ -3,6 +3,7 @@
   "version": "8.0.5",
   "description": "Parse METAR and TAF reports",
   "homepage": "https://aeharding.github.io/metar-taf-parser",
+  "packageManager": "pnpm@8.15.3+sha256.fc4a49bd609550a41e14d20efbce802a4b892aa4cac877322de2f0924f122991",
   "keywords": [
     "aviation",
     "weather",
@@ -22,15 +23,15 @@
   },
   "scripts": {
     "clean": "rimraf dist locale metar-taf-parser.*",
-    "build": "yarn clean && rollup -c rollup.config.ts && cp -R dist/locale/. locale/ && cp dist/metar-taf-parser.js metar-taf-parser.js && yarn clean:after",
+    "build": "pnpm clean && rollup -c rollup.config.ts && cp -R dist/locale/. locale/ && cp dist/metar-taf-parser.js metar-taf-parser.js && pnpm clean:after",
     "clean:after": "rimraf dist",
     "start": "rollup -c rollup.config.ts -w",
     "check-types": "tsc --skipLibCheck --noEmit",
     "check-formatting": "prettier --check '**/*.{js,json,css,md,scss,tsx,ts}'",
-    "watch": "watch 'yarn build' src",
+    "watch": "watch 'pnpm build' src",
     "test": "jest --coverage",
     "test-watch": "jest --watch --coverage",
-    "prepublishOnly": "yarn clean && yarn build"
+    "prepublishOnly": "pnpm clean && pnpm build"
   },
   "files": [
     "locale",
