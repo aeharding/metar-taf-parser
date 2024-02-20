@@ -1,6 +1,5 @@
 import { css, Global } from "@emotion/react";
 import styled from "@emotion/styled";
-import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, Navigate } from "react-router";
 import { ParseMetar, ParseTAF, ParseTAFAsForecast } from "./Parse";

@@ -1,5 +1,5 @@
-import { css } from "@emotion/react/macro";
-import styled from "@emotion/styled/macro";
+import { css } from "@emotion/react";
+import styled from "@emotion/styled";
 import { format, startOfTomorrow } from "date-fns";
 import {
   Forecast as IForecast,

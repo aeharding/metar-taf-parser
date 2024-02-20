@@ -1,4 +1,4 @@
-import styled from "@emotion/styled/macro";
+import styled from "@emotion/styled";
 import { IForecastContainer } from "metar-taf-parser";
 import Forecast from "./Forecast";
 
