@@ -3,7 +3,7 @@
   "version": "8.0.5",
   "description": "Parse METAR and TAF reports",
   "homepage": "https://aeharding.github.io/metar-taf-parser",
-  "packageManager": "pnpm@8.15.3+sha256.fc4a49bd609550a41e14d20efbce802a4b892aa4cac877322de2f0924f122991",
+  "packageManager": "pnpm@9.0.6+sha256.0624e30eff866cdeb363b15061bdb7fd9425b17bc1bb42c22f5f4efdea21f6b3",
   "keywords": [
     "aviation",
     "weather",
@@ -31,30 +31,31 @@
     "watch": "watch 'pnpm build' src",
     "test": "jest --coverage",
     "test-watch": "jest --watch --coverage",
-    "prepublishOnly": "pnpm clean && pnpm build"
+    "prepublishOnly": "pnpm clean && pnpm build",
+    "upgrade:packageManager": "corepack use pnpm@latest"
   },
   "files": [
     "locale",
     "metar-taf-parser.*"
   ],
   "devDependencies": {
-    "@babel/preset-env": "^7.23.9",
-    "@babel/preset-typescript": "^7.23.3",
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-typescript": "^7.24.1",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/jest": "^29.5.12",
-    "@types/lodash": "^4.14.202",
-    "@types/node": "^20.11.19",
+    "@types/lodash": "^4.17.1",
+    "@types/node": "^20.12.8",
     "jest": "^29.7.0",
     "lodash": "^4.17.21",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
-    "rollup": "^4.12.0",
+    "rollup": "^4.17.2",
     "rollup-plugin-dts": "^6.1.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.8",
     "tslib": "^2.6.2",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.5",
     "watch": "^1.0.2"
   }
 }
