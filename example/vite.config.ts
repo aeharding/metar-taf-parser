@@ -3,5 +3,9 @@ import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/metar-taf-parser/",
   plugins: [react()],
+  build: {
+    outDir: "build",
+  },
 });

@@ -45,8 +45,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       metar-taf-parser:
-        specifier: ^8.0.5
-        version: 8.0.5
+        specifier: link:..
+        version: link:..
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -920,9 +920,6 @@ packages:
   make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
-
-  metar-taf-parser@8.0.5:
-    resolution: {integrity: sha512-cNau4OR7ha/DehoXTkeJ0KKjB8Pdgxf/RMo2LcTcQxTFowRVfWssbsyyEP05VE51BwBxsZsdd1/+n01ZQd5G0Q==}
 
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -2101,8 +2098,6 @@ snapshots:
   make-dir@3.1.0:
     dependencies:
       semver: 6.3.1
-
-  metar-taf-parser@8.0.5: {}
 
   mime-db@1.52.0: {}
 

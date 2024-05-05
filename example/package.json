@@ -18,7 +18,7 @@
     "axios": "^1.6.8",
     "date-fns": "^3.6.0",
     "lodash": "^4.17.21",
-    "metar-taf-parser": "^8.0.5",
+    "metar-taf-parser": "link:..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-json-view": "^1.21.3",
@@ -33,7 +33,7 @@
     "predeploy": "pnpm build",
     "deploy": "gh-pages -d build",
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && cp build/index.html build/404.html",
     "serve": "vite preview",
     "upgrade:packageManager": "corepack use pnpm@latest"
   },
