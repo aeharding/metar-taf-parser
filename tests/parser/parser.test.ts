@@ -240,18 +240,6 @@ describe("MetarParser", () => {
     expect((metar.runwaysInfo[0] as IRunwayInfoRange).trend).toBe("N");
   });
 
-  test("supports runway 'none' coverage", () => {
-    const input = "UUWW 151030Z 34002MPS CAVOK 14/02 Q1026 R01/000070 NOSIG";
-
-    const metar = new MetarParser(en).parse(input);
-
-    expect(metar.runwaysInfo).toHaveLength(1);
-    expect(metar.runwaysInfo[0].name).toBe("01");
-    expect((metar.runwaysInfo[0] as IRunwayInfoDeposit).coverage).toBe(
-      DepositCoverage.None,
-    );
-  });
-
   test("parses 'AUTO' as station if no station identifier", () => {
     const input = "AUTO 061950Z 10002KT 9999NDV NCD 01/M00 Q1015 RMK=";
 
@@ -563,6 +551,18 @@ describe("MetarParser", () => {
     expect(metar.nosig).toBe(true);
     expect(metar.remark).toBe("QFE741");
     expect(metar.remarks).toHaveLength(1);
+  });
+
+  test("with 'none' runway deposit", () => {
+    const input = "UUWW 151030Z 34002MPS CAVOK 14/02 Q1026 R01/000070 NOSIG";
+
+    const metar = new MetarParser(en).parse(input);
+
+    expect(metar.runwaysInfo).toHaveLength(1);
+    expect(metar.runwaysInfo[0].name).toBe("01");
+    expect((metar.runwaysInfo[0] as IRunwayInfoDeposit).coverage).toBe(
+      DepositCoverage.None,
+    );
   });
 
   test("with nil", () => {
