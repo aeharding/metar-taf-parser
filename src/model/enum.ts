@@ -403,6 +403,14 @@ export enum DepositType {
 }
 
 export enum DepositCoverage {
+  /**
+   * Only reported by certain countries (e.g. Russia)
+   */
+  None = "0",
+
+  /**
+   * Not reported (e.g. due to rwy clearance in progress)
+   */
   NotReported = "/",
 
   Less10 = "1",

@@ -22,8 +22,13 @@ import {
   IcingIntensity,
   MetarType,
   AltimeterUnit,
+  DepositCoverage,
 } from "model/enum";
-import { IAbstractWeatherContainer, IRunwayInfoRange } from "model/model";
+import {
+  IAbstractWeatherContainer,
+  IRunwayInfoDeposit,
+  IRunwayInfoRange,
+} from "model/model";
 import { Direction } from "model/enum";
 import en from "locale/en";
 import { _, format } from "commons/i18n";
@@ -546,6 +551,18 @@ describe("MetarParser", () => {
     expect(metar.nosig).toBe(true);
     expect(metar.remark).toBe("QFE741");
     expect(metar.remarks).toHaveLength(1);
+  });
+
+  test("with 'none' runway deposit", () => {
+    const input = "UUWW 151030Z 34002MPS CAVOK 14/02 Q1026 R01/000070 NOSIG";
+
+    const metar = new MetarParser(en).parse(input);
+
+    expect(metar.runwaysInfo).toHaveLength(1);
+    expect(metar.runwaysInfo[0].name).toBe("01");
+    expect((metar.runwaysInfo[0] as IRunwayInfoDeposit).coverage).toBe(
+      DepositCoverage.None,
+    );
   });
 
   test("with nil", () => {
