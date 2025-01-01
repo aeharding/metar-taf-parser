@@ -13,7 +13,7 @@ import { ICommand } from "../metar";
 export class RunwayCommand implements ICommand {
   #genericRegex = /^(R\d{2}\w?\/)/;
   #runwayMaxRangeRegex = /^R(\d{2}\w?)\/(\d{4})V(\d{3,4})([UDN])?(FT)?/;
-  #runwayRegex = /^R(\d{2}\w?)\/([MP])?(\d{4})([UDN])?(FT)?$/;
+  #runwayRegex = /^R(\d{2}\w?)\/([MP])?(\d{4})([UDN])?(FT)?(\/([UDN]))?$/;
   #runwayDepositRegex = /^R(\d{2}\w?)\/([/\d])([/\d])(\/\/|\d{2})(\/\/|\d{2})$/;
 
   canParse(input: string): boolean {
@@ -42,7 +42,7 @@ export class RunwayCommand implements ICommand {
       if (!matches) throw new UnexpectedParseError("Should be able to parse");
 
       const indicator = matches[2] ? as(matches[2], ValueIndicator) : undefined;
-      const trend = matches[4] ? as(matches[4], RunwayInfoTrend) : undefined;
+      const trend = matches[4] ? as(matches[4], RunwayInfoTrend) : matches[7] ? as(matches[7], RunwayInfoTrend) : undefined;
       const unit = matches[5]
         ? as(matches[5], RunwayInfoUnit)
         : RunwayInfoUnit.Meters;
