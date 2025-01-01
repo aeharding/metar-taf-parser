@@ -36,7 +36,7 @@ import { PartialWeatherStatementError } from "commons/errors";
 
 describe("RemarkParser", () => {
   (() => {
-    const code = "Token AO1 End of remark";
+    const code = "Token AO1 End of remark NXT FCST BY 160300Z";
 
     test(`parses "${code}"`, () => {
       const remarks = new RemarkParser(en).parse(code);
@@ -54,6 +54,14 @@ describe("RemarkParser", () => {
         {
           type: RemarkType.Unknown,
           raw: "End of remark",
+        },
+        {
+          type: RemarkType.NextForecastBy,
+          description: "next forecast by 16, 03:00Z",
+          raw: "NXT FCST BY 160300Z",
+          day: 16,
+          hour: 3,
+          minute: 0,
         },
       ]);
     });

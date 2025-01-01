@@ -8,6 +8,7 @@ import {
   ITemperatureDated,
 } from "model/model";
 import { determineReportDate } from "helpers/date";
+import {RemarkType} from "command/remark";
 
 export type TAFTrendDated = IAbstractTrend &
   IBaseTAFTrend & {
@@ -93,6 +94,21 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
       (trend) =>
         ({
           ...trend,
+          remarks: trend.remarks.map((remark) => {
+            if (remark.type === RemarkType.NextForecastBy) {
+              return {
+                ...remark,
+                date: determineReportDate(
+                  issued,
+                  remark.day,
+                  remark.hour,
+                  remark.minute,
+                ),
+              };
+            } else {
+              return remark;
+            }
+          }),
           validity: (() => {
             switch (trend.type) {
               case WeatherChangeType.FM:

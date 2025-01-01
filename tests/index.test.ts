@@ -4,6 +4,7 @@ import {
   parseTAFAsForecast,
   WeatherChangeType,
 } from "index";
+import {INextForecastByRemarkDated} from "command/remark/NextForecastByCommand";
 
 describe("public API", () => {
   describe("parseMetar", () => {
@@ -57,6 +58,20 @@ TAF
           new Date("2022-01-16T18:00:00.000Z"),
         );
       });
+
+      test("sets next forecasted by remark date", () => {
+        const taf = parseTAF(
+          `
+    TAF CYVR 152340Z 1600/1706 29015KT P6SM FEW015 FM162200 28010KT P6SM SKC RMK NXT FCST BY 160300Z
+        `,
+          { issued: new Date("2022-10-22") },
+        );
+        expect(taf.trends[0]).toBeDefined();
+        expect(taf.trends[0].remarks[0]).toBeDefined();
+        expect((taf.trends[0].remarks[0] as INextForecastByRemarkDated).date).toEqual(
+          new Date("2022-10-16T03:00:00.000Z"),
+        );
+      })
 
       test("should set maxTemperature, minTemperature with dates", () => {
         const taf = parseTAF(
