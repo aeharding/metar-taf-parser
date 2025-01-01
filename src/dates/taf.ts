@@ -8,7 +8,7 @@ import {
   ITemperatureDated,
 } from "model/model";
 import { determineReportDate } from "helpers/date";
-import {RemarkType} from "command/remark";
+import { RemarkType } from "command/remark";
 
 export type TAFTrendDated = IAbstractTrend &
   IBaseTAFTrend & {

@@ -151,7 +151,7 @@ import {
 import {
   INextForecastByRemark,
   INextForecastByRemarkDated,
-  NextForecastByCommand
+  NextForecastByCommand,
 } from "command/remark/NextForecastByCommand";
 
 export type {

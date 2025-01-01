@@ -4,7 +4,7 @@ import {
   parseTAFAsForecast,
   WeatherChangeType,
 } from "index";
-import {INextForecastByRemarkDated} from "command/remark/NextForecastByCommand";
+import { INextForecastByRemarkDated } from "command/remark/NextForecastByCommand";
 
 describe("public API", () => {
   describe("parseMetar", () => {
@@ -68,10 +68,10 @@ TAF
         );
         expect(taf.trends[0]).toBeDefined();
         expect(taf.trends[0].remarks[0]).toBeDefined();
-        expect((taf.trends[0].remarks[0] as INextForecastByRemarkDated).date).toEqual(
-          new Date("2022-10-16T03:00:00.000Z"),
-        );
-      })
+        expect(
+          (taf.trends[0].remarks[0] as INextForecastByRemarkDated).date,
+        ).toEqual(new Date("2022-10-16T03:00:00.000Z"));
+      });
 
       test("should set maxTemperature, minTemperature with dates", () => {
         const taf = parseTAF(

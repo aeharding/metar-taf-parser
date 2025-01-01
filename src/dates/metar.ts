@@ -1,6 +1,6 @@
 import { IMetar } from "model/model";
 import { determineReportDate } from "helpers/date";
-import {RemarkType} from "command/remark";
+import { RemarkType } from "command/remark";
 
 export interface IMetarDated extends IMetar {
   issued: Date;

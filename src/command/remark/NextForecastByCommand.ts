@@ -14,7 +14,7 @@ export interface INextForecastByRemark extends IBaseRemark {
 export interface INextForecastByRemarkDated extends INextForecastByRemark {
   type: RemarkType.NextForecastBy;
 
-  date: Date,
+  date: Date;
 }
 
 export class NextForecastByCommand extends Command {
