@@ -148,6 +148,11 @@ import {
   IPrecipitationEndRemark,
   PrecipitationEndCommand,
 } from "./remark/PrecipitationEndCommand";
+import {
+  INextForecastByRemark,
+  INextForecastByRemarkDated,
+  NextForecastByCommand,
+} from "command/remark/NextForecastByCommand";
 
 export type {
   ICeilingHeightRemark,
@@ -184,6 +189,8 @@ export type {
   IWaterEquivalentSnowRemark,
   IWindPeakCommandRemark,
   IWindShiftFropaRemark,
+  INextForecastByRemark,
+  INextForecastByRemarkDated,
 };
 
 export interface IBaseRemark {
@@ -242,6 +249,7 @@ export class RemarkCommandSupplier {
       new SnowDepthCommand(locale),
       new SunshineDurationCommand(locale),
       new WaterEquivalentSnowCommand(locale),
+      new NextForecastByCommand(locale),
     ];
   }
 
@@ -308,9 +316,13 @@ export enum RemarkType {
   SnowDepth = "SnowDepth",
   SunshineDuration = "SunshineDuration",
   WaterEquivalentSnow = "WaterEquivalentSnow",
+
+  // Canada commands below
+  NextForecastBy = "NextForecastBy",
 }
 
-export type Remark =
+// Remark types that are not date based
+type RemarkBase =
   | IUnknownRemark
   | IDefaultCommandRemark
   // Regular commands below
@@ -326,7 +338,6 @@ export type Remark =
   | IIceAccretionRemark
   | IObscurationRemark
   | IPrecipitationAmount24HourRemark
-  | IPrecipitationAmount36HourRemark
   | IPrecipitationAmount36HourRemark
   | IPrecipitationBegRemark
   | IPrecipitationBegEndRemark
@@ -354,3 +365,13 @@ export type Remark =
   | IWindPeakCommandRemark
   | IWindShiftRemark
   | IWindShiftFropaRemark;
+
+export type RemarkDated =
+  | RemarkBase
+  // Canadian commands below
+  | INextForecastByRemarkDated;
+
+export type Remark =
+  | RemarkBase
+  // Canadian commands below
+  | INextForecastByRemark;

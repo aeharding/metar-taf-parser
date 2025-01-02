@@ -36,7 +36,7 @@ import { PartialWeatherStatementError } from "commons/errors";
 
 describe("RemarkParser", () => {
   (() => {
-    const code = "Token AO1 End of remark";
+    const code = "Token AO1 End of remark NXT FCST BY 160300Z";
 
     test(`parses "${code}"`, () => {
       const remarks = new RemarkParser(en).parse(code);
@@ -54,6 +54,14 @@ describe("RemarkParser", () => {
         {
           type: RemarkType.Unknown,
           raw: "End of remark",
+        },
+        {
+          type: RemarkType.NextForecastBy,
+          description: "next forecast by 16, 03:00Z",
+          raw: "NXT FCST BY 160300Z",
+          day: 16,
+          hour: 3,
+          minute: 0,
         },
       ]);
     });
@@ -1191,7 +1199,7 @@ describe("TAFParser", () => {
 
     expect(taf).toBeDefined();
     expect(taf.remark).toBeDefined();
-    expect(taf.remarks).toHaveLength(1);
+    expect(taf.remarks).toHaveLength(2);
   });
 
   test("parse with trend remark", () => {
@@ -1201,7 +1209,7 @@ describe("TAFParser", () => {
 
     expect(taf.trends).toHaveLength(3);
     expect(taf.trends[2].remark).toBeDefined();
-    expect(taf.trends[2].remarks).toHaveLength(1);
+    expect(taf.trends[2].remarks).toHaveLength(2);
   });
 
   test("parses INTER trend", () => {

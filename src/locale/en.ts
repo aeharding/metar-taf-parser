@@ -196,6 +196,11 @@ export default {
     LGT: "light",
     LTG: "lightning",
     MOD: "moderate",
+    Next: {
+      Forecast: {
+        By: "next forecast by {0}, {1}:{2}Z"
+      },
+    },
     NXT: "next",
     ON: "on",
     Obscuration: "{0} layer at {1} feet composed of {2}",
