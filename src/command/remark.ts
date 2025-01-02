@@ -322,7 +322,7 @@ export enum RemarkType {
 }
 
 // Remark types that are not date based
-export type RemarkBase =
+type RemarkBase =
   | IUnknownRemark
   | IDefaultCommandRemark
   // Regular commands below

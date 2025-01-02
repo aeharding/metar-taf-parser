@@ -17,6 +17,7 @@ export {
   IBaseRemark,
   IUnknownRemark,
   Remark,
+  RemarkDated,
   // Rest of remark types
   ICeilingHeightRemark,
   ICeilingSecondLocationRemark,
@@ -52,6 +53,9 @@ export {
   IWaterEquivalentSnowRemark,
   IWindPeakCommandRemark,
   IWindShiftFropaRemark,
+  // Canadian remarks
+  INextForecastByRemark,
+  INextForecastByRemarkDated,
 } from "command/remark";
 export {
   getCompositeForecastForDate,
