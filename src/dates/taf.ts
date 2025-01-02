@@ -105,9 +105,8 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
                   remark.minute,
                 ),
               };
-            } else {
-              return remark;
             }
+            return remark;
           }),
           validity: (() => {
             switch (trend.type) {
