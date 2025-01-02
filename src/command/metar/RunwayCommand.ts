@@ -42,11 +42,10 @@ export class RunwayCommand implements ICommand {
       if (!matches) throw new UnexpectedParseError("Should be able to parse");
 
       const indicator = matches[2] ? as(matches[2], ValueIndicator) : undefined;
-      const trend = matches[4]
-        ? as(matches[4], RunwayInfoTrend)
-        : matches[7]
-          ? as(matches[7], RunwayInfoTrend)
-          : undefined;
+      const trend = (() => {
+        if (matches[4]) return as(matches[4], RunwayInfoTrend);
+        if (matches[7]) return as(matches[7], RunwayInfoTrend);
+      })();
       const unit = matches[5]
         ? as(matches[5], RunwayInfoUnit)
         : RunwayInfoUnit.Meters;
