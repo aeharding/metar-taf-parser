@@ -13,7 +13,7 @@ import { ICommand } from "../metar";
 export class RunwayCommand implements ICommand {
   #genericRegex = /^(R\d{2}\w?\/)/;
   #runwayMaxRangeRegex = /^R(\d{2}\w?)\/(\d{4})V(\d{3,4})([UDN])?(FT)?/;
-  #runwayRegex = /R(\d{2}\w?)\/([MP])?(\d{4})(?:([UDN])|(FT)(?:\/([UDN]))?)$/;
+  #runwayRegex = /^R(\d{2}\w?)\/([MP])?(\d{4})(?:([UDN])|(FT)(?:\/([UDN]))?)$/;
   #runwayDepositRegex = /^R(\d{2}\w?)\/([/\d])([/\d])(\/\/|\d{2})(\/\/|\d{2})$/;
 
   canParse(input: string): boolean {
