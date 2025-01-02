@@ -21,7 +21,7 @@ describe("CeilingSecondLocationCommand", () => {
           {
             type: RemarkType.CeilingSecondLocation,
             description:
-              "ceiling of 200 feet mesured by a second sensor located at RY11",
+              "ceiling of 200 feet measured by a second sensor located at RY11",
             raw: code,
             height: 200,
             location: "RY11",

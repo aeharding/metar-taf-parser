@@ -94,7 +94,7 @@ export default {
     TS: "thunderstorm",
   },
   Error: {
-    prefix: "An error occured. Error code n°",
+    prefix: "An error occurred. Error code n°",
   },
   ErrorCode: {
     AirportNotFound: "The airport was not found for this message.",
@@ -142,6 +142,7 @@ export default {
     ALQDS: "all quadrants",
     AO1: "automated stations without a precipitation discriminator",
     AO2: "automated station with a precipitation discriminator",
+    AO2A: "automated station with a precipitation discriminator (augmented)",
     BASED: "based",
     Barometer: [
       "Increase, then decrease",
@@ -158,7 +159,7 @@ export default {
       Height: "ceiling varying between {0} and {1} feet",
       Second: {
         Location:
-          "ceiling of {0} feet mesured by a second sensor located at {1}",
+          "ceiling of {0} feet measured by a second sensor located at {1}",
       },
     },
     DSNT: "distant",
@@ -227,7 +228,7 @@ export default {
     Second: {
       Location: {
         Visibility:
-          "visibility of {0} SM mesured by a second sensor located at {1}",
+          "visibility of {0} SM measured by a second sensor located at {1}",
       },
     },
     Sector: {

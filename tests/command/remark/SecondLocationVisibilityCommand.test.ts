@@ -19,7 +19,7 @@ describe("SecondLocationVisibilityCommand", () => {
         {
           type: RemarkType.SecondLocationVisibility,
           description:
-            "visibility of 1/2 SM mesured by a second sensor located at RWY12",
+            "visibility of 1/2 SM measured by a second sensor located at RWY12",
           raw: code,
           distance: 0.5,
           location: "RWY12",
