@@ -8,7 +8,7 @@ import {
   ITemperatureDated,
 } from "model/model";
 import { determineReportDate } from "helpers/date";
-import { RemarkType } from "command/remark";
+import { Remark, RemarkDated, RemarkType } from "command/remark";
 
 export type TAFTrendDated = IAbstractTrend &
   IBaseTAFTrend & {
@@ -16,6 +16,7 @@ export type TAFTrendDated = IAbstractTrend &
       start: Date;
       end?: Date;
     };
+    remarks: RemarkDated[];
   } & (
     | {
         type: WeatherChangeType.FM;
@@ -44,6 +45,19 @@ export interface ITAFDated extends ITAF {
   maxTemperature?: ITemperatureDated;
 
   trends: TAFTrendDated[];
+  remarks: RemarkDated[];
+}
+
+function remarksDatesHydrator(remarks: Remark[], date: Date): RemarkDated[] {
+  return remarks.map((remark) => {
+    if (remark.type === RemarkType.NextForecastBy) {
+      return {
+        ...remark,
+        date: determineReportDate(date, remark.day, remark.hour, remark.minute),
+      };
+    }
+    return remark;
+  });
 }
 
 export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
@@ -94,20 +108,7 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
       (trend) =>
         ({
           ...trend,
-          remarks: trend.remarks.map((remark) => {
-            if (remark.type === RemarkType.NextForecastBy) {
-              return {
-                ...remark,
-                date: determineReportDate(
-                  issued,
-                  remark.day,
-                  remark.hour,
-                  remark.minute,
-                ),
-              };
-            }
-            return remark;
-          }),
+          remarks: remarksDatesHydrator(trend.remarks, issued),
           validity: (() => {
             switch (trend.type) {
               case WeatherChangeType.FM:
@@ -138,5 +139,6 @@ export function tafDatesHydrator(report: ITAF, date: Date): ITAFDated {
           })(),
         }) as TAFTrendDated,
     ),
+    remarks: remarksDatesHydrator(report.remarks, issued),
   };
 }

@@ -1199,7 +1199,7 @@ describe("TAFParser", () => {
 
     expect(taf).toBeDefined();
     expect(taf.remark).toBeDefined();
-    expect(taf.remarks).toHaveLength(1);
+    expect(taf.remarks).toHaveLength(2);
   });
 
   test("parse with trend remark", () => {
@@ -1209,7 +1209,7 @@ describe("TAFParser", () => {
 
     expect(taf.trends).toHaveLength(3);
     expect(taf.trends[2].remark).toBeDefined();
-    expect(taf.trends[2].remarks).toHaveLength(1);
+    expect(taf.trends[2].remarks).toHaveLength(2);
   });
 
   test("parses INTER trend", () => {

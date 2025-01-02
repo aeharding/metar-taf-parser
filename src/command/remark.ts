@@ -321,7 +321,8 @@ export enum RemarkType {
   NextForecastBy = "NextForecastBy",
 }
 
-export type Remark =
+// Remark types that are not date based
+export type RemarkBase =
   | IUnknownRemark
   | IDefaultCommandRemark
   // Regular commands below
@@ -363,7 +364,14 @@ export type Remark =
   | IWaterEquivalentSnowRemark
   | IWindPeakCommandRemark
   | IWindShiftRemark
-  | IWindShiftFropaRemark
+  | IWindShiftFropaRemark;
+
+export type RemarkDated =
+  | RemarkBase
   // Canadian commands below
-  | INextForecastByRemark
   | INextForecastByRemarkDated;
+
+export type Remark =
+  | RemarkBase
+  // Canadian commands below
+  | INextForecastByRemark;
