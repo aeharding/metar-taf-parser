@@ -205,4 +205,27 @@ describe("RunwayCommand", () => {
       });
     });
   })();
+
+  (() => {
+    const code = "R36/4000FT/D"; // runway info north america style
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(1);
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "36",
+          minRange: 4000,
+          unit: RunwayInfoUnit.Feet,
+          trend: RunwayInfoTrend.Decreasing,
+        });
+      });
+    });
+  })();
 });

@@ -248,6 +248,32 @@ describe("MetarParser", () => {
     expect((metar.runwaysInfo[0] as IRunwayInfoRange).trend).toBe("N");
   });
 
+  test("parses canadian station", () => {
+    const input =
+      "CYWG 172000Z 30015G25KT 3/4SM R36/4000FT/D -SN BLSN BKN008 OVC040 M05/M08 A2992 REFZRA WS RWY36 RMK SF5NS3 SLP134";
+
+    const metar = new MetarParser(en).parse(input);
+
+    expect(metar.station).toBe("CYWG");
+    expect(metar.day).toBe(17);
+    expect(metar.hour).toBe(20);
+    expect(metar.minute).toBe(0);
+    expect(metar.wind).toBeDefined();
+    expect(metar.wind?.speed).toBe(15);
+    expect(metar.wind?.gust).toBe(25);
+    expect(metar.wind?.direction).toBe("WNW");
+    expect(metar.wind?.unit).toBe("KT");
+    expect(metar.visibility).toBeDefined();
+    expect(metar.visibility).toEqual({
+      value: 0.75,
+      unit: DistanceUnit.StatuteMiles,
+    });
+    expect(metar.runwaysInfo).toHaveLength(1);
+    expect(metar.runwaysInfo[0].name).toBe("36");
+    expect((metar.runwaysInfo[0] as IRunwayInfoRange).minRange).toBe(4000);
+    expect((metar.runwaysInfo[0] as IRunwayInfoRange).trend).toBe("D");
+  });
+
   test("parses 'AUTO' as station if no station identifier", () => {
     const input = "AUTO 061950Z 10002KT 9999NDV NCD 01/M00 Q1015 RMK=";
 
