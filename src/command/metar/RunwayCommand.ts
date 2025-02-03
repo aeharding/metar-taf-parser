@@ -13,7 +13,7 @@ import { ICommand } from "../metar";
 export class RunwayCommand implements ICommand {
   #genericRegex = /^(R\d{2}\w?\/)/;
   #runwayMaxRangeRegex =
-    /^R(\d{2}\w?)\/(\d{4})V(\d{3,4})(?:([UDN])|(FT)(?:\/([UDN]))?)$/;
+    /^R(\d{2}\w?)\/(\d{4})V([MP])?(\d{3,4})(?:([UDN])|(FT)(?:\/([UDN]))?)$/;
   #runwayRegex = /^R(\d{2}\w?)\/([MP])?(\d{4})(?:([UDN])|(FT)(?:\/([UDN]))?)$/;
   #runwayDepositRegex = /^R(\d{2}\w?)\/([/\d])([/\d])(\/\/|\d{2})(\/\/|\d{2})$/;
 
@@ -64,18 +64,20 @@ export class RunwayCommand implements ICommand {
 
       if (!matches) throw new UnexpectedParseError("Should be able to parse");
 
+      const indicator = matches[3] ? as(matches[3], ValueIndicator) : undefined;
       const trend = (() => {
-        if (matches[6]) return as(matches[6], RunwayInfoTrend);
-        if (matches[4]) return as(matches[4], RunwayInfoTrend);
+        if (matches[7]) return as(matches[7], RunwayInfoTrend);
+        if (matches[5]) return as(matches[5], RunwayInfoTrend);
       })();
-      const unit = matches[5]
-        ? as(matches[5], RunwayInfoUnit)
+      const unit = matches[6]
+        ? as(matches[6], RunwayInfoUnit)
         : RunwayInfoUnit.Meters;
 
       metar.runwaysInfo.push({
         name: matches[1],
+        indicator,
         minRange: +matches[2],
-        maxRange: +matches[3],
+        maxRange: +matches[4],
         trend,
         unit,
       });

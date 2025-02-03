@@ -123,6 +123,31 @@ describe("RunwayCommand", () => {
   })();
 
   (() => {
+    const code = "R08R/5000VP6000FT/D"; // runway info range north america style with indicator
+    const metar = { runwaysInfo: [] } as unknown as IMetar;
+
+    describe(code, () => {
+      test("canParse", () => {
+        expect(command.canParse(code)).toBe(true);
+      });
+
+      test("parse", () => {
+        command.execute(metar, code);
+
+        expect(metar.runwaysInfo).toHaveLength(1);
+        expect(metar.runwaysInfo[0]).toEqual({
+          name: "08R",
+          minRange: 5000,
+          maxRange: 6000,
+          indicator: ValueIndicator.GreaterThan,
+          unit: RunwayInfoUnit.Feet,
+          trend: RunwayInfoTrend.Decreasing,
+        });
+      });
+    });
+  })();
+
+  (() => {
     const code = "R01L/0800FT"; // runway info range feet simple
     const metar = { runwaysInfo: [] } as unknown as IMetar;
 
