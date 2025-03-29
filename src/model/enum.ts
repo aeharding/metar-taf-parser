@@ -151,7 +151,7 @@ export enum TimeIndicator {
 }
 
 /**
- * https://www.aviationweather.gov/taf/decoder
+ * https://web.archive.org/web/20230318235549/https://aviationweather.gov/taf/decoder
  */
 export enum WeatherChangeType {
   /**

@@ -88,7 +88,7 @@ TAF reports are a little funky... FM, BECMG, PROB, weird validity periods, etc. 
 
 #### `parseTAFAsForecast`
 
-Returns a more normalized TAF report than `parseTAF`. Most notably: while the `parseTAF` function returns initial weather conditions on the base of the returned result (and further conditions on `trends[]`), the `parseTAFAsForecast` function returns the initial weather conditions as the first element of the `forecast[]` property (with `type = undefined`), followed by subsequent trends. (For more, please see the above about the forecast abstraction.) This makes it much easier to render a UI similar to the [aviationweather.gov](https://www.aviationweather.gov/taf/data?ids=SBPJ&format=decoded&metars=off&layout=on) TAF decoder.
+Returns a more normalized TAF report than `parseTAF`. Most notably: while the `parseTAF` function returns initial weather conditions on the base of the returned result (and further conditions on `trends[]`), the `parseTAFAsForecast` function returns the initial weather conditions as the first element of the `forecast[]` property (with `type = undefined`), followed by subsequent trends. (For more, please see the above about the forecast abstraction.) This makes it much easier to render a UI similar to the [aviationweather.gov](https://aviationweather.gov/data/taf/?decoded=1&ids=KMSN&metar=0&taf=1) TAF decoder.
 
 ```ts
 import { parseTAFAsForecast } from "metar-taf-parser";
