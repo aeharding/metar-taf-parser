@@ -1432,7 +1432,7 @@ describe("TAFParser", () => {
   });
 
   // Note: I saw this in the wild. It would be great if this could be parsed eventually, but for now it appears to be an invalid TAF.
-  // (https://www.aviationweather.gov/taf/decoder#Date)
+  // (https://web.archive.org/web/20230318235549/https://aviationweather.gov/taf/decoder#Date)
   //
   // test("should parse without issued date", () => {
   //   const taf = new TAFParser(en).parse(
