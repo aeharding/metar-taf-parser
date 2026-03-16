@@ -9,7 +9,7 @@ import {
   parseTAFAsForecast,
   IMetarTAFParserOptionsDated,
 } from "metar-taf-parser";
-import ReactJson from "react-json-view";
+import ReactJsonView from "@microlink/react-json-view";
 import ErrorComponent from "./Error";
 import { useNavigate } from "react-router";
 import { createSearchParams, useSearchParams } from "react-router-dom";
@@ -22,9 +22,6 @@ import zh from "metar-taf-parser/locale/zh-CN";
 import { css } from "@emotion/react";
 import { format } from "date-fns/format";
 import { omitByDeep } from "./helpers/omitByDeep";
-
-// Types are broke
-const Json = ReactJson as any;
 
 const Container = styled.div`
   display: flex;
@@ -273,7 +270,7 @@ function Parse<T extends () => unknown>({
         {error && <ErrorComponent error={error} />}
 
         <JsonContainer>
-          <Json
+          <ReactJsonView
             // Hide undefined values from displaying
             src={omitByDeep(result, (v) => v === undefined)}
             theme="harmonic"
