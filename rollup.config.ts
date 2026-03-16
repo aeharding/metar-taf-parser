@@ -1,7 +1,7 @@
 import { exec } from "child_process";
-import lodash from "lodash";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
+import { camelCase } from "es-toolkit";
 
 const tsconfig = "tsconfig.build.json";
 
@@ -42,7 +42,7 @@ export default [
     output: [
       {
         dir: "dist",
-        name: lodash.camelCase(libraryName),
+        name: camelCase(libraryName),
         format: "es",
       },
     ],
