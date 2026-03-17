@@ -292,7 +292,8 @@ export class MetarParser extends AbstractParser {
       i < trendParts.length &&
       trendParts[i] !== this.TEMPO &&
       trendParts[i] !== this.INTER &&
-      trendParts[i] !== this.BECMG
+      trendParts[i] !== this.BECMG &&
+      trendParts[i] !== this.RMK
     ) {
       if (
         trendParts[i].startsWith(this.FM) ||
