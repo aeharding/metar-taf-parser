@@ -587,6 +587,19 @@ describe("MetarParser", () => {
     expect(metar.remarks).toHaveLength(1);
   });
 
+  // https://github.com/aeharding/metar-taf-parser/issues/122
+  test("TEMPO followed by RMK parses remark correctly", () => {
+    const metar = new MetarParser(en).parse(
+      "EGLL 231250Z 14012G22KT 2000 +TSRA FG BKN008 SCT025CB OVC050 18/17 Q1010 TEMPO 1000 -SHRA RMK QFE998",
+    );
+
+    expect(metar.trends).toHaveLength(1);
+    expect(metar.trends[0].type).toBe(WeatherChangeType.TEMPO);
+    expect(metar.trends[0].raw).toBe("TEMPO 1000 -SHRA");
+    expect(metar.remark).toBe("QFE998");
+    expect(metar.remarks).toHaveLength(1);
+  });
+
   test("with 'none' runway deposit", () => {
     const input = "UUWW 151030Z 34002MPS CAVOK 14/02 Q1026 R01/000070 NOSIG";
 
